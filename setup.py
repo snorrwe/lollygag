@@ -11,7 +11,7 @@ except:
   home_page = ""
 
 setup(name='frenetiq_crawler',
-      version='0.0.1',
+      version='0.0.2',
       author='Daniel Kiss',
       author_email='littlesnorrboy@gmail.com',
       url='https://github.com/snorrwe/frenetiq-crawler',
