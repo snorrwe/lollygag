@@ -1,0 +1,52 @@
+language: python
+python:
+  - "2.7"
+  - "3.6"
+  - "pypy"
+  - "pypy3"
+env:
+  - TEST_ENV=src
+  - TEST_ENV=e2e
+install:
+- python setup.py -q install
+- pip install -r requirements.txt
+script:
+- cd $TEST_ENV
+- pytest
+jobs:
+  include:
+  - stage: lint
+    language: python
+    python: 3.6
+    install:
+    - pip install pylint
+    - pip install -r requirements.txt
+    script:
+    - pylint src/frenetiq_crawler
+  - stage: deploy
+    language: python
+    python: 3.6
+    sudo: required
+    dist: trusty
+    install: skip
+    script: skip
+    before_deploy:
+    - pip install markdown
+    - python setup.py sdist
+    deploy:
+      - provider: pypi
+        distributions: sdist
+        user: snorrwe
+        password:
+          secure: UiaFvDhgC5cDPsNHsSMB3n/bHPuPs6/Ih+A+bTtqXvLpk/1bsJOCvEve9hcDCqOjI6mRy5mUGBwjLETsmzJKNA3Woea3qL2nIeW4eqWfx9g4yD2qs+c4Pxnlv6Xa6JkQcphIR90XnzTbSgnEPM8+OBesmSBKzxYd6tdIH+zuWNHUUtf+YFKpA9UBhIu8yfEqnXE6/eCNxFtx0vlpYC5AzVZXKxW5rsVJGMAXTAxZHbuTYwWXLKyyPIoeybeWfSaGzAlRP4P9/L/uQAsFgkBVdQiocWymjPUkJ3iTcLa8fkgxngmUMV0EZIF+ylq467BanysOZEuvrpuOLpNiZs4HL8UPQbubtjhYVAgk79toEM62CUQdm2chmPhglHvqsny3yHotmn5OXKPToiW8PmSpi3GLsFJEpiJSo7HrOV+pf9hhkltvk3L1Ys8Aw7p66bwXSeuXpy78LiihQ+h4SopBw4TVaJGr+IzpH/3G/t1sF58o0+QLl7rd+IVHR7Tnjrs/FsR4r4hO3D5hrqebbCa63JLdeLg/PElAZhJE+49cxLQ0JOnd3xA1jzaCirqLENvL9d/j8yjE5uggXgOJuPwr3ari/oFiL3omFsdydv2PJI3rMMjuMYTvqua7HXhSLFfoPmlgzos1PM/P2m2cHrzG2u03EMqvsIJvFV5z965/LBM=
+        skip_cleanup: true
+        on:
+          tags: true
+      - provider: releases
+        api_key:
+          secure: d37p1ekU1K+laQz1xWqDUbCP6HAob1V37HjqXtu/QPgvcNtL01D0B6g1zweUxl7rzn5tBFOs349czsg0OFLn8ZDbkGpYb9sP37ersqr28drYBPwof0DzknSnjHI2sPBEJ/dmEBq9em+Q/UsgsnbXIWtyVLF5zeM09dWxq9fcTZNa59GVupy4zsHMMwQiYWgpiypbC7qZ+WmiPpryFawWeljwYLBMZbIr0Fu0hNx/ajBK5dc0R2Rr0x4XzIJTDN4RejG+wFc8Bas4k39vJ8fjXaEBhO4q8sP7XF09ahcRcwtc5sRDiDuKoeey3uNA2WseR2Ora2egz2qDX/IswQeMdVOV7CvsE/maSQHL0pFwhuXO+fDR1YlweOhTetF0IoJq5jtWriRh9K9CqDF5SFnMUHUeczZsR2Zq8+SjOSLHyHiOYxCeTo78o0vTh2rn0TAxRY6oQZb3SMKv1MSqrzyVBLTazHQUjDgXvhyf1Lr/HjbwVDWu65tXBLzFBHxM6Yg/FA06S4+4Bs4kSF7IQMSM+77UwhQnGz0G7rNJB5fglar8rzGeEpLz4JpwyGFUxqUsXiCutO6SUbXumFoS8HX7mELtIwdwkqwoFQ1Bp22A/SME/dJOdcmq+TaiqNZv5BLXBcEefwl/28bZC12CTO/wktYXs3wFr08A8fCugbr/J+Q=
+        file_glob: true
+        file: dist/*
+        skip_cleanup: true
+        on:
+          tags: true
