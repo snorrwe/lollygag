@@ -3,7 +3,7 @@
 ## About
 
 * Version: 0.0.1
-* Travis CI: [![Build Status](https://travis-ci.com/snorrwe/Crawler.svg?token=WMyzvqbod1Qz3yx7UKAT&branch=master)](https://travis-ci.com/snorrwe/Crawler)
+* Travis CI: [![Build Status](https://travis-ci.org/snorrwe/frenetiq-crawler.svg?branch=master)](https://travis-ci.org/snorrwe/frenetiq-crawler)
 * Supported Python versions: 
     * Python 2.7
     * Python 3.6
