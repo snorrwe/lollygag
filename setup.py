@@ -8,7 +8,7 @@ from setuptools import setup, find_packages
 def handle_possible_ci_error(message, code):
     print(message)
     if any(filter(lambda x: x == "--ci", sys.argv)):
-        print(sys.exc_info()[0])
+        print(sys.exc_info())
         raise SystemExit(code)
 
 def main():
