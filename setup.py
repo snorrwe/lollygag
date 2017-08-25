@@ -7,7 +7,12 @@ from setuptools import setup, find_packages
 
 def handle_possible_ci_error(message, code):
     print(message)
-    if os.environ['SETUP_DEPLOY']:
+    is_deploy = False
+    try:
+        is_deploy = os.environ['SETUP_DEPLOY']
+    except KeyError:
+        pass
+    if is_deploy:
         print(sys.exc_info())
         raise SystemExit(code)
 
