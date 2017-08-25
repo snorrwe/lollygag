@@ -29,14 +29,18 @@ class DomainCrawler(object):
         self.reset(url)
 
     def reset(self, url):
+        self.domain = None
+        self.visited_urls = set()
+        self.urls_to_crawl = []
+        self.urls_in_progress = []
+        if not url: 
+            return
         self.protocol = get_protocol(url)
         if not self.protocol:
             self.protocol = "http://"
             url = "%s%s" % (self.protocol, url)
         self.domain = get_domain(url)
-        self.visited_urls = set()
-        self.urls_to_crawl = [url]
-        self.urls_in_progress = []
+        self.urls_to_crawl.append(url)
 
     def crawl(self, url=None):
         """
@@ -46,6 +50,8 @@ class DomainCrawler(object):
         """
         if url:
             self.reset(url)
+        elif not self.domain:
+            raise AssertionError("Cannot start crawling without a URL!")
         self.log_service.info("----------Crawl starting----------")
         self._init_crawl_thread()
         try:
@@ -56,7 +62,7 @@ class DomainCrawler(object):
             self.work_service.terminate_all()
         finally:
             self.log_service.info(
-"""Total:
+                """Total:
         Urls crawled=[%s]
         Urls in progess=[%s]
         Urls left to crawl=[%s]""" \
