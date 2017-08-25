@@ -7,7 +7,7 @@ from setuptools import setup, find_packages
 
 def handle_possible_ci_error(message, code):
     print(message)
-    if sys.arc and sys.argv[1] == "ci":
+    if any(filter(lambda x: x == "--ci", sys.argv)):
         print(sys.exc_info()[0])
         raise SystemExit(code)
 
@@ -26,7 +26,7 @@ def main():
     version = os.environ['TRAVIS_TAG']
     re.search(r'(\d\.){3,}', version).group(0)
   except:
-    handle_possible_ci_error("Something went wrong while setting the version!", 2)
+    print("Something went wrong while setting the version!")
     version = '0.0.dev1'
 
   setup(name='frenetiq_crawler',
