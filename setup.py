@@ -13,11 +13,9 @@ def handle_possible_ci_error(message, code):
 
 def main():
   try:
-    import pandoc
-    doc = pandoc.Document()
-    with open("README.md") as file:
-      doc.markdown = file.read()
-      home_page = doc.rst
+    import pypandoc
+    home_page = pypandoc.convert_file("README.md", 'rst')
+    assert home_page
   except:
     handle_possible_ci_error("Something went wrong while generating the README!", 1)
     home_page = "Something went wrong while generating the README. Please refer to https://github.com/snorrwe/frenetiq-crawler"

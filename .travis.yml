@@ -30,7 +30,7 @@ jobs:
     dist: trusty
     install: skip
     script:
-    - pip install pandoc
+    - pip install pypandoc
     - python setup.py sdist --ci
     deploy:
       - provider: pypi
