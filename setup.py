@@ -5,6 +5,12 @@ import re
 import sys
 from setuptools import setup, find_packages
 
+def handle_possible_ci_error(message, code):
+    print(message)
+    if sys.arc and sys.argv[1] == "ci":
+        print(sys.exc_info()[0])
+        raise SystemExit(code)
+
 def main():
   try:
     import pandoc
@@ -13,16 +19,14 @@ def main():
       doc.markdown = file.read()
       home_page = doc.rst
   except:
-    print("Something went wrong while generating the README!")
-    print(sys.exec_info()[0])
+    handle_possible_ci_error("Something went wrong while generating the README!", 1)
     home_page = "Something went wrong while generating the README. Please refer to https://github.com/snorrwe/frenetiq-crawler"
 
   try:
     version = os.environ['TRAVIS_TAG']
     re.search(r'(\d\.){3,}', version).group(0)
   except:
-    print("Something went wrong while setting the version!")
-    print(sys.exec_info()[0])
+    handle_possible_ci_error("Something went wrong while setting the version!", 2)
     version = '0.0.dev1'
 
   setup(name='frenetiq_crawler',
