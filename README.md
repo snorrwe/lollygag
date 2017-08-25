@@ -55,24 +55,36 @@ if __name__ == '__main__':
 ```
 
 ```bash
-$ python crawler_example.py -u snorrwe.github.io/crawler_test
+python crawler_example.py -u snorrwe.github.io/crawler_test
 
 [Info]Thread=[MainThread]        ----------Crawl starting----------
 [Debug]Thread=[MainThread]       No urls to crawl, going to sleep. Work in progress=[1]
-[Info]Thread=[WSc--3]    Yeah boi, a page!
-[Debug]Thread=[WSc--3]   Boi, I found a link!
-[Debug]Thread=[WSc--3]   Boi, I found a link!
-[Info]Thread=[WSc--3]    Yeeeeaaaah boiiiiiii, I found an img
-[Info]Thread=[WSc--3]    Link=[http://snorrwe.github.io/crawler_test] StatusCode=[200] Size=[310]
-[Debug]Thread=[WSc--3]   URLs visited=[1], remaining=[2]
+[Info]Thread=[WSc--0]    Yeah boi, a page!
+[Debug]Thread=[WSc--0]   Boi, I found a link!
+[Debug]Thread=[WSc--0]   Boi, I found a link!
+[Info]Thread=[WSc--0]    Yeeeeaaaah boiiiiiii, I found an img
+[Info]Thread=[WSc--0]    Link=[http://snorrwe.github.io/crawler_test] StatusCode=[200] Size=[310]
+[Debug]Thread=[WSc--0]
+    Urls visited=[1]
+    Urls in progess=[0]
+    Urls left=[2]
 [Debug]Thread=[MainThread]       No urls to crawl, going to sleep. Work in progress=[2]
-[Info]Thread=[WSc--8]    Yeah boi, a page!
-[Debug]Thread=[WSc--8]   Boi, I found a link!
-[Info]Thread=[WSc--8]    Link=[http://snorrwe.github.io/crawler_test/kanga.html] StatusCode=[200] Size=[220]
-[Debug]Thread=[WSc--8]   URLs visited=[2], remaining=[0]
-[Info]Thread=[WSc--7]    Link=[http://snorrwe.github.io/crawler_test/kanga2.html] StatusCode=[404] Size=[9340]
-[Debug]Thread=[WSc--7]   URLs visited=[3], remaining=[0]
-[Info]Thread=[MainThread]        Total urls crawled=[3] Urls left to crawl=[0]
+[Info]Thread=[WSc--4]    Link=[http://snorrwe.github.io/crawler_test/kanga2.html] StatusCode=[404] Size=[9340]
+[Debug]Thread=[WSc--4]
+    Urls visited=[2]
+    Urls in progess=[1]
+    Urls left=[0]
+[Info]Thread=[WSc--2]    Yeah boi, a page!
+[Debug]Thread=[WSc--2]   Boi, I found a link!
+[Info]Thread=[WSc--2]    Link=[http://snorrwe.github.io/crawler_test/kanga.html] StatusCode=[200] Size=[220]
+[Debug]Thread=[WSc--2]
+    Urls visited=[3]
+    Urls in progess=[0]
+    Urls left=[0]
+[Info]Thread=[MainThread]
+    Urls visited=[3]
+    Urls in progess=[0]
+    Urls left=[0]
 [Info]Thread=[MainThread]        ----------Crawl finished----------
 ```
 
