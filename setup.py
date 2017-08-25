@@ -6,7 +6,6 @@ import sys
 from setuptools import setup, find_packages
 
 def main():
-  result = 0
   try:
     import pandoc
     doc = pandoc.Document()
@@ -15,15 +14,13 @@ def main():
       home_page = doc.rst
   except:
     print("Something went wrong while generating the README!")
-    result += 1
     home_page = "Something went wrong while generating the README. Please refer to https://github.com/snorrwe/frenetiq-crawler"
 
   try:
     tag = os.environ['TRAVIS_TAG']
     re.search(r'(\d\.){3,}', tag).group(0)
   except:
-    result += 2
-    version = 'UNKNOWN_VERSION'
+    version = '0.0.dev1'
 
   setup(name='frenetiq_crawler',
         version=version,
@@ -44,8 +41,5 @@ def main():
         python_requires='>=2.7, >=3.4'
        )
 
-  return result
-
 if __name__ == '__main__':
-  result = main()
-  sys.exit(result)
+  main()
