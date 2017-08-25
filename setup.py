@@ -14,12 +14,15 @@ def main():
       home_page = doc.rst
   except:
     print("Something went wrong while generating the README!")
+    print(sys.exec_info()[0])
     home_page = "Something went wrong while generating the README. Please refer to https://github.com/snorrwe/frenetiq-crawler"
 
   try:
-    tag = os.environ['TRAVIS_TAG']
-    re.search(r'(\d\.){3,}', tag).group(0)
+    version = os.environ['TRAVIS_TAG']
+    re.search(r'(\d\.){3,}', version).group(0)
   except:
+    print("Something went wrong while setting the version!")
+    print(sys.exec_info()[0])
     version = '0.0.dev1'
 
   setup(name='frenetiq_crawler',
