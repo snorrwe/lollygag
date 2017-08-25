@@ -29,7 +29,7 @@ def main():
     version = os.environ['TRAVIS_TAG']
     re.search(r'(\d\.){3,}', version).group(0)
   except:
-    print("Something went wrong while setting the version!")
+    handle_possible_ci_error("Something went wrong while setting the version!", 2)
     version = '0.0.dev1'
 
   setup(name='frenetiq_crawler',
