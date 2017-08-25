@@ -34,7 +34,7 @@ jobs:
     - sudo apt-get install pandoc
     script:
     - pip install pypandoc
-    - python setup.py sdist --ci
+    - python setup.py sdist
     deploy:
       - provider: pypi
         distributions: sdist
