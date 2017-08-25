@@ -28,7 +28,8 @@ jobs:
     python: 3.6
     sudo: required
     dist: trusty
-    install: skip
+    install: 
+    - sudo apt-get install pandoc
     script:
     - pip install pypandoc
     - python setup.py sdist --ci
