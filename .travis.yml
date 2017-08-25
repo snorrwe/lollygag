@@ -8,7 +8,7 @@ env:
   - TEST_ENV=src
   - TEST_ENV=e2e
 install:
-- python setup.py -q install --ci
+- python setup.py -q install
 - pip install -r requirements.txt
 script:
 - cd $TEST_ENV
@@ -31,7 +31,7 @@ jobs:
     install: skip
     script:
     - pip install pandoc
-    - python setup.py sdist
+    - python setup.py sdist --ci
     deploy:
       - provider: pypi
         distributions: sdist
