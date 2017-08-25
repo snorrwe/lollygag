@@ -33,7 +33,7 @@ class DomainCrawler(object):
         self.visited_urls = set()
         self.urls_to_crawl = []
         self.urls_in_progress = []
-        if not url: 
+        if not url:
             return
         self.protocol = get_protocol(url)
         if not self.protocol:
@@ -61,13 +61,19 @@ class DomainCrawler(object):
             self.log_service.info("Crawling was interrupted", error)
             self.work_service.terminate_all()
         finally:
-            self.log_service.info(
-                """Total:
-        Urls crawled=[%s]
-        Urls in progess=[%s]
-        Urls left to crawl=[%s]""" \
-                                  % (len(self.visited_urls),len(self.urls_in_progress) , len(self.urls_to_crawl)))
+            self.__log_results()
             self.log_service.info("----------Crawl finished----------\n")
+
+    def __log_results(self):
+        visited = len(self.visited_urls)
+        in_progess = len(self.urls_in_progress)
+        todo = len(self.urls_to_crawl)
+        message = """Total:
+    Urls crawled=[%s]
+    Urls in progess=[%s]
+    Urls left to crawl=[%s]""" % (visited, in_progess, todo)
+        self.log_service.info(message)
+
 
     def _run(self):
         self.sleep_until_task_is_available()
