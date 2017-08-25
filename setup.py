@@ -1,17 +1,26 @@
 #!/usr/bin/env python
 
+import os
+import re
 from setuptools import setup, find_packages
 
 try:
-  import markdown
-  markdown.markdownFromFile(input="README.md", output="README.html")
-  with open("README.html") as file:
-    home_page = file.read()
+  import pandoc
+  doc = pandoc.Document()
+  with open("README.md") as file:
+    doc.markdown = file.read()
+    home_page = doc.rst
 except:
   home_page = ""
 
+try:
+  tag = os.environ['TRAVIS_TAG']
+  re.search(r'(\d\.){3,}', tag).group(0)
+except:
+  version = 'UNKNOWN_VERSION'
+
 setup(name='frenetiq_crawler',
-      version='0.0.2',
+      version=version,
       author='Daniel Kiss',
       author_email='littlesnorrboy@gmail.com',
       url='https://github.com/snorrwe/frenetiq-crawler',
