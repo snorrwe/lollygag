@@ -28,6 +28,8 @@ jobs:
     python: 3.6
     sudo: required
     dist: trusty
+    env:
+    - SETUP_DEPLOY = 1
     install: 
     - sudo apt-get install pandoc
     script:

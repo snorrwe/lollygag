@@ -7,7 +7,7 @@ from setuptools import setup, find_packages
 
 def handle_possible_ci_error(message, code):
     print(message)
-    if any(filter(lambda x: x == "--ci", sys.argv)):
+    if os.environ['SETUP_DEPLOY']:
         print(sys.exc_info())
         raise SystemExit(code)
 
