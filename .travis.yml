@@ -28,10 +28,12 @@ jobs:
     python: 3.6
     sudo: required
     dist: trusty
-    install: skip
-    script: skip
-    before_deploy:
-    - pip install pandoc
+    env:
+    - SETUP_DEPLOY = 1
+    install: 
+    - sudo apt-get install pandoc
+    script:
+    - pip install pypandoc
     - python setup.py sdist
     deploy:
       - provider: pypi

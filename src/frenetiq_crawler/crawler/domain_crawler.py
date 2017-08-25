@@ -29,14 +29,18 @@ class DomainCrawler(object):
         self.reset(url)
 
     def reset(self, url):
+        self.domain = None
+        self.visited_urls = set()
+        self.urls_to_crawl = []
+        self.urls_in_progress = []
+        if not url:
+            return
         self.protocol = get_protocol(url)
         if not self.protocol:
             self.protocol = "http://"
             url = "%s%s" % (self.protocol, url)
         self.domain = get_domain(url)
-        self.visited_urls = set()
-        self.urls_to_crawl = [url]
-        self.urls_in_progress = []
+        self.urls_to_crawl.append(url)
 
     def crawl(self, url=None):
         """
@@ -46,6 +50,8 @@ class DomainCrawler(object):
         """
         if url:
             self.reset(url)
+        elif not self.domain:
+            raise AssertionError("Cannot start crawling without a URL!")
         self.log_service.info("----------Crawl starting----------")
         self._init_crawl_thread()
         try:
@@ -55,20 +61,34 @@ class DomainCrawler(object):
             self.log_service.info("Crawling was interrupted", error)
             self.work_service.terminate_all()
         finally:
-            self.log_service.info("Total urls crawled=[%s] Urls left to crawl=[%s]" \
-                                  % (len(self.visited_urls), len(self.urls_to_crawl)))
+            self.log_service.info(self.get_status_message())
             self.log_service.info("----------Crawl finished----------\n")
+
+    def get_status_message(self):
+        visited = len(self.visited_urls)
+        in_progess = len(self.urls_in_progress)
+        todo = len(self.urls_to_crawl)
+        message = """
+    Urls visited=[%s]
+    Urls in progess=[%s]
+    Urls left=[%s]""" % (visited, in_progess, todo)
+        return message
 
     def _run(self):
         self.sleep_until_task_is_available()
         self._init_crawl_thread()
 
     def sleep_until_task_is_available(self):
-        while not any(self.urls_to_crawl) \
-              and self.work_service.active_count():
-            self.log_service.debug("No urls to crawl, going to sleep."\
-                                 , "Work in progress=[%s]" % self.work_service.active_count())
+        if not self.is_waiting_for_url():
+            return
+        self.log_service.debug("No urls to crawl, going to sleep."\
+                             , "Work in progress=[%s]" % self.work_service.active_count())
+        while self.is_waiting_for_url():
             time.sleep(1)
+
+    def is_waiting_for_url(self):
+        return not any(self.urls_to_crawl) \
+              and self.work_service.active_count()
 
     def is_task_left(self):
         return any(self.urls_in_progress) or any(self.urls_to_crawl)
@@ -86,8 +106,7 @@ class DomainCrawler(object):
         self.visited_urls.add(url)
         if result:
             self.process_links(result.links)
-            self.log_service.debug("URLs visited=[%s], remaining=[%s]"\
-                                   % (len(self.visited_urls), len(self.urls_to_crawl)))
+            self.log_service.debug(self.get_status_message())
 
     def crawl_site(self, url):
         """
