@@ -11,7 +11,7 @@ try:
     doc.markdown = file.read()
     home_page = doc.rst
 except:
-  home_page = ""
+  home_page = "Something went wrong while generating this README. Please refer to https://github.com/snorrwe/frenetiq-crawler"
 
 try:
   tag = os.environ['TRAVIS_TAG']
