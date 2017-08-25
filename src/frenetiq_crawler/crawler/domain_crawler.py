@@ -55,8 +55,12 @@ class DomainCrawler(object):
             self.log_service.info("Crawling was interrupted", error)
             self.work_service.terminate_all()
         finally:
-            self.log_service.info("Total urls crawled=[%s] Urls left to crawl=[%s]" \
-                                  % (len(self.visited_urls), len(self.urls_to_crawl)))
+            self.log_service.info(
+"""Total:
+        Urls crawled=[%s]
+        Urls in progess=[%s]
+        Urls left to crawl=[%s]""" \
+                                  % (len(self.visited_urls),len(self.urls_in_progress) , len(self.urls_to_crawl)))
             self.log_service.info("----------Crawl finished----------\n")
 
     def _run(self):

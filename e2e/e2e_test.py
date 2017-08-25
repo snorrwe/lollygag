@@ -35,7 +35,7 @@ main()
             self.assertTrue(type(self.output) is unicode, "Output should be of type unicode, instead got %s" % (type(self.output)))
         except NameError: # python 3 support
             self.assertTrue(type(self.output) is str, "Output should be of type str, instead got %s" % (type(self.output)))
-        self.assertTrue(len(self.lines) == 9, "Output should contain 9 lines, instead got %s" % (len(self.lines)))
+        self.assertTrue(len(self.lines) == 12, "Output should contain 9 lines, instead got %s" % (len(self.lines)))
 
     def test_found_all_pages(self):
         found = []
