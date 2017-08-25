@@ -29,8 +29,7 @@ jobs:
     sudo: required
     dist: trusty
     install: skip
-    script: skip
-    before_deploy:
+    script:
     - pip install pandoc
     - python setup.py sdist
     deploy:
