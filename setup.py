@@ -28,6 +28,8 @@ def main():
   try:
     version = os.environ['TRAVIS_TAG']
     re.search(r'(\d\.){3,}', version).group(0)
+  except KeyError:
+    pass
   except:
     handle_possible_ci_error("Something went wrong while setting the version!", 2)
     version = '0.0.dev1'
