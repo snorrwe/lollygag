@@ -31,7 +31,7 @@ jobs:
     install: skip
     script: skip
     before_deploy:
-    - pip install markdown
+    - pip install pandoc
     - python setup.py sdist
     deploy:
       - provider: pypi
