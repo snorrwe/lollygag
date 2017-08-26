@@ -7,13 +7,13 @@ from setuptools import setup, find_packages
 
 def handle_possible_ci_error(message, code):
     print(message)
+    print(sys.exc_info())
     is_deploy = False
     try:
         is_deploy = os.environ['SETUP_DEPLOY']
     except KeyError:
         pass
     if is_deploy:
-        print(sys.exc_info())
         raise SystemExit(code)
 
 def main():
@@ -27,7 +27,6 @@ def main():
 
   try:
     version = os.environ['TRAVIS_TAG']
-    re.search(r'(\d\.){3,}', version).group(0)
   except KeyError:
     pass
   except:
