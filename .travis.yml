@@ -13,6 +13,9 @@ install:
 script:
 - cd $TEST_ENV
 - pytest
+git:
+  depth:
+    3
 jobs:
   include:
   - stage: lint
