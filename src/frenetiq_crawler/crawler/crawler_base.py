@@ -1,5 +1,4 @@
 from collections import namedtuple
-import abc
 from frenetiq_crawler.dependency_injection.inject import Inject
 from frenetiq_crawler.dependency_injection.requirements import HasMethods
 
@@ -11,7 +10,6 @@ class Crawler(object):
     crawl performs a GET rquest on the url and calls feed with the response.text
     Subclasses should implement the feed method
     """
-    __metaclass__ = abc.ABCMeta
     _requests = Inject("requests", HasMethods("get"))
     log_service = Inject("log_service", HasMethods("debug", "info", "error", "warn"))
 
