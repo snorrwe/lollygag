@@ -16,9 +16,7 @@ class HasAttributes(object):
 
     def evaluate(self, obj):
         for key in self._keys:
-            try:
-                getattr(obj, key)
-            except AttributeError:
+            if not hasattr(obj, key):
                 raise AttributeError("Attribute named=[%s] is not found in obj=[%s]" % (key, obj))
         return True
 
@@ -40,5 +38,5 @@ class HasMethods(HasAttributes):
         for key in self._keys:
             method = getattr(obj, key)
             if not callable(method):
-                return False
+                raise AttributeError("Attribute named=[%s] is not callable in obj=[%s]" % (key, obj))
         return True
