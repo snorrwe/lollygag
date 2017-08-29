@@ -1,9 +1,9 @@
 import unittest
 import threading
 from tl.testing.thread import ThreadJoiner, ThreadAwareTestCase
-from frenetiq_crawler.services.work.work_service import WorkService
-from frenetiq_crawler.dependency_injection.inject import Inject
-from frenetiq_crawler.utility.test_utils import Any, CallableMock
+from lollygag.services.work.work_service import WorkService
+from lollygag.dependency_injection.inject import Inject
+from lollygag.utility.test_utils import Any, CallableMock
 try:
     import Queue
 except ImportError:

@@ -1,7 +1,7 @@
 import unittest
-from frenetiq_crawler.crawler.link_crawler import LinkCrawler
-from frenetiq_crawler.dependency_injection.inject import Inject
-from frenetiq_crawler.utility.test_utils import Any
+from lollygag.crawler.link_crawler import LinkCrawler
+from lollygag.dependency_injection.inject import Inject
+from lollygag.utility.test_utils import Any
 
 response = Any(text="", status_code=404, content="")
 requests = Any(get=lambda x, **kw: response)

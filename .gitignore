@@ -142,9 +142,8 @@ crawler.sublime-workspace
 
 .idea
 *.pyproj
-/.vs/Crawler/v14
 *.sln
-.vs/Crawler/v15
 *.htm
 .suo
 README.html
+.vs

@@ -2,11 +2,11 @@ import sys
 import argparse
 import threading
 import requests
-from frenetiq_crawler.crawler.link_crawler import LinkCrawler
-from frenetiq_crawler.services.config_service import ConfigService
-from frenetiq_crawler.services.print_service import PrintService
-from frenetiq_crawler.services.work.work_service import WorkService
-from frenetiq_crawler.dependency_injection.inject import Inject
+from lollygag.crawler.link_crawler import LinkCrawler
+from lollygag.services.config_service import ConfigService
+from lollygag.services.print_service import PrintService
+from lollygag.services.work.work_service import WorkService
+from lollygag.dependency_injection.inject import Inject
 try:
     import Queue
 except ImportError:

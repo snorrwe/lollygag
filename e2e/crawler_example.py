@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
-from frenetiq_crawler import run
-from frenetiq_crawler.services import SERVICES
-from frenetiq_crawler.crawler.link_crawler import LinkCrawler
+from lollygag import run
+from lollygag.services import SERVICES
+from lollygag.crawler.link_crawler import LinkCrawler
 
 class MyCrawler(LinkCrawler):
     """
