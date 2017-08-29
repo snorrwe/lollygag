@@ -17,23 +17,23 @@ def handle_possible_ci_error(message, code):
         raise SystemExit(code)
 
 def main():
-  try:
-    import pypandoc
-    home_page = pypandoc.convert_file("README.md", 'rst')
-    assert home_page
-  except:
-    handle_possible_ci_error("Something went wrong while generating the README!", 1)
-    home_page = "Something went wrong while generating the README. Please refer to https://github.com/snorrwe/frenetiq-crawler"
-
-  try:
-    version = os.environ['TRAVIS_TAG']
-  except KeyError:
-    pass
-  except:
-    handle_possible_ci_error("Something went wrong while setting the version!", 2)
+    try:
+        import pypandoc
+        home_page = pypandoc.convert_file("README.md", 'rst')
+        assert home_page
+    except:
+        handle_possible_ci_error("Something went wrong while generating the README!", 1)
+        home_page = "Something went wrong while generating the README. Please refer to https://github.com/snorrwe/frenetiq-crawler"
+  
     version = '0.0.dev1'
+    try:
+        version = os.environ['TRAVIS_TAG']
+    except KeyError:
+        pass
+    except:
+        handle_possible_ci_error("Something went wrong while setting the version!", 2)
 
-  setup(name='lollygag',
+    setup(name='lollygag',
         version=version,
         author='Daniel Kiss',
         author_email='littlesnorrboy@gmail.com',
