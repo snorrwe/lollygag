@@ -14,7 +14,7 @@ class DomainCrawler(object):
     then decides the next pages to crawl based on the result
     Does not go outside the domain boundaries of the initial url
 
-    Uses multiple working threads, based on the config_service.threads attribute
+    Uses work_service to execute crawling jobs
     Uses log_service to display results and errors
     """
     crawler_factory = Inject("crawler_factory", return_factory=True)
@@ -42,27 +42,33 @@ class DomainCrawler(object):
         self.domain = get_domain(url)
         self.urls_to_crawl.append(url)
 
-    def crawl(self, url=None):
+    def crawl_domain(self, url=None):
         """
         Starts the crawl procedure
         Returns when the crawling is complete or a KeyboardInterrupt or SystemExit is raised
-        Joins working threads before returning
+        Terminates remaining work if interrupted
         """
         if url:
             self.reset(url)
         elif not self.domain:
             raise AssertionError("Cannot start crawling without a URL!")
         self.log_service.info("----------Crawl starting----------")
-        self._init_crawl_thread()
+        self.__request_crawl_job()
         try:
             while self.is_task_left():
                 self._run()
         except (KeyboardInterrupt, SystemExit) as error:
-            self.log_service.info("Crawling was interrupted", error)
-            self.work_service.terminate_all()
+            self.on_interrupt()
         finally:
-            self.log_service.info(self.get_status_message())
-            self.log_service.info("----------Crawl finished----------\n")
+            self.on_crawl_finish()
+
+    def on_interrupt():
+        self.log_service.info("Crawling was interrupted", error)
+        self.work_service.terminate_all()
+
+    def on_crawl_finish(self):
+        self.log_service.info(self.get_status_message())
+        self.log_service.info("----------Crawl finished----------\n")
 
     def get_status_message(self):
         visited = len(self.visited_urls)
@@ -75,10 +81,10 @@ class DomainCrawler(object):
         return message
 
     def _run(self):
-        self.sleep_until_task_is_available()
-        self._init_crawl_thread()
+        self.__sleep_until_task_is_available()
+        self.__request_crawl_job()
 
-    def sleep_until_task_is_available(self):
+    def __sleep_until_task_is_available(self):
         if not self.is_waiting_for_url():
             return
         self.log_service.debug("No urls to crawl, going to sleep."\
@@ -93,10 +99,10 @@ class DomainCrawler(object):
     def is_task_left(self):
         return any(self.urls_in_progress) or any(self.urls_to_crawl)
 
-    def _init_crawl_thread(self):
-        return self.work_service.request_work(self._run_crawl)
+    def __request_crawl_job(self):
+        return self.work_service.request_work(self.__run_crawl)
 
-    def _run_crawl(self):
+    def __run_crawl(self):
         try:
             url = self.urls_to_crawl.pop()
         except IndexError:
