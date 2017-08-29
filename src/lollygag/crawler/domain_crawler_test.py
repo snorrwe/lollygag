@@ -60,27 +60,27 @@ class DomainCrawlerMethodTests(DomainCrawlerTests):
             self.assertEqual(result, None)
 
     def test_crawl_calls_crawler(self):
-        self.crawler.crawl()
+        self.crawler.crawl_domain()
         self.assertEqual(crawler.crawl.call_count(), 1)
 
     def test_crawls_all_links(self):
         crawl_result.links = ["http://winnie_the_pooh/kanga", "http://winnie_the_pooh/tiggers"]
-        self.crawler.crawl()
+        self.crawler.crawl_domain()
         self.assertEqual(crawler.crawl.call_count(), 3)
 
     def test_does_not_crawl_out_of_domain(self):
         crawl_result.links = ["http://kanga.com", "http://roo.com"]
-        self.crawler.crawl()
+        self.crawler.crawl_domain()
         self.assertEqual(crawler.crawl.call_count(), 1)
 
     def test_recognizes_domain(self):
         crawl_result.links = ["http://kanga.com", "http://roo.com", "http://www.winnie_the_pooh/tiggers", "http://winnie_the_pooh/tiggers"]
-        self.crawler.crawl()
+        self.crawler.crawl_domain()
         self.assertEqual(crawler.crawl.call_count(), 3)
    
     def test_recognizes_slashslash_domain(self):		
         crawl_result.links = ["//www.winnie_the_pooh/tiggers"]		
-        self.crawler.crawl()		
+        self.crawler.crawl_domain()		
         self.assertEqual(crawler.crawl.call_count(), 2)
 
 
@@ -92,11 +92,11 @@ class DomainCrawlerNoUrlTests(DomainCrawlerTests):
     def test_raises_AssertionError_if_no_url_is_present(self):
         crawler = DomainCrawler()
         with self.assertRaises(AssertionError):
-            crawler.crawl()
+            crawler.crawl_domain()
 
     def test_works_with_url_in_crawl(self):
         mycrawler = DomainCrawler()
-        mycrawler.crawl("www.winnie_the_pooh")
+        mycrawler.crawl_domain("www.winnie_the_pooh")
         self.assertEqual(crawler.crawl.call_count(), 1)
 
 if __name__ == '__main__':
