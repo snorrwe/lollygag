@@ -58,15 +58,15 @@ class DomainCrawler(object):
             while self.is_task_left():
                 self._run()
         except (KeyboardInterrupt, SystemExit) as error:
-            self.on_interrupt(error)
+            self.handle_interrupt(error)
         finally:
-            self.on_crawl_finish()
+            self.handle_crawl_finish()
 
-    def on_interrupt(self, error):
+    def handle_interrupt(self, error):
         self.log_service.info("Crawling was interrupted", error)
         self.work_service.terminate_all()
 
-    def on_crawl_finish(self):
+    def handle_crawl_finish(self):
         self.log_service.info(self.get_status_message())
         self.log_service.info("----------Crawl finished----------\n")
 
