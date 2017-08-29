@@ -33,11 +33,11 @@ def main():
     handle_possible_ci_error("Something went wrong while setting the version!", 2)
     version = '0.0.dev1'
 
-  setup(name='frenetiq_crawler',
+  setup(name='lollygag',
         version=version,
         author='Daniel Kiss',
         author_email='littlesnorrboy@gmail.com',
-        url='https://github.com/snorrwe/frenetiq-crawler',
+        url='https://github.com/snorrwe/lollygag',
         description="A simple web crawling module",
         long_description=home_page,
         license="MIT",

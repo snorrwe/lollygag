@@ -2,7 +2,7 @@
 
 ## About
 
-* Travis CI: [![Build Status](https://travis-ci.org/snorrwe/frenetiq-crawler.svg?branch=master)](https://travis-ci.org/snorrwe/frenetiq-crawler)
+* Travis CI: [![Build Status](https://travis-ci.org/snorrwe/lollygag.svg?branch=master)](https://travis-ci.org/snorrwe/lollygag)
 * Supported Python versions: 
     * Python 2.7
     * Python 3.6
