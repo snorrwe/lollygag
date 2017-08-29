@@ -65,6 +65,5 @@ class Inject(object):
             raise KeyError("Feature=[%s] was not registered!" % self.key)
 
     def _make_assertion(self, assertion, obj):
-        if not assertion(obj):
-            raise AssertionError("The value=[%s] of feature=[%s] does not match a criteria" \
-                                 % (obj, self.key))
+        assert assertion(obj), "The value=[%s] of feature=[%s] does not match a criteria" \
+                                 % (obj, self.key)
