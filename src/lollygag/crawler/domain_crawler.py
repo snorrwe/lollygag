@@ -1,11 +1,11 @@
 import time
 import requests
-from frenetiq_crawler.crawler.url import get_protocol
-from frenetiq_crawler.crawler.url import strip_beginning_slashes
-from frenetiq_crawler.crawler.url import get_domain
-from frenetiq_crawler.crawler.url import is_relative_link
-from frenetiq_crawler.dependency_injection.inject import Inject
-from frenetiq_crawler.dependency_injection.requirements import HasMethods, HasAttributes
+from lollygag.crawler.url import get_protocol
+from lollygag.crawler.url import strip_beginning_slashes
+from lollygag.crawler.url import get_domain
+from lollygag.crawler.url import is_relative_link
+from lollygag.dependency_injection.inject import Inject
+from lollygag.dependency_injection.requirements import HasMethods, HasAttributes
 
 class DomainCrawler(object):
     """

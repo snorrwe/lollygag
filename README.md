@@ -1,4 +1,4 @@
-# Frenetiq Crawler
+# Lollygag
 
 ## About
 
@@ -11,7 +11,7 @@
 
 ## Installation
 
-`pip install frenetiq-crawler`
+`pip install lollygag`
 
 ## Usage
 
@@ -20,9 +20,9 @@
 ```python
 #!/usr/bin/python
 
-from frenetiq_crawler import run
-from frenetiq_crawler.services import SERVICES
-from frenetiq_crawler.crawler.link_crawler import LinkCrawler
+from lollygag import run
+from lollygag.services import SERVICES
+from lollygag.crawler.link_crawler import LinkCrawler
 
 class MyCrawler(LinkCrawler):
     # This is a custom crawler to handle a single webpage

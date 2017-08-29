@@ -1,6 +1,6 @@
 import threading
-from frenetiq_crawler.dependency_injection.inject import Inject
-from frenetiq_crawler.dependency_injection.requirements import HasAttributes, HasMethods
+from lollygag.dependency_injection.inject import Inject
+from lollygag.dependency_injection.requirements import HasAttributes, HasMethods
 
 LOGLEVELS = {
     "all": 0,

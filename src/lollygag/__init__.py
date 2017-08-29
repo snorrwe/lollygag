@@ -1,5 +1,5 @@
-from frenetiq_crawler.services import register_services
-from frenetiq_crawler.crawler.domain_crawler import DomainCrawler
+from lollygag.services import register_services
+from lollygag.crawler.domain_crawler import DomainCrawler
 
 def run(**kwargs):
     register_services()

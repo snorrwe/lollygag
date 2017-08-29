@@ -1,5 +1,5 @@
-from frenetiq_crawler.dependency_injection.inject import Inject
-from frenetiq_crawler.dependency_injection.requirements import HasMethods, HasAttributes
+from lollygag.dependency_injection.inject import Inject
+from lollygag.dependency_injection.requirements import HasMethods, HasAttributes
 
 class WorkService(object):
     threading = Inject("threading", \

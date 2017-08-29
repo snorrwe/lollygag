@@ -1,7 +1,7 @@
 import unittest
-from frenetiq_crawler.crawler.domain_crawler import DomainCrawler
-from frenetiq_crawler.dependency_injection.inject import Inject
-from frenetiq_crawler.utility.test_utils import Any, CallableMock
+from lollygag.crawler.domain_crawler import DomainCrawler
+from lollygag.dependency_injection.inject import Inject
+from lollygag.utility.test_utils import Any, CallableMock
 
 crawl_result = Any(link="", status_code=200, page_size=0, links=[])
 crawler = Any(crawl=CallableMock(returns=crawl_result))

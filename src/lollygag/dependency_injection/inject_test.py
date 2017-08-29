@@ -1,5 +1,5 @@
 import unittest
-from frenetiq_crawler.dependency_injection.inject import Inject
+from lollygag.dependency_injection.inject import Inject
 
 class InjectTests(unittest.TestCase):
     def setUp(self):

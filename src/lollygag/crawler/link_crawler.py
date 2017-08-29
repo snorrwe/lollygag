@@ -1,7 +1,7 @@
 from collections import namedtuple
-from frenetiq_crawler.crawler.crawler_base import Crawler
-from frenetiq_crawler.dependency_injection.inject import Inject
-from frenetiq_crawler.dependency_injection.requirements import HasMethods
+from lollygag.crawler.crawler_base import Crawler
+from lollygag.dependency_injection.inject import Inject
+from lollygag.dependency_injection.requirements import HasMethods
 try:
     from HTMLParser import HTMLParser
 except ImportError:
