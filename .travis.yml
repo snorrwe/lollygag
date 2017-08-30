@@ -26,10 +26,17 @@ jobs:
     - pip install -r requirements.txt
     script:
     - pylint src/lollygag
+  - stage: setup
+    language: python
+    python: 3.6
+    sudo: false
+    dist: trusty
+    script:
+    - python setup.py sdist
   - stage: deploy
     language: python
     python: 3.6
-    sudo: required
+    sudo: false
     dist: trusty
     env:
     - SETUP_DEPLOY = 1
