@@ -12,8 +12,9 @@ Lollygag
 About
 -----
 
--  See: https://github.com/snorrwe/lollygag
--  Supported Python versions:
+See: https://github.com/snorrwe/lollygag
+
+Supported Python versions:
    -  Python 2.7
    -  Python 3.6
    -  Pypy
