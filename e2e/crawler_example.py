@@ -40,7 +40,7 @@ def main():
     Services.crawler_factory = MyCrawler
     register_services()
     crawler = DomainCrawler()
-    crawler.on_crawl_finish(on_finish(Services.log_service()))
+    crawler.on_finish(on_finish(Services.log_service()))
     run(crawler=crawler)
 
 if __name__ == '__main__':

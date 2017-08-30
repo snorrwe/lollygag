@@ -26,8 +26,9 @@ class DomainCrawler(object):
 
 
     def __init__(self, url=None):
+        self.on_start = Subject()
         self.on_interrupt = Subject()
-        self.on_crawl_finish = Subject()
+        self.on_finish = Subject()
         if not url:
             url = self.config_service.url
         self.reset(url)
@@ -54,9 +55,9 @@ class DomainCrawler(object):
         """
         if url:
             self.reset(url)
-        elif not self.domain:
-            raise AssertionError("Cannot start crawling without a URL!")
+        assert self.domain, "Cannot start crawling without a URL!"
         self.log_service.info("----------Crawl starting----------")
+        self.on_start.next(url)
         self.__request_crawl_job()
         try:
             while self.is_task_left():
@@ -72,7 +73,7 @@ class DomainCrawler(object):
         self.work_service.terminate_all()
 
     def handle_crawl_finish(self):
-        self.on_crawl_finish.next(self.visited_urls, self.urls_in_progress, self.urls_to_crawl)
+        self.on_finish.next(self.visited_urls, self.urls_in_progress, self.urls_to_crawl)
         self.log_service.info(self.get_status_message())
         self.log_service.info("----------Crawl finished----------\n")
 
