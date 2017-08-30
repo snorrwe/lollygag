@@ -15,7 +15,7 @@
 
 ## Usage
 
-### Example code
+### Sample code
 
 ```python
 #!/usr/bin/python
