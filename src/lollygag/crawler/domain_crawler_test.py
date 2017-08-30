@@ -16,7 +16,6 @@ class DomainCrawlerTests(unittest.TestCase):
         Inject.register_feature("config_service", config)
         Inject.register_feature("log_service", log)
         Inject.register_feature("work_service", work_service)
-        Inject.register_feature("threading", threading_module_mock)
 
     def tearDown(self):
         Inject.reset() 
