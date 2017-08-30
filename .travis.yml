@@ -18,21 +18,23 @@ git:
     3
 jobs:
   include:
-  - stage: lint
-    language: python
-    python: 3.6
-    install:
-    - pip install pylint
-    - pip install -r requirements.txt
-    script:
-    - pylint src/lollygag
-  - stage: setup
-    language: python
-    python: 3.6
-    sudo: false
-    dist: trusty
-    script:
-    - python setup.py sdist
+  - stage: post_test
+    matrix:
+      include:
+      - language: python
+        python: 3.6
+        install:
+        - pip install pylint
+        - pip install -r requirements.txt
+        script:
+        - pylint src/lollygag
+
+      - language: python
+        python: 3.6
+        sudo: false
+        dist: trusty
+        script:
+        - python setup.py sdist
   - stage: deploy
     language: python
     python: 3.6
