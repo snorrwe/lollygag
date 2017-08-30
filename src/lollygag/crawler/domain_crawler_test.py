@@ -9,6 +9,8 @@ crawler_factory = lambda: crawler
 config = Any(threads=1, url=None)
 log = Any(write=CallableMock(), info=CallableMock(), error=CallableMock(), debug=CallableMock())
 work_service = Any(request_work=CallableMock(), terminate_all=CallableMock(), active_count=CallableMock())
+threading_mock = Any(acquire=CallableMock(), release=CallableMock())
+threading_module_mock = Any(Lock=CallableMock(returns=threading_mock))
 
 class DomainCrawlerTests(unittest.TestCase):
     def setUp(self):
@@ -16,6 +18,7 @@ class DomainCrawlerTests(unittest.TestCase):
         Inject.register_feature("config_service", config)
         Inject.register_feature("log_service", log)
         Inject.register_feature("work_service", work_service)
+        Inject.register_feature("threading", threading_module_mock)
 
     def tearDown(self):
         Inject.reset() 
@@ -23,7 +26,9 @@ class DomainCrawlerTests(unittest.TestCase):
         log.write.reset()           
         log.info.reset()           
         log.error.reset()           
-        log.debug.reset()       
+        log.debug.reset()
+        threading_mock.acquire.reset()
+        threading_mock.release.reset()
 
 class CanCreateDomainCrawler(DomainCrawlerTests):
     def test_can_initialize(self):
