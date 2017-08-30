@@ -47,13 +47,13 @@ class DomainCrawlerMethodTests(DomainCrawlerTests):
         self.reset_threadmocks()       
 
     def test_crawl_site_returns_the_crawl_result_from_crawler(self):
-        self.crawler.urls_in_progress.append("http://winnie_the_pooh")
+        self.crawler.status.urls_in_progress.append("http://winnie_the_pooh")
         result = self.crawler.crawl_site("http://winnie_the_pooh")
         self.assertTrue(result)
         self.assertEqual(result, crawl_result)
 
     def test_crawl_site_returns_none_on_interrupt(self):
-        self.crawler.urls_in_progress.append("http://winnie_the_pooh")
+        self.crawler.status.urls_in_progress.append("http://winnie_the_pooh")
         crawler.crawl.args["raises"] = KeyboardInterrupt() 
         with self.assertRaises(KeyboardInterrupt):
             result = self.crawler.crawl_site("http://winnie_the_pooh")
