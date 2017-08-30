@@ -18,7 +18,10 @@ sys.argv.append("-u")
 sys.argv.append("%s")
 sys.argv.append("-l")
 sys.argv.append("info")
-from crawler_example import main
+try:
+    from crawler_example import main
+except ImportError:
+    from e2e.crawler_example import main
 main()
 """ % (URI)
             ]
