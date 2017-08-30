@@ -18,13 +18,19 @@ sys.argv.append("-u")
 sys.argv.append("%s")
 sys.argv.append("-l")
 sys.argv.append("info")
-from crawler_example import main
+sys.argv.append("-t")
+sys.argv.append("3")
+try:
+    from crawler_example import main
+except ImportError:
+    from e2e.crawler_example import main
 main()
 """ % (URI)
             ]
             , stdout=subprocess.PIPE, shell=True, executable=sys.executable)
         (output, error) = crawler_process.communicate()
-        cls.output = output.decode("utf-8")
+        print(output, error)
+        cls.output = output.decode("utf-8") if output else ""
         lines = cls.output.splitlines()
         cls.lines = [i for i in lines if i != '']
 
@@ -35,7 +41,8 @@ main()
             self.assertTrue(type(self.output) is unicode, "Output should be of type unicode, instead got %s" % (type(self.output)))
         except NameError: # python 3 support
             self.assertTrue(type(self.output) is str, "Output should be of type str, instead got %s" % (type(self.output)))
-        self.assertTrue(len(self.lines) == 12, "Output should contain 12 lines, instead got %s" % (len(self.lines)))
+        expected = 13
+        self.assertTrue(len(self.lines) == expected, "Output should contain %s lines, instead got %s" % (expected, len(self.lines)))
 
     def test_found_all_pages(self):
         found = []

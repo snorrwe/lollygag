@@ -5,6 +5,27 @@ import re
 import sys
 from setuptools import setup, find_packages
 
+home_page = """
+Lollygag
+========
+
+About
+-----
+
+See: https://github.com/snorrwe/lollygag
+
+Supported Python versions:
+   -  Python 2.7
+   -  Python 3.6
+   -  Pypy
+   -  Pypy 3
+
+Installation
+------------
+
+``pip install lollygag``
+"""
+
 def handle_possible_ci_error(message, code):
     print(message)
     print(sys.exc_info())
@@ -17,23 +38,17 @@ def handle_possible_ci_error(message, code):
         raise SystemExit(code)
 
 def main():
-  try:
-    import pypandoc
-    home_page = pypandoc.convert_file("README.md", 'rst')
-    assert home_page
-  except:
-    handle_possible_ci_error("Something went wrong while generating the README!", 1)
-    home_page = "Something went wrong while generating the README. Please refer to https://github.com/snorrwe/frenetiq-crawler"
+    global home_page
 
-  try:
-    version = os.environ['TRAVIS_TAG']
-  except KeyError:
-    pass
-  except:
-    handle_possible_ci_error("Something went wrong while setting the version!", 2)
     version = '0.0.dev1'
+    try:
+        version = os.environ['TRAVIS_TAG']
+    except KeyError:
+        pass
+    except:
+        handle_possible_ci_error("Something went wrong while setting the version!", 2)
 
-  setup(name='lollygag',
+    setup(name='lollygag',
         version=version,
         author='Daniel Kiss',
         author_email='littlesnorrboy@gmail.com',
@@ -49,7 +64,7 @@ def main():
                 'sample=sample:main',
             ],
         },
-        python_requires='>=2.7, >=3.4'
+        python_requires='>=2.7, >=3.6'
        )
 
 if __name__ == '__main__':

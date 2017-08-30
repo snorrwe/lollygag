@@ -6,6 +6,21 @@ from lollygag.crawler.url import get_domain
 from lollygag.crawler.url import is_relative_link
 from lollygag.dependency_injection.inject import Inject
 from lollygag.dependency_injection.requirements import HasMethods, HasAttributes
+from lollygag.utility.observer.subject import Subject
+
+class DomainCrawlerStatus(object):
+    __slots__ = ["domain", "visited_urls", "urls_to_crawl", "urls_in_progress"]
+
+    def __init__(self, *args):
+        assert not args or len(args) == 4
+        if args:
+            self.reset(*args)
+
+    def reset(self, domain, visited_urls, urls_to_crawl, urls_in_progress):
+        self.domain = domain
+        self.visited_urls = visited_urls
+        self.urls_to_crawl = urls_to_crawl
+        self.urls_in_progress = urls_in_progress
 
 class DomainCrawler(object):
     """
@@ -24,23 +39,24 @@ class DomainCrawler(object):
     config_service = Inject("config_service", HasAttributes("url"))
 
     def __init__(self, url=None):
+        self.on_start = Subject()
+        self.on_interrupt = Subject()
+        self.on_finish = Subject()
+        self.status = DomainCrawlerStatus()
         if not url:
             url = self.config_service.url
         self.reset(url)
 
     def reset(self, url):
-        self.domain = None
-        self.visited_urls = set()
-        self.urls_to_crawl = []
-        self.urls_in_progress = []
+        self.status.reset(None, set(), [], [])
         if not url:
             return
         self.protocol = get_protocol(url)
         if not self.protocol:
             self.protocol = "http://"
             url = "%s%s" % (self.protocol, url)
-        self.domain = get_domain(url)
-        self.urls_to_crawl.append(url)
+        self.status.domain = get_domain(url)
+        self.status.urls_to_crawl.append(url)
 
     def crawl_domain(self, url=None):
         """
@@ -50,34 +66,38 @@ class DomainCrawler(object):
         """
         if url:
             self.reset(url)
-        elif not self.domain:
-            raise AssertionError("Cannot start crawling without a URL!")
+        assert self.status.domain, "Cannot start crawling without a URL!"
         self.log_service.info("----------Crawl starting----------")
+        self.on_start.next(url)
         self.__request_crawl_job()
         try:
             while self.is_task_left():
                 self._run()
         except (KeyboardInterrupt, SystemExit) as error:
-            self.on_interrupt(error)
+            self.handle_interrupt(error)
         finally:
-            self.on_crawl_finish()
+            self.handle_crawl_finish()
 
-    def on_interrupt(self, error):
-        self.log_service.info("Crawling was interrupted", error)
+    def handle_interrupt(self, error):
+        self.log_service.info("----------Crawling was interrupted----------", error)
+        self.on_interrupt.next()
         self.work_service.terminate_all()
 
-    def on_crawl_finish(self):
+    def handle_crawl_finish(self):
+        self.on_finish.next(self.status.visited_urls,
+                            self.status.urls_in_progress,
+                            self.status.urls_to_crawl)
         self.log_service.info(self.get_status_message())
         self.log_service.info("----------Crawl finished----------\n")
 
     def get_status_message(self):
-        visited = len(self.visited_urls)
-        in_progess = len(self.urls_in_progress)
-        todo = len(self.urls_to_crawl)
-        message = """
-    Urls visited=[%s]
-    Urls in progess=[%s]
-    Urls left=[%s]""" % (visited, in_progess, todo)
+        visited = len(self.status.visited_urls)
+        in_progess = len(self.status.urls_in_progress)
+        todo = len(self.status.urls_to_crawl)
+        message = """--------------------Crawl status--------------------
+                                        Urls visited=[%s]
+                                        Urls in progess=[%s]
+                                        Urls left=[%s]""" % (visited, in_progess, todo)
         return message
 
     def _run(self):
@@ -93,23 +113,23 @@ class DomainCrawler(object):
             time.sleep(1)
 
     def is_waiting_for_url(self):
-        return not any(self.urls_to_crawl) \
-              and self.work_service.active_count()
+        return not any(self.status.urls_to_crawl) \
+               and self.work_service.active_count()
 
     def is_task_left(self):
-        return any(self.urls_in_progress) or any(self.urls_to_crawl)
+        return any(self.status.urls_in_progress + self.status.urls_to_crawl)
 
     def __request_crawl_job(self):
         return self.work_service.request_work(self.__run_crawl)
 
     def __run_crawl(self):
         try:
-            url = self.urls_to_crawl.pop()
+            url = self.status.urls_to_crawl.pop()
         except IndexError:
             return
-        self.urls_in_progress.append(url)
+        self.status.urls_in_progress.append(url)
         result = self.crawl_site(url)
-        self.visited_urls.add(url)
+        self.status.visited_urls.add(url)
         if result:
             self.process_links(result.links)
             self.log_service.debug(self.get_status_message())
@@ -125,21 +145,21 @@ class DomainCrawler(object):
             result = crawler.crawl(url)
             return result
         except (requests.exceptions.ConnectionError, requests.exceptions.SSLError) as error:
-            self.log_service.error("Error while crawling site", url, str(error))
+            self.log_service.error("Error while crawling site=[%s]" % url, str(error))
             return None
         finally:
-            self.urls_in_progress.remove(url)
+            self.status.urls_in_progress.remove(url)
 
     def process_links(self, links):
         for link in links:
             processed_link = self.process_link(link)
             if self.is_new_link(processed_link):
-                self.urls_to_crawl.append(processed_link)
+                self.status.urls_to_crawl.append(processed_link)
 
     def is_new_link(self, link):
         return link \
-               and link not in self.visited_urls \
-               and link not in self.urls_to_crawl
+               and link not in self.status.visited_urls \
+               and link not in self.status.urls_to_crawl
 
     def process_link(self, link):
         if not link or link[0] == "#":
@@ -147,9 +167,9 @@ class DomainCrawler(object):
         if is_relative_link(link):
             if link[0] == ".":
                 link = link[1::]
-            link = "%s%s" % (self.domain, link)
+            link = "%s%s" % (self.status.domain, link)
         link = strip_beginning_slashes(link)
-        if get_domain(link) != self.domain:
+        if get_domain(link) != self.status.domain:
             return None
         if not get_protocol(link):
             link = "%s%s" % (self.protocol, link)

@@ -23,7 +23,7 @@ class DomainCrawlerTests(unittest.TestCase):
         log.write.reset()           
         log.info.reset()           
         log.error.reset()           
-        log.debug.reset()       
+        log.debug.reset()
 
 class CanCreateDomainCrawler(DomainCrawlerTests):
     def test_can_initialize(self):
@@ -47,13 +47,13 @@ class DomainCrawlerMethodTests(DomainCrawlerTests):
         self.reset_threadmocks()       
 
     def test_crawl_site_returns_the_crawl_result_from_crawler(self):
-        self.crawler.urls_in_progress.append("http://winnie_the_pooh")
+        self.crawler.status.urls_in_progress.append("http://winnie_the_pooh")
         result = self.crawler.crawl_site("http://winnie_the_pooh")
         self.assertTrue(result)
         self.assertEqual(result, crawl_result)
 
     def test_crawl_site_returns_none_on_interrupt(self):
-        self.crawler.urls_in_progress.append("http://winnie_the_pooh")
+        self.crawler.status.urls_in_progress.append("http://winnie_the_pooh")
         crawler.crawl.args["raises"] = KeyboardInterrupt() 
         with self.assertRaises(KeyboardInterrupt):
             result = self.crawler.crawl_site("http://winnie_the_pooh")
@@ -98,6 +98,41 @@ class DomainCrawlerNoUrlTests(DomainCrawlerTests):
         mycrawler = DomainCrawler()
         mycrawler.crawl_domain("www.winnie_the_pooh")
         self.assertEqual(crawler.crawl.call_count(), 1)
+
+class EventTests(DomainCrawlerTests):
+    def test_calls_callback_on_start(self):
+        crawler = DomainCrawler()
+        callback = CallableMock()
+        crawler.on_start(callback)
+        self.assertEqual(callback.call_count(), 0)
+        crawler.crawl_domain("tiggers")
+        self.assertEqual(callback.call_count(), 1)
+
+    def test_calls_callback_on_finish(self):
+        crawler = DomainCrawler()
+        callback = CallableMock()
+        crawler.on_finish(callback)
+        self.assertEqual(callback.call_count(), 0)
+        crawler.crawl_domain("tiggers")
+        self.assertEqual(callback.call_count(), 1)
+
+    def test_calls_callback_on_interrupt(self):
+        crawler.crawl.args["raises"] = KeyboardInterrupt()
+        myCrawler = DomainCrawler()
+        callback = CallableMock()
+        myCrawler.on_interrupt(callback)
+        self.assertEqual(callback.call_count(), 0)
+        with self.assertRaises(KeyboardInterrupt):
+            myCrawler.crawl_domain("tiggers")
+            self.assertEqual(callback.call_count(), 1)
+
+    def test_on_interrupt_is_not_called_without_interrupt(self):
+        myCrawler = DomainCrawler()
+        callback = CallableMock()
+        myCrawler.on_interrupt(callback)
+        self.assertEqual(callback.call_count(), 0)
+        myCrawler.crawl_domain("tiggers")
+        self.assertEqual(callback.call_count(), 0)
 
 if __name__ == '__main__':
     unittest.main()

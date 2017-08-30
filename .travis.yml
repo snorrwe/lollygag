@@ -26,6 +26,13 @@ jobs:
     - pip install -r requirements.txt
     script:
     - pylint src/lollygag
+  - stage: setup
+    language: python
+    python: 3.6
+    sudo: false
+    dist: trusty
+    script:
+    - python setup.py sdist
   - stage: deploy
     language: python
     python: 3.6
@@ -33,10 +40,7 @@ jobs:
     dist: trusty
     env:
     - SETUP_DEPLOY = 1
-    install: 
-    - sudo apt-get install pandoc
     script:
-    - pip install pypandoc
     - python setup.py sdist
     deploy:
       - provider: pypi
