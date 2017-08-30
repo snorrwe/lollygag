@@ -12,22 +12,24 @@ try:
 except ImportError:
     import queue as Queue
 
-SERVICES = {
-    'requests': requests,
-    'crawler_factory': LinkCrawler,
-    'argparse': argparse.ArgumentParser,
-    'config_service': ConfigService,
-    'log_service': PrintService,
-    'work_service':  WorkService,
-    'threading':  threading,
-    'queue': Queue.Queue,
-    'logging_output': sys.stdout
-}
+__Services = {}
 
-def get_required_service_keys():
-    return SERVICES.keys()
+class Services(object):
+    requests = requests
+    crawler_factory = LinkCrawler
+    argparse = argparse.ArgumentParser
+    config_service = ConfigService
+    log_service = PrintService
+    work_service =  WorkService
+    threading =  threading
+    queue = Queue.Queue
+    logging_output = sys.stdout
+
+    def __init__(self):
+        self.__dict__ = __Services
 
 def register_services(services=None):
+    assert services is dict or services is None
     if not services:
-        services = SERVICES
+        services = Services.__dict__
     Inject.register_features(**services)
