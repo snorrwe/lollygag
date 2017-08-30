@@ -6,6 +6,7 @@ from lollygag.crawler.url import get_domain
 from lollygag.crawler.url import is_relative_link
 from lollygag.dependency_injection.inject import Inject
 from lollygag.dependency_injection.requirements import HasMethods, HasAttributes
+from lollygag.utility.observer.subject import Subject
 
 class DomainCrawler(object):
     """
@@ -23,7 +24,10 @@ class DomainCrawler(object):
                         HasMethods("request_work", "terminate_all", "active_count"))
     config_service = Inject("config_service", HasAttributes("url"))
 
+
     def __init__(self, url=None):
+        self.on_interrupt = Subject()
+        self.on_crawl_finish = Subject()
         if not url:
             url = self.config_service.url
         self.reset(url)
@@ -63,10 +67,12 @@ class DomainCrawler(object):
             self.handle_crawl_finish()
 
     def handle_interrupt(self, error):
-        self.log_service.info("Crawling was interrupted", error)
+        self.log_service.info("----------Crawling was interrupted----------", error)
+        self.on_interrupt.next()
         self.work_service.terminate_all()
 
     def handle_crawl_finish(self):
+        self.on_crawl_finish.next(self.visited_urls, self.urls_in_progress, self.urls_to_crawl)
         self.log_service.info(self.get_status_message())
         self.log_service.info("----------Crawl finished----------\n")
 

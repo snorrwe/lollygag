@@ -1,8 +1,10 @@
 #!/usr/bin/python
 
 from lollygag import run
+from lollygag.services import register_services
 from lollygag.services import Services
 from lollygag.crawler.link_crawler import LinkCrawler
+from lollygag.crawler.domain_crawler import DomainCrawler
 
 class MyCrawler(LinkCrawler):
     """
@@ -28,10 +30,18 @@ class MyCrawler(LinkCrawler):
         if(tag == 'a'):
             self.log_service.debug("Boi, I found a link!")
 
+def on_finish(log_service):
+    def callback(*args):
+        log_service.info("-------------Yeah boiiii, done-----------------")
+    return callback
+
 def main():
     # Override crawler_factory with my own implementation
-    Services.crawler_factory = MyCrawler 
-    run()
+    Services.crawler_factory = MyCrawler
+    register_services()
+    crawler = DomainCrawler()
+    crawler.on_crawl_finish(on_finish(Services.log_service()))
+    run(crawler=crawler)
 
 if __name__ == '__main__':
     main()
