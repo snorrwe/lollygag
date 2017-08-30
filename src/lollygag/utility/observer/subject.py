@@ -1,7 +1,8 @@
 from lollygag.utility.observer.observer import Observer
 
 class Subject(object):
-    callbacks = []
+    def __init__(self):
+        self.callbacks = []
 
     def next(self, *args):
         for callback in self.callbacks:
