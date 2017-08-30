@@ -36,7 +36,7 @@ jobs:
   - stage: deploy
     language: python
     python: 3.6
-    sudo: false
+    sudo: required
     dist: trusty
     env:
     - SETUP_DEPLOY = 1
