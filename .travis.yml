@@ -33,10 +33,7 @@ jobs:
     dist: trusty
     env:
     - SETUP_DEPLOY = 1
-    install: 
-    - sudo apt-get install pandoc
     script:
-    - pip install pypandoc
     - python setup.py sdist
     deploy:
       - provider: pypi
