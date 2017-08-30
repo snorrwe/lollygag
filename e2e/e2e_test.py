@@ -28,6 +28,7 @@ main()
             , stdout=subprocess.PIPE, shell=True, executable=sys.executable)
         (output, error) = crawler_process.communicate()
         cls.output = output.decode("utf-8")
+        print(cls.output, error.decode("utf-8"))
         lines = cls.output.splitlines()
         cls.lines = [i for i in lines if i != '']
 
