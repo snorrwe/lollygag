@@ -95,6 +95,7 @@ python crawler_example.py -u snorrwe.github.io/crawler_test
             <th>Name</th>
             <th>Short</th>
             <th>Description</th>
+            <th>Default</th>
         </tr>
     </thead>
     <tbody>
@@ -103,6 +104,7 @@ python crawler_example.py -u snorrwe.github.io/crawler_test
                 <td>--help</td>
                 <td>-h</td>
                 <td rowspan="2">Show the help and exit</td>
+                <td> - </td>
             </tr>
             <tr>
             </tr>
@@ -116,6 +118,7 @@ python crawler_example.py -u snorrwe.github.io/crawler_test
                     Note that if you pass the url argument to run() or crawl() this option will be ignored.
                 </i>
                 </td>
+                <td> - </td>
             </tr>
             <tr>
             </tr>
@@ -125,6 +128,7 @@ python crawler_example.py -u snorrwe.github.io/crawler_test
                 <td>--threads</td>
                 <td>-t</td>
                 <td rowspan="2">Maximum number of concurrent threads</td>
+                <td> 5 </td>
             </tr>
             <tr>
             </tr>
@@ -133,7 +137,8 @@ python crawler_example.py -u snorrwe.github.io/crawler_test
             <tr>
                 <td>--loglevel</td>
                 <td>-l</td>
-                <td rowspan="2">Level of logging, possible values = [all, info, debug, warn, error, none]</td>
+                <td rowspan="2">Level of logging, possible values = [all, debug, info, warn, error, none]</td>
+                <td> all </td>
             </tr>
             <tr>
             </tr>
