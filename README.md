@@ -15,7 +15,7 @@
 
 ## Usage
 
-### Example code
+### Sample code
 
 ```python
 #!/usr/bin/python
@@ -115,7 +115,7 @@ python crawler_example.py -u snorrwe.github.io/crawler_test
                 <td>-u</td>
                 <td rowspan="2">Base url you wish to crawl.<br>
                 <i>
-                    Note that if you pass the url argument to run() or crawl() this option will be ignored.
+                    Note that if you pass the url argument to run() or crawl_domain() this option will be ignored.
                 </i>
                 </td>
                 <td> - </td>
