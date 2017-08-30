@@ -21,7 +21,7 @@
 #!/usr/bin/python
 
 from lollygag import run
-from lollygag.services import SERVICES
+from lollygag.services import Services
 from lollygag.crawler.link_crawler import LinkCrawler
 
 class MyCrawler(LinkCrawler):
@@ -46,7 +46,7 @@ class MyCrawler(LinkCrawler):
 
 def main():
     # Override crawler_factory with my own implementation
-    SERVICES['crawler_factory'] = MyCrawler 
+    Services.crawler_factory = MyCrawler 
     run()
 
 if __name__ == '__main__':
