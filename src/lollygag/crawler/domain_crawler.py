@@ -37,10 +37,8 @@ class DomainCrawler(object):
     work_service = Inject("work_service", \
                         HasMethods("request_work", "terminate_all", "active_count"))
     config_service = Inject("config_service", HasAttributes("url"))
-    threading = Inject("threading", HasMethods("Lock"))
 
     def __init__(self, url=None):
-        self.__is_task_left_lock = self.threading.Lock()
         self.on_start = Subject()
         self.on_interrupt = Subject()
         self.on_finish = Subject()
@@ -119,11 +117,7 @@ class DomainCrawler(object):
                and self.work_service.active_count()
 
     def is_task_left(self):
-        self.__is_task_left_lock.acquire()
-        try:
-            return any(self.status.urls_in_progress) or any(self.status.urls_to_crawl)
-        finally:
-            self.__is_task_left_lock.release()
+        return any(self.status.urls_in_progress + self.status.urls_to_crawl)
 
     def __request_crawl_job(self):
         return self.work_service.request_work(self.__run_crawl)
