@@ -18,6 +18,8 @@ sys.argv.append("-u")
 sys.argv.append("%s")
 sys.argv.append("-l")
 sys.argv.append("info")
+sys.argv.append("-t")
+sys.argv.append("3")
 try:
     from crawler_example import main
 except ImportError:
