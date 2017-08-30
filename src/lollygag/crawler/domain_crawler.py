@@ -24,7 +24,6 @@ class DomainCrawler(object):
                         HasMethods("request_work", "terminate_all", "active_count"))
     config_service = Inject("config_service", HasAttributes("url"))
 
-
     def __init__(self, url=None):
         self.on_start = Subject()
         self.on_interrupt = Subject()
@@ -81,10 +80,10 @@ class DomainCrawler(object):
         visited = len(self.visited_urls)
         in_progess = len(self.urls_in_progress)
         todo = len(self.urls_to_crawl)
-        message = """
-    Urls visited=[%s]
-    Urls in progess=[%s]
-    Urls left=[%s]""" % (visited, in_progess, todo)
+        message = """--------------------Crawl status--------------------
+                                        Urls visited=[%s]
+                                        Urls in progess=[%s]
+                                        Urls left=[%s]""" % (visited, in_progess, todo)
         return message
 
     def _run(self):
