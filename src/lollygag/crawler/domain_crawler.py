@@ -125,7 +125,7 @@ class DomainCrawler(object):
             result = crawler.crawl(url)
             return result
         except (requests.exceptions.ConnectionError, requests.exceptions.SSLError) as error:
-            self.log_service.error("Error while crawling site", url, str(error))
+            self.log_service.error("Error while crawling site=[%s]" % url, str(error))
             return None
         finally:
             self.urls_in_progress.remove(url)
