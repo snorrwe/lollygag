@@ -12,21 +12,20 @@ try:
 except ImportError:
     import queue as Queue
 
-__Services = {}
-
 class Services(object):
+    #pylint: disable=too-few-public-methods
     requests = requests
     crawler_factory = LinkCrawler
     argparse = argparse.ArgumentParser
     config_service = ConfigService
     log_service = PrintService
-    work_service =  WorkService
-    threading =  threading
+    work_service = WorkService
+    threading = threading
     queue = Queue.Queue
     logging_output = sys.stdout
 
     def __init__(self):
-        self.__dict__ = __Services
+        self.__dict__ = Services.__dict__
 
 def register_services(services=None):
     assert services is dict or services is None
