@@ -64,7 +64,7 @@ def main():
                 'sample=sample:main',
             ],
         },
-        python_requires='>=2.7, >=3.4'
+        python_requires='>=2.7, >=3.6'
        )
 
 if __name__ == '__main__':
