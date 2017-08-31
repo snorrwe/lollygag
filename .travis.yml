@@ -34,11 +34,13 @@ jobs:
     python: 3.6
     sudo: required
     dist: trusty
+    env:
+    - SETUP_DEPLOY = 0
+    - SETUP_DEPLOY = 1
     script:
-    - python setup.py install
-    script:
-    - python setup_travis_deploy.py
-    - python setup.py sdist
+    - if [${SETUP_DEPLOY} = 0];then python setup.py install; fi
+    - if [${SETUP_DEPLOY} = 1];then python setup_travis_deploy.py; fi
+    - if [${SETUP_DEPLOY} = 1];then python setup.py sdist; fi
     deploy:
       - provider: pypi
         distributions: sdist
