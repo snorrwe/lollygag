@@ -6,9 +6,10 @@ LOGLEVELS = {
     "all": 0,
     "debug": 1,
     "info": 2,
-    "warn": 3,
-    "error": 4,
-    "none": 5
+    "important": 3,
+    "warn": 4,
+    "error": 5,
+    "none": 6
 }
 
 class PrintService(object):
@@ -26,6 +27,9 @@ class PrintService(object):
 
     def info(self, *messages):
         self.log(LOGLEVELS["info"], "\n[Info]", *messages)
+
+    def important(self, *messages):
+        self.log(LOGLEVELS["important"], "\n[Important]", *messages)
 
     def error(self, *messages):
         self.log(LOGLEVELS["error"], "\n[Error]", *messages)
