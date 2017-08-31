@@ -5,6 +5,7 @@ import re
 import sys
 from setuptools import setup, find_packages
 
+version_file = ".version"
 home_page = """
 Lollygag
 ========
@@ -37,13 +38,25 @@ def handle_possible_ci_error(message, code):
     if is_deploy:
         raise SystemExit(code)
 
+def create_version_file(version):
+    with open(version_file, 'w') as f:
+        f.write(version)
+
+def read_version():
+    with open(version_file, 'r') as f:
+        return f.read()
+
 def main():
     global home_page
 
     version = '0.0.dev1'
     try:
         version = os.environ['TRAVIS_TAG']
-    except KeyError:
+        if version:
+            create_version_file(version)
+        else:
+            version = read_version()
+    except (KeyError, IOError):
         pass
     except:
         handle_possible_ci_error("Something went wrong while setting the version!", 2)

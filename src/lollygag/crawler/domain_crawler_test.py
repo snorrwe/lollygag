@@ -18,7 +18,7 @@ class DomainCrawlerTests(unittest.TestCase):
         Inject.register_feature("work_service", work_service)
 
     def tearDown(self):
-        Inject.reset() 
+        Inject.reset()
         crawler.crawl.reset()
         log.write.reset()           
         log.info.reset()           
