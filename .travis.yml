@@ -21,6 +21,7 @@ git:
 jobs:
   include:
   - stage: lint
+    env:
     language: python
     python: 3.6
     install:
@@ -29,6 +30,7 @@ jobs:
     script:
     - pylint lollygag
   - stage: install
+    env:
     language: python
     python: 3.6
     script:
