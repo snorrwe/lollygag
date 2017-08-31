@@ -7,8 +7,8 @@ python:
   - "pypy"
   - "pypy3"
 env:
-  - TEST_ENV=src
-  - TEST_ENV=e2e
+  - TEST_ENV=lollygag
+  - TEST_ENV=test
 install:
 - python setup.py -q install
 - pip install -r requirements.txt
@@ -21,14 +21,16 @@ git:
 jobs:
   include:
   - stage: lint
+    env:
     language: python
     python: 3.6
     install:
     - pip install pylint
     - pip install -r requirements.txt
     script:
-    - pylint src/lollygag
+    - pylint lollygag
   - stage: install
+    env:
     language: python
     python: 3.6
     script:
@@ -41,6 +43,7 @@ jobs:
     env:
     - SETUP_DEPLOY = 1
     script:
+    - python setup_travis_deploy.py
     - python setup.py sdist
     deploy:
       - provider: pypi
