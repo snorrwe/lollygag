@@ -43,6 +43,7 @@ jobs:
     script:
     - echo $TRAVIS_TAG
     - python setup.py setopt --command=metadata --option=version --set-value=$TRAVIS_TAG
+    - cat setup.cfg
     - python setup.py sdist
     deploy:
       - provider: pypi

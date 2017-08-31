@@ -36,12 +36,7 @@ def main():
         license="MIT",
         package_dir={'':'src'},
         packages=find_packages('src'),
-        install_requires=['requests>=2.2.1'],
-        entry_points={
-            'console_scripts': [
-                'sample=sample:main',
-            ],
-        }
+        install_requires=['requests>=2.2.1']
        )
 
 if __name__ == '__main__':
