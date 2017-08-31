@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 
-import os
-import re
-import sys
 from setuptools import setup, find_packages
 
 config_file = "setup.cfg"
@@ -27,35 +24,8 @@ Installation
 ``pip install lollygag``
 """
 
-def handle_possible_ci_error(message, code):
-    print(message)
-    print(sys.exc_info())
-    is_deploy = False
-    try:
-        is_deploy = os.environ['SETUP_DEPLOY']
-    except KeyError:
-        pass
-    if is_deploy:
-        raise SystemExit(code)
-
-def create_version_file(version):
-    with open(config_file, 'w') as f:
-        conf = """[metadata]
-version={version}
-        """.format(version=version)
-        f.write(conf)
-
 def main():
     global home_page
-
-    try:
-        version = os.environ['TRAVIS_TAG']
-        if version:
-            create_version_file(version)
-    except (KeyError, IOError):
-        pass
-    except:
-        handle_possible_ci_error("Something went wrong while setting the version!", 2)
 
     setup(name='lollygag',
         author='Daniel Kiss',

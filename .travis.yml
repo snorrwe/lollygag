@@ -41,6 +41,7 @@ jobs:
     env:
     - SETUP_DEPLOY = 1
     script:
+    - python setup.py setopt --command=metadata --option=version --set-value=$TRAVIS_TAG
     - python setup.py sdist
     deploy:
       - provider: pypi
