@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 
 from setuptools import setup, find_packages
-
-config_file = "setup.cfg"
 home_page = """
 Lollygag
 ========
@@ -34,8 +32,8 @@ def main():
         description="A simple web crawling module",
         long_description=home_page,
         license="MIT",
-        package_dir={'':'src'},
-        packages=find_packages('src'),
+        package_dir={'lollygag':'lollygag'},
+        packages=find_packages('lollygag'),
         install_requires=['requests>=2.2.1']
        )
 
