@@ -6,7 +6,7 @@ LOGLEVELS = {
     "all": 0,
     "debug": 1,
     "info": 2,
-    "important": 3
+    "important": 3,
     "warn": 4,
     "error": 5,
     "none": 6
