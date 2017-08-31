@@ -5,7 +5,7 @@ import re
 import sys
 from setuptools import setup, find_packages
 
-version_file = ".version"
+version_file = "src/.version"
 home_page = """
 Lollygag
 ========
