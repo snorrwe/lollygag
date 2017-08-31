@@ -1,5 +1,5 @@
 {
-    "version": "0.0.5"
+    "version": "development"
     ,"home_page": "Lollygag\n========\n\nAbout\n-----\n\nSee: https://github.com/snorrwe/lollygag\n\nSupported Python versions:\n\n-  Python 2.7\n   -  Python 3.6\n   -  Pypy\n   -  Pypy 3\n\nInstallation\n------------\n\n``pip install lollygag``\n"
     , "classifiers": [
         "'Development Status :: 4 - Beta'"
