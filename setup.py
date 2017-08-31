@@ -5,7 +5,7 @@ import re
 import sys
 from setuptools import setup, find_packages
 
-version_file = ".version"
+version_file = "src/.version"
 home_page = """
 Lollygag
 ========
@@ -76,8 +76,7 @@ def main():
             'console_scripts': [
                 'sample=sample:main',
             ],
-        },
-        python_requires='>=2.7, >=3.6'
+        }
        )
 
 if __name__ == '__main__':
