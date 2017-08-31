@@ -7,7 +7,7 @@ python:
   - "pypy"
   - "pypy3"
 env:
-  - TEST_ENV=src
+  - TEST_ENV=lollygag
   - TEST_ENV=e2e
 install:
 - python setup.py -q install
@@ -27,7 +27,7 @@ jobs:
     - pip install pylint
     - pip install -r requirements.txt
     script:
-    - pylint src/lollygag
+    - pylint lollygag
   - stage: install
     language: python
     python: 3.6
