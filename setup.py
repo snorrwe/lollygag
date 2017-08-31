@@ -33,8 +33,9 @@ def main():
         long_description=home_page,
         license="MIT",
         package_dir={'lollygag':'lollygag'},
-        packages=find_packages('lollygag'),
-        install_requires=['requests>=2.2.1']
+        packages=find_packages('.'),
+        install_requires=['requests>=2.2.1'],
+        tests_require=['tl.testing==0.5', 'pylint==1.7.2']
        )
 
 if __name__ == '__main__':
