@@ -5,9 +5,9 @@ import os
 import sys
 import json
 
-this = os.path.dirname(os.path.realpath(__file__))
+here = os.path.dirname(os.path.realpath(__file__))
 
-version_info_path = os.path.join(this, "lollygag", ".version")
+version_info_path = os.path.join(here, "lollygag", ".version")
 try:
     with open(version_info_path, 'r') as f:
         version_info = json.loads(f.read())
@@ -23,8 +23,6 @@ except:
     sys.exit(1)
 
 def main():
-  global home_page
-
   setup(name='lollygag',
         author='Daniel Kiss',
         version=version_info["version"],
