@@ -1,5 +1,5 @@
 import unittest
-from lollygag.crawler.link_crawler import LinkCrawler
+from lollygag.core.link_crawler import LinkCrawler
 from lollygag.dependency_injection.inject import Inject
 from lollygag.utility.test_utils import Any
 

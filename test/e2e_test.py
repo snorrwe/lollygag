@@ -23,7 +23,7 @@ sys.argv.append("3")
 try:
     from crawler_example import main
 except ImportError:
-    from e2e.crawler_example import main
+    from test.crawler_example import main
 main()
 """ % (URI)
             ]

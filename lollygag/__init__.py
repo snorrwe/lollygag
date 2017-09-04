@@ -1,5 +1,5 @@
 from lollygag.services import register_services
-from lollygag.crawler.domain_crawler import DomainCrawler
+from lollygag.core.domain_crawler import DomainCrawler
 
 def run(**kwargs):
     register_services()

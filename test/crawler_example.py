@@ -3,8 +3,8 @@
 from lollygag import run
 from lollygag.services import register_services
 from lollygag.services import Services
-from lollygag.crawler.link_crawler import LinkCrawler
-from lollygag.crawler.domain_crawler import DomainCrawler
+from lollygag.core.link_crawler import LinkCrawler
+from lollygag.core.domain_crawler import DomainCrawler
 
 class MyCrawler(LinkCrawler):
     """

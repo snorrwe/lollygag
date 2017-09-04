@@ -1,5 +1,5 @@
 import unittest
-from lollygag.crawler.domain_crawler import DomainCrawler
+from lollygag.core.domain_crawler import DomainCrawler
 from lollygag.dependency_injection.inject import Inject
 from lollygag.utility.test_utils import Any, CallableMock
 

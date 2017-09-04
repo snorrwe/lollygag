@@ -1,5 +1,5 @@
 from collections import namedtuple
-from lollygag.crawler.crawler_base import Crawler
+from lollygag.core.crawler_base import Crawler
 from lollygag.dependency_injection.inject import Inject
 from lollygag.dependency_injection.requirements import HasMethods
 try:
