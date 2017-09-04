@@ -131,8 +131,8 @@ class DomainCrawler(object):
         result = self.crawl_site(url)
         self.status.visited_urls.add(url)
         if result:
-            self.process_links(result.links)
-            self.log_service.debug(self.get_status_message())
+            self.process_links(url, result.links)
+        self.log_service.debug(self.get_status_message())
 
     def crawl_site(self, url):
         """
@@ -150,11 +150,14 @@ class DomainCrawler(object):
         finally:
             self.status.urls_in_progress.remove(url)
 
-    def process_links(self, links):
+    def process_links(self, origin, links):
+        result = []
         for link in links:
             processed_link = self.process_link(link)
             if self.is_new_link(processed_link):
+                result.append(processed_link)
                 self.status.urls_to_crawl.append(processed_link)
+        return result
 
     def is_new_link(self, link):
         return link \

@@ -22,7 +22,7 @@ class CallableMock(object):
                 result = self.args["raises"]
                 raise self.args["raises"]
             if "callback" in self.args:
-                return self.args["callback"](*a, **kw)
+                result = self.args["callback"](*a, **kw)
             return result
         finally:
             self.calls.append((a, kw, result))

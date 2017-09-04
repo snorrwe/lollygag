@@ -16,7 +16,7 @@ except ImportError:
 class Services(object):
     #pylint: disable=too-few-public-methods
     requests = requests
-    site_site_crawler_factory = LinkCrawler
+    site_crawler_factory = LinkCrawler
     argparse = argparse.ArgumentParser
     config_service = ConfigService
     log_service = PrintService
