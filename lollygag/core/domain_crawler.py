@@ -25,14 +25,14 @@ class DomainCrawlerStatus(object):
 class DomainCrawler(object):
     """
     Crawls a resource starting from url
-    Uses Crawlers created by crawler_factory to crawl each resource,
+    Uses Crawlers created by site_crawler_factory to crawl each resource,
     then decides the next pages to crawl based on the result
     Does not go outside the domain boundaries of the initial url
 
     Uses work_service to execute crawling jobs
     Uses log_service to display results and errors
     """
-    crawler_factory = Inject("crawler_factory", return_factory=True)
+    site_crawler_factory = Inject("site_crawler_factory", return_factory=True)
     log_service = Inject("log_service", HasMethods("info", "error", "debug"))
     work_service = Inject("work_service", \
                         HasMethods("request_work", "terminate_all", "active_count"))
@@ -136,12 +136,12 @@ class DomainCrawler(object):
 
     def crawl_site(self, url):
         """
-        Crawls the given url using a crawler made by crawler_factory
+        Crawls the given url using a crawler made by site_crawler_factory
         If a requests.exceptions.ConnectionError or requests.exceptions.SSLError is raised
         returns None
         """
         try:
-            crawler = self.crawler_factory()
+            crawler = self.site_crawler_factory()
             result = crawler.crawl(url)
             return result
         except (requests.exceptions.ConnectionError, requests.exceptions.SSLError) as error:
