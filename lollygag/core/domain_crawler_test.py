@@ -6,7 +6,7 @@ from lollygag.utility.test_utils import Any, CallableMock
 crawl_result = Any(link="", status_code=200, page_size=0, links=[])
 crawler = Any(crawl=CallableMock(returns=crawl_result))
 site_crawler_factory = lambda: crawler
-config = Any(threads=1, url=None)
+config = Any(threads=1, url=None, skip=[])
 log = Any(write=CallableMock(), info=CallableMock(), error=CallableMock(), debug=CallableMock())
 work_service = Any(request_work=CallableMock(), terminate_all=CallableMock(), active_count=CallableMock())
 

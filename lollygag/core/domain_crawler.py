@@ -1,5 +1,6 @@
 import time
 import requests
+import re
 from lollygag.core.url import get_protocol
 from lollygag.core.url import strip_beginning_slashes
 from lollygag.core.url import get_domain
@@ -166,7 +167,7 @@ class DomainCrawler(object):
                and link not in self.status.urls_to_crawl
 
     def process_link(self, link):
-        if not link or link[0] == "#":
+        if not link or any(filter(lambda x: re.search(x, link.lower()), self.config_service.skip)) :
             return None
         if is_relative_link(link):
             if link[0] == ".":

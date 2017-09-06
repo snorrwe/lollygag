@@ -4,7 +4,8 @@ from lollygag.dependency_injection.requirements import HasMethods
 DEFAULT_CONFIG = {
     'threads': 10,
     'loglevel': 'all',
-    'url': ''
+    'url': '',
+    'skip': ['\.pdf$', '\.jpg$', '\.png$', '\.jpeg$', "^#", "\.css$", "\.ico$", "\.docx?$", "\.xlsx?$"]
 }
 
 class ConfigService(object):
