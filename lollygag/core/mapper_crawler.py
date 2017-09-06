@@ -8,8 +8,15 @@ def make_node(lst):
         result[item] = {}
     return result
 
-class MapperCrawler(DomainCrawler):
+def get_all_nodes_in_tree(tree):
+    result = []
+    for node in tree:
+        result.append(node)
+        if tree[node] and isinstance(tree[node], dict):
+            result.extend(get_all_nodes_in_tree(tree[node]))
+    return result
 
+class MapperCrawler(DomainCrawler):
     def __init__(self, *args, **kwargs):
         super(MapperCrawler, self).__init__(*args, **kwargs)
         self.graph = set()
@@ -26,6 +33,7 @@ class MapperCrawler(DomainCrawler):
 
     def make_map(self):
         result = self.__make_map()
+        result = self.__reduce_map(result)
         return result
 
     def __make_map(self):
@@ -33,6 +41,16 @@ class MapperCrawler(DomainCrawler):
         for vertex in self.graph:
             for value in vertex:
                 if value not in result:
-                    result[value] = []
-            result[vertex[0]].append(vertex[1])
+                    result[value] = {}
+            result[vertex[0]][vertex[1]] = result[vertex[1]]
+        return result
+
+    def __reduce_map(self, site_map):
+        assert isinstance(site_map, dict)
+        result = dict(site_map)
+        for url in site_map:
+            child_nodes = get_all_nodes_in_tree(site_map[url])
+            for node in child_nodes:
+                if node in result:
+                    del result[node]
         return result

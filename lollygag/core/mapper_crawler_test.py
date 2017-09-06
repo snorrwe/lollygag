@@ -1,6 +1,6 @@
 import unittest
 from lollygag.core.domain_crawler_test import DomainCrawlerTests, crawler as crawler_mock
-from lollygag.core.mapper_crawler import MapperCrawler
+from lollygag.core.mapper_crawler import MapperCrawler, get_all_nodes_in_tree
 from lollygag.dependency_injection.inject import Inject
 from lollygag.utility.test_utils import Any, CallableMock
 
@@ -48,6 +48,19 @@ class graph_tests(MapperCrawlerTests):
         self.assertTrue(('http://winnie.the/pooh', 'http://winnie.the/e') in mapper.graph)
         self.assertTrue(('http://winnie.the/e', 'http://winnie.the/c') in mapper.graph)
         self.assertTrue(('http://winnie.the/e', 'http://winnie.the/d') in mapper.graph)
+
+class get_all_nodes_in_tree_Tests(unittest.TestCase):
+    def test_returns_all_nodes(self):
+        tree = {
+            'a': {
+                'b': {
+                    'c': None
+                },
+                'd': None
+            }
+        }
+        result = get_all_nodes_in_tree(tree)
+        self.assertEqual(result, ['a', 'b', 'c', 'd'])
 
 if __name__ == '__main__':
     unittest.main()
