@@ -151,6 +151,7 @@ class DomainCrawler(object):
             self.status.urls_in_progress.remove(url)
 
     def process_links(self, origin, links):
+        #pylint: disable=unused-argument
         result = []
         for link in links:
             processed_link = self.process_link(link)

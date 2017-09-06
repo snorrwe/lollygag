@@ -1,4 +1,3 @@
-from lollygag.core.link_crawler import CrawlResult
 from lollygag.core.domain_crawler import DomainCrawler
 
 def make_node(lst):
