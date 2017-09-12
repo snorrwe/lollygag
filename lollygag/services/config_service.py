@@ -4,7 +4,17 @@ from lollygag.dependency_injection.requirements import HasMethods
 DEFAULT_CONFIG = {
     'threads': 10,
     'loglevel': 'all',
-    'url': ''
+    'url': '',
+    'skip': [
+        r'\.pdf$'
+        , r'\.jpg$'
+        , r'\.png$'
+        , r'\.jpeg$', "^#"
+        , r"\.css$"
+        , r"\.ico$"
+        , r"\.docx?$"
+        , r"\.xlsx?$"
+    ]
 }
 
 class ConfigService(object):
@@ -40,4 +50,7 @@ class ConfigService(object):
             help="Maximum number of concurrent threads", required=False)
         self.argumentParser.add_argument("--loglevel", "-l", \
             help="Level of logging, possible values = [all, info, debug, warn, error, none]"\
+            , required=False)
+        self.argumentParser.add_argument("--skip", "-s", \
+            help="Regex patterns, when any of them is found in the url, it's skipped"\
             , required=False)

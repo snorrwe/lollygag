@@ -36,8 +36,8 @@ def on_finish(log_service):
     return callback
 
 def main():
-    # Override crawler_factory with my own implementation
-    Services.crawler_factory = MyCrawler
+    # Override site_crawler_factory with my own implementation
+    Services.site_crawler_factory = MyCrawler
     register_services()
     crawler = DomainCrawler()
     crawler.on_finish(on_finish(Services.log_service()))
