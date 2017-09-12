@@ -5,7 +5,7 @@ DEFAULT_CONFIG = {
     'threads': 10,
     'loglevel': 'all',
     'url': '',
-    'skip': ['\.pdf$', '\.jpg$', '\.png$', '\.jpeg$', "^#", "\.css$", "\.ico$", "\.docx?$", "\.xlsx?$"]
+    'skip': [r'\.pdf$', r'\.jpg$', r'\.png$', r'\.jpeg$', "^#", r"\.css$", r"\.ico$", r"\.docx?$", r"\.xlsx?$"]
 }
 
 class ConfigService(object):
