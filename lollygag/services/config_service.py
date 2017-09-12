@@ -42,3 +42,6 @@ class ConfigService(object):
         self.argumentParser.add_argument("--loglevel", "-l", \
             help="Level of logging, possible values = [all, info, debug, warn, error, none]"\
             , required=False)
+        self.argumentParser.add_argument("--skip", "-s", \
+            help="Regex patterns, when any of them is found in the url, it's skipped"\
+            , required=False)
