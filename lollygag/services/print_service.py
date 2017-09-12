@@ -52,5 +52,5 @@ class PrintService(object):
     def write(self, msg):
         try:
             self.output.write(msg)
-        except UnicodeEncodeError as e:
-            self.output.write(e)
+        except UnicodeEncodeError as error:
+            self.output.write(error)
