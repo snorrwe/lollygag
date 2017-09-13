@@ -1,5 +1,11 @@
 sudo: false
 dist: trusty
+stages:
+  - test
+  - lint
+  - install
+  - name: deploy
+    if: tag IS present
 language: python
 python:
   - "2.7"
