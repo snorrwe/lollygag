@@ -1,10 +1,10 @@
 import re
 import time
 import requests
-from lollygag.core.url import get_protocol
-from lollygag.core.url import strip_beginning_slashes
-from lollygag.core.url import get_domain
-from lollygag.core.url import is_relative_link
+from lollygag.utility.url import get_protocol
+from lollygag.utility.url import strip_beginning_slashes
+from lollygag.utility.url import get_domain
+from lollygag.utility.url import is_relative_link
 from lollygag.dependency_injection.inject import Inject
 from lollygag.dependency_injection.requirements import HasMethods, HasAttributes
 from lollygag.utility.observer.subject import Subject
@@ -121,28 +121,33 @@ class DomainCrawler(object):
         return any(self.status.urls_in_progress + self.status.urls_to_crawl)
 
     def __request_crawl_job(self):
-        return self.work_service.request_work(self.__run_crawl)
+        return self.work_service.request_work(self.__crawl_urls)
 
-    def __run_crawl(self):
+    def __crawl_urls(self):
+        crawler = self.site_crawler_factory()
+        while self.status.urls_to_crawl:
+            self.__run_crawl(crawler)
+
+    def __run_crawl(self, crawler=None):
         try:
             url = self.status.urls_to_crawl.pop()
         except IndexError:
             return
         self.status.urls_in_progress.append(url)
-        result = self.crawl_site(url)
+        result = self.crawl_site(url, crawler)
         self.status.visited_urls.add(url)
         if result:
             self.process_links(url, result.links)
         self.log_service.debug(self.get_status_message())
 
-    def crawl_site(self, url):
+    def crawl_site(self, url, crawler=None):
         """
         Crawls the given url using a crawler made by site_crawler_factory
         If a requests.exceptions.ConnectionError or requests.exceptions.SSLError is raised
         returns None
         """
         try:
-            crawler = self.site_crawler_factory()
+            crawler = self.site_crawler_factory() if crawler is None else crawler
             result = crawler.crawl(url)
             return result
         except (requests.exceptions.ConnectionError, requests.exceptions.SSLError) as error:

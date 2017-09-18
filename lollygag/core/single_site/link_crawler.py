@@ -1,5 +1,5 @@
 from collections import namedtuple
-from lollygag.core.crawler_base import Crawler
+from lollygag.core.single_site.crawler_base import Crawler
 from lollygag.dependency_injection.inject import Inject
 from lollygag.dependency_injection.requirements import HasMethods
 try:
@@ -31,7 +31,8 @@ class LinkCrawler(HTMLParser, Crawler):
         return HTMLParser.feed(self, data)
 
     def handle_starttag(self, tag, attrs):
-        #pylint: disable=unused-argument
+        if tag != 'a':
+            return
         for attribute in attrs:
             if attribute[0] == "href":
                 self._links.add(attribute[1])

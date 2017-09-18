@@ -2,7 +2,7 @@ import sys
 import argparse
 import threading
 import requests
-from lollygag.core.link_crawler import LinkCrawler
+from lollygag.core.single_site.link_crawler import LinkCrawler
 from lollygag.core.domain_crawler import DomainCrawler
 from lollygag.services.config_service import ConfigService
 from lollygag.services.print_service import PrintService
