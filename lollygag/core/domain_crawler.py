@@ -1,10 +1,10 @@
 import re
 import time
 import requests
-from lollygag.core.url import get_protocol
-from lollygag.core.url import strip_beginning_slashes
-from lollygag.core.url import get_domain
-from lollygag.core.url import is_relative_link
+from lollygag.utility.url import get_protocol
+from lollygag.utility.url import strip_beginning_slashes
+from lollygag.utility.url import get_domain
+from lollygag.utility.url import is_relative_link
 from lollygag.dependency_injection.inject import Inject
 from lollygag.dependency_injection.requirements import HasMethods, HasAttributes
 from lollygag.utility.observer.subject import Subject

@@ -1,5 +1,5 @@
 import unittest
-from lollygag.core.url import get_domain
+from lollygag.utility.url import get_domain
 
 class get_domainTest(unittest.TestCase):
     def test_should_recognise_http(self):
