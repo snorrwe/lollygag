@@ -47,7 +47,6 @@ jobs:
     sudo: required
     dist: trusty
     env:
-    - SETUP_DEPLOY = 1
     script:
     - python setup_travis_deploy.py
     - python setup.py sdist
