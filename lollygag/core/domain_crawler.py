@@ -172,7 +172,7 @@ class DomainCrawler(object):
                and link not in self.status.urls_to_crawl
 
     def process_link(self, link):
-        if not link or any(filter(lambda x: re.search(x, link.lower()), self.config_service.skip)):
+        if not link or any([x for x in self.config_service.skip if re.search(x, link.lower())]):
             return None
         if is_relative_link(link):
             if link[0] == ".":
