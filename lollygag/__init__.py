@@ -8,12 +8,12 @@ def run(**kwargs):
         register_events(crawler, **kwargs['subscribe'])
     crawler.crawl_domain(url)
 
-def register(crawler, type, callback):
+def register(crawler, event_type, callback):
     {
-        'on_start': lambda x: crawler.on_start(x)
-        , 'on_finish': lambda x: crawler.on_finish(x)
-        , 'on_interrupt': lambda x: crawler.on_interrupt(x)
-    }[type](callback)
+        'on_start': crawler.on_start,
+        'on_finish': crawler.on_finish,
+        'on_interrupt': crawler.on_interrupt
+    }[event_type](callback)
 
 def register_events(crawler, **subscriptions):
     for key in subscriptions:
