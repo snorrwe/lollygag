@@ -21,11 +21,14 @@ def crawl_url_list(url, event_register, **kwargs):
     for domain in domains:
         crawler = get_crawler(event_register, **kwargs)
         crawler.on_finish(lambda *a, **kw: jobs.get())
-        job = lambda: crawler.crawl_domain(domains[domain])
+        job = get_crawl_job(crawler, domains[domain])
         work_service.request_work(job)
         jobs.put(1)
     while not jobs.empty():
         time.sleep(1)
+
+def get_crawl_job(crawler, domain):
+    return lambda: crawler.crawl_domain(domain)
 
 def separate_urls_by_domain(urls):
     assert isinstance(urls, list)

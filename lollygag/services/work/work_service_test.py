@@ -20,7 +20,7 @@ class WorkServiceTests(unittest.TestCase):
         threading_mock.Thread.reset(returns=Any(daemon=False, start=self.startMock))
         Inject.register_feature("threading", threading_mock)
         Inject.register_feature("config_service", config_mock)
-        Inject.register_feature("queue", queue_mock)
+        Inject.register_feature("queue", lambda: queue_mock)
         Inject.register_feature("log_service", log_service_mock)
 
     def tearDown(self):

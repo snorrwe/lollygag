@@ -35,29 +35,41 @@ class DomainCrawler(object):
     """
     site_crawler_factory = Inject("site_crawler_factory", return_factory=True)
     log_service = Inject("log_service", HasMethods("info", "error", "debug"))
-    work_service = Inject("work_service", \
-                        HasMethods("request_work", "terminate_all", "active_count"))
-    config_service = Inject("config_service", HasAttributes("url"))
+    work_service = Inject("work_service",
+                          HasMethods("request_work", "terminate_all", "active_count"),
+                          cache=False)
+    config_service = Inject("config_service", HasAttributes("skip"))
 
     def __init__(self, url=None):
         self.on_start = Subject()
         self.on_interrupt = Subject()
         self.on_finish = Subject()
         self.status = DomainCrawlerStatus()
-        if not url:
-            url = self.config_service.url
+        self.status.domain = None
+        self.protocol = None
         self.reset(url)
 
     def reset(self, url):
         self.status.reset(None, set(), [], [])
         if not url:
             return
-        self.protocol = get_protocol(url)
+        if isinstance(url, list):
+            self.__initialize_url_list(url)
+        else:
+            self.__initialize_url_list([url])
+
+    def __initialize_url_list(self, urls):
+        self.status.domain = get_domain(urls[0])
+        self.protocol = get_protocol(urls[0])
         if not self.protocol:
             self.protocol = "http://"
-            url = "%s%s" % (self.protocol, url)
-        self.status.domain = get_domain(url)
-        self.status.urls_to_crawl.append(url)
+            urls[0] = "%s%s" % (self.protocol, urls[0])
+        self.status.urls_to_crawl.append(urls[0])
+        for url in urls[1:]:
+            processed = self.process_link(url)
+            if not processed:
+                raise AttributeError("Url=[%s] is not valid in this collection!" % url)
+            self.status.urls_to_crawl.append(processed)
 
     def crawl_domain(self, url=None):
         """

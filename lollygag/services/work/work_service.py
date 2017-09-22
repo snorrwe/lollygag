@@ -6,10 +6,11 @@ class WorkService(object):
                     HasMethods("Thread", "Lock"))
     config_service = Inject("config_service", HasAttributes("threads"))
     log_service = Inject("log_service", HasMethods("debug", "info"))
-    queue = Inject("queue", HasMethods("put", "get", "task_done", "join"))
+    queue_factory = Inject("queue", return_factory=True)
     __count = 0
 
     def __init__(self):
+        self.queue = self.queue_factory()
         self.request_lock = self.threading.Lock()
         worker_count = int(self.config_service.threads)
         if worker_count < 1:

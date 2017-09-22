@@ -4,7 +4,7 @@ from lollygag.dependency_injection.requirements import HasMethods
 DEFAULT_CONFIG = {
     'threads': 10,
     'loglevel': 'all',
-    'url': '',
+    'urls': '',
     'skip': [
         r'\.pdf$'
         , r'\.jpg$'
@@ -24,13 +24,21 @@ class ConfigService(object):
     Arguments not in argumentParser will fall back to the DEFAULT_CONFIG
     """
     argumentParser = Inject("argparse", HasMethods("add_argument", "parse_args"))
+    state = None
+
+    threads = DEFAULT_CONFIG['threads']
+    loglevel = DEFAULT_CONFIG['loglevel']
+    urls = DEFAULT_CONFIG['urls']
+    skip = DEFAULT_CONFIG['skip']
 
     def __init__(self):
         self.reset()
 
     def reset(self):
-        self.__init_args()
-        self.__dict__ = self.__parse_args()
+        if not ConfigService.state:
+            self.__init_args()
+            ConfigService.state = self.__parse_args()
+        self.__dict__ = ConfigService.state
 
     def __parse_args(self):
         arguments = self.argumentParser.parse_args()
@@ -44,8 +52,8 @@ class ConfigService(object):
         return config
 
     def __init_args(self):
-        self.argumentParser.add_argument("--url", "-u", \
-            help="Base url you wish to crawl", required=False)
+        self.argumentParser.add_argument("--urls", "-u", nargs="+", \
+            help="Base url(s) you wish to crawl", required=False)
         self.argumentParser.add_argument("--threads", "-t", \
             help="Maximum number of concurrent threads", required=False)
         self.argumentParser.add_argument("--loglevel", "-l", \

@@ -30,11 +30,20 @@ class CanCreateDomainCrawler(DomainCrawlerTests):
         result = DomainCrawler("http://winnie_the_pooh")
         self.assertIsNot(result, None)
 
+    def test_can_initialize_with_multiple_urls(self):
+        result = DomainCrawler(["http://winnie_the_pooh/1", "https://winnie_the_pooh/2"])
+        self.assertIsNot(result, None)
+
+    def test_raises_error_if_initialized_with_multiple_urls_with_different_domains(self):
+        with self.assertRaises(AttributeError):
+            result = DomainCrawler(["http://winnie_the_pooh", "https://kanga_the_mommy"])
+            self.fail()
+
 class DomainCrawlerMethodTests(DomainCrawlerTests):
     start_mock = None
     callback = None
 
-    def reset_threadmocks(self):
+    def __reset_threadmocks(self):
         self.callback = lambda *a, **kw: None
         self.start_mock = CallableMock(callback=lambda *a, **kw: self.callback())
         work_service.request_work.reset(callback=lambda cb: cb())
@@ -44,7 +53,7 @@ class DomainCrawlerMethodTests(DomainCrawlerTests):
         DomainCrawlerTests.setUp(self)
         self.crawler = DomainCrawler("http://winnie_the_pooh")
         crawler.crawl.reset(returns=crawl_result)
-        self.reset_threadmocks()       
+        self.__reset_threadmocks()       
 
     def test_crawl_site_returns_the_crawl_result_from_crawler(self):
         self.crawler.status.urls_in_progress.append("http://winnie_the_pooh")
