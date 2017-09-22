@@ -34,3 +34,5 @@ def register_services(services=None):
     if not services:
         services = Services.__dict__
     Inject.register_features(**services)
+
+register_services()
