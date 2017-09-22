@@ -37,20 +37,12 @@ class MyCrawler(LinkCrawler):
     def handle_starttag(self, tag, attrs):
         super(MyCrawler, self).handle_starttag(tag, attrs)
         if(tag == 'img'):
-            self.log_service.info("Yeeeeaaaah, I found an %s" % tag)
-        if(tag == 'a'):
-            self.log_service.debug("Boi, I found an anchor tag!")
-
-def on_finish(log_service):
-    def callback(*args):
-        log_service.info("-------------Yeah boiiii, done-----------------")
-    return callback
+            self.log_service.info("Yeeeeaaaah boiiiiiii, I found an %s" % (tag))
 
 def main():
     # Override site_crawler_factory with my own implementation
     Services.site_crawler_factory = MyCrawler
-    # Subscribe to events by passing a 'subscribe' dictionary
-    run(subscribe={'on_finish': on_finish(Services.log_service())})
+    run()
 
 if __name__ == '__main__':
     main()
@@ -62,27 +54,25 @@ python crawler_example.py -u snorrwe.github.io/crawler_test
 
 [Info]Thread=[MainThread]        ----------Crawl starting----------
 [Debug]Thread=[MainThread]       No urls to crawl, going to sleep. Work in progress=[1]
-[Info]Thread=[WSc--2]    Yeah boi, a page!
-[Debug]Thread=[WSc--2]   Boi, I found an anchor tag!
-[Debug]Thread=[WSc--2]   Boi, I found an anchor tag!
-[Info]Thread=[WSc--2]    Yeeeeaaaah, I found an img
-[Info]Thread=[WSc--2]    Link=[http://snorrwe.github.io/crawler_test] StatusCode=[200] Size=[310]
-[Debug]Thread=[WSc--2]   --------------------Crawl status--------------------
-                                        Urls visited=[1]
-                                        Urls in progess=[0]
-                                        Urls left=[2]
-[Info]Thread=[WSc--2]    Link=[http://snorrwe.github.io/crawler_test/kanga2.html] StatusCode=[404] Size=[9340]
-[Debug]Thread=[WSc--2]   --------------------Crawl status--------------------
-                                        Urls visited=[2]
-                                        Urls in progess=[0]
-                                        Urls left=[1]
-[Info]Thread=[WSc--2]    Yeah boi, a page!
-[Debug]Thread=[WSc--2]   Boi, I found an anchor tag!
-[Info]Thread=[WSc--2]    Link=[http://snorrwe.github.io/crawler_test/kanga.html] StatusCode=[200] Size=[220]
-[Debug]Thread=[WSc--2]   --------------------Crawl status--------------------
-                                        Urls visited=[3]
-                                        Urls in progess=[0]
-                                        Urls left=[0]
+[Info]Thread=[WSc--0]    Yeah boi, a page!
+[Info]Thread=[WSc--0]    Yeeeeaaaah boiiiiiii, I found an img
+[Info]Thread=[WSc--0]    Link=[http://snorrwe.github.io/crawler_test] StatusCode=[200] Size=[310]
+[Debug]Thread=[WSc--0]
+    Urls visited=[1]
+    Urls in progess=[0]
+    Urls left=[2]
+[Debug]Thread=[MainThread]       No urls to crawl, going to sleep. Work in progress=[2]
+[Info]Thread=[WSc--3]    Link=[http://snorrwe.github.io/crawler_test/kanga2.html] StatusCode=[404] Size=[9340]
+[Debug]Thread=[WSc--3]
+    Urls visited=[2]
+    Urls in progess=[1]
+    Urls left=[0]
+[Info]Thread=[WSc--4]    Yeah boi, a page!
+[Info]Thread=[WSc--4]    Link=[http://snorrwe.github.io/crawler_test/kanga.html] StatusCode=[200] Size=[220]
+[Debug]Thread=[WSc--4]
+    Urls visited=[3]
+    Urls in progess=[0]
+    Urls left=[0]
 [Info]Thread=[MainThread]        -------------Yeah boiiii, done-----------------
 [Info]Thread=[MainThread]        --------------------Crawl status--------------------
                                         Urls visited=[3]

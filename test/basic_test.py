@@ -6,7 +6,7 @@ import sys
 
 URI = "https://snorrwe.github.io/crawler_test/"
 
-class E2ETest(TestCase):
+class BasicTest(TestCase):
     output = None
     lines = None
 
