@@ -24,11 +24,15 @@ from lollygag import run
 from lollygag.services import Services
 from lollygag.core.single_site.link_crawler import LinkCrawler
 
+# Override HTMLParser methods to provide a custom implementation
+# https://docs.python.org/2/library/htmlparser.html
+# Be sure to call the super methods so you do not lose existing functionality!
+#
+# Or use a different parser like Beautiful Soup
 class MyCrawler(LinkCrawler):
-
     def feed(self, data):
         self.log_service.info("Yeah boi, a page!")
-        return super(MyCrawler, self).feed(self, data)
+        return super(MyCrawler, self).feed(data)
 
     def handle_starttag(self, tag, attrs):
         super(MyCrawler, self).handle_starttag(tag, attrs)
@@ -70,10 +74,10 @@ python crawler_example.py -u snorrwe.github.io/crawler_test
     Urls in progess=[0]
     Urls left=[0]
 [Info]Thread=[MainThread]        -------------Yeah boiiii, done-----------------
-[Info]Thread=[MainThread]
-    Urls visited=[3]
-    Urls in progess=[0]
-    Urls left=[0]
+[Info]Thread=[MainThread]        --------------------Crawl status--------------------
+                                        Urls visited=[3]
+                                        Urls in progess=[0]
+                                        Urls left=[0]
 [Info]Thread=[MainThread]        ----------Crawl finished----------
 ```
 
