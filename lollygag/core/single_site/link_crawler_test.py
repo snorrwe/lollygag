@@ -5,7 +5,7 @@ from lollygag.utility.test_utils import Any
 
 response = Any(text="", status_code=404, content="")
 requests = Any(get=lambda x, **kw: response)
-log_service = Any(info=lambda *a, **kw: None)
+log_service = Any(info=lambda *a, **kw: None, debug=lambda *a, **kw: None, error=lambda *a, **kw: None, warn=lambda *a, **kw: None)
 
 class CanCreateLinkCrawler(unittest.TestCase):
     def test_can_initialize(self):

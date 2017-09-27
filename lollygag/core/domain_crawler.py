@@ -40,7 +40,7 @@ class DomainCrawler(object):
     work_service = Inject("work_service",
                           HasMethods("request_work",
                                      "terminate_all", "active_count"),
-                          cache=False)
+                          cache=True)
     config_service = Inject("config_service", HasAttributes("skip"))
 
     def __init__(self, url=None):
@@ -96,6 +96,27 @@ class DomainCrawler(object):
         finally:
             self.handle_crawl_finish()
 
+    def _run(self):
+        self.__sleep_until_task_is_available()
+        self.__request_crawl_job()
+
+    def __sleep_until_task_is_available(self):
+        if not self.is_waiting_for_url():
+            return
+        self.log_service.debug("No urls to crawl, going to sleep.",
+                               "Work in progress=[%s]" %
+                               self.work_service.active_count())
+        while self.is_waiting_for_url():
+            time.sleep(1)
+
+    def __request_crawl_job(self):
+        return self.work_service.request_work(self.__crawl_urls)
+
+    def __crawl_urls(self):
+        crawler = self.site_crawler_factory()
+        while self.status.urls_to_crawl:
+            self.__run_crawl(crawler)
+
     def handle_interrupt(self, error):
         self.log_service.info(
             "----------Crawling was interrupted----------", error)
@@ -120,33 +141,12 @@ class DomainCrawler(object):
                                         (visited, in_progess, todo)
         return message
 
-    def _run(self):
-        self.__sleep_until_task_is_available()
-        self.__request_crawl_job()
-
-    def __sleep_until_task_is_available(self):
-        if not self.is_waiting_for_url():
-            return
-        self.log_service.debug("No urls to crawl, going to sleep.",
-                               "Work in progress=[%s]" %
-                               self.work_service.active_count())
-        while self.is_waiting_for_url():
-            time.sleep(1)
-
     def is_waiting_for_url(self):
         return not any(self.status.urls_to_crawl) \
             and self.work_service.active_count()
 
     def is_task_left(self):
         return any(self.status.urls_in_progress + self.status.urls_to_crawl)
-
-    def __request_crawl_job(self):
-        return self.work_service.request_work(self.__crawl_urls)
-
-    def __crawl_urls(self):
-        crawler = self.site_crawler_factory()
-        while self.status.urls_to_crawl:
-            self.__run_crawl(crawler)
 
     def __run_crawl(self, crawler=None):
         try:

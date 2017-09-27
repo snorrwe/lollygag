@@ -1,7 +1,5 @@
 from collections import namedtuple
 from lollygag.core.single_site.crawler_base import Crawler
-from lollygag.dependency_injection.inject import Inject
-from lollygag.dependency_injection.requirements import HasMethods
 try:
     from HTMLParser import HTMLParser
 except ImportError:
@@ -13,8 +11,9 @@ class LinkCrawler(HTMLParser, Crawler):
     """
     A website crawler that collects links from href attributes on the site
     """
-    log_service = Inject("log_service", HasMethods("info"))
-    _links = set()
+    def __init__(self, *args, **kwargs):
+        super(LinkCrawler, self).__init__(*args, **kwargs)
+        self._links = set()
 
     def crawl(self, url):
         """
