@@ -1,4 +1,4 @@
-sudo: false
+sudo: required
 dist: trusty
 stages:
   - test
@@ -18,8 +18,8 @@ env:
 install:
 - pip install -r requirements.txt
 before_script:
-  - if [ "$TEST_ENV" = "test" ]; then python setup.py install; fi
-  - if [ "$TEST_ENV" = "test" ]; then chmod -R +xr .; fi
+  - if [ "$TEST_ENV" = "test" ]; then sudo python setup.py install; fi
+  - if [ "$TEST_ENV" = "test" ]; then sudo chmod -R +xr .; fi
 script:
 - cd $TEST_ENV
 - pytest
