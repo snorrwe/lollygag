@@ -85,7 +85,7 @@ class BasicTest(TestCase):
                 link = output.group('link')
                 code = output.group('code')
                 page_data[link] = code
-        self.assertTrue('%s' % (URI)in page_data)
+        self.assertTrue(URI in page_data)
         self.assertTrue('%skanga.html' % (URI) in page_data)
         self.assertTrue('%skanga2.html' % (URI) in page_data)
         self.assertEqual(page_data['%s' % (URI)], '200')

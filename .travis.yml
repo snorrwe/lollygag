@@ -18,8 +18,8 @@ env:
 install:
 - pip install -r requirements.txt
 before_script:
-  - if [ "$TEST_ENV" = "test" ]; then python setup.py install; fi
-  - if [ "$TEST_ENV" = "test" ]; then chmod -R +xr .; fi
+- then python setup.py install
+- then chmod -R +xr .
 script:
 - cd $TEST_ENV
 - pytest
