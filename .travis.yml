@@ -16,8 +16,10 @@ env:
   - TEST_ENV=lollygag
   - TEST_ENV=test
 install:
-- python setup.py -q install
 - pip install -r requirements.txt
+before_script:
+  - if [ "$TEST_ENV" = "test" ]; then python setup.py install; fi
+  - if [ "$TEST_ENV" = "test" ]; then chmod -R +xr .; fi
 script:
 - cd $TEST_ENV
 - pytest

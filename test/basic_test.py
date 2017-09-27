@@ -10,7 +10,7 @@ URI = "https://snorrwe.github.io/crawler_test/"
 HERE = os.path.realpath(os.path.abspath(__file__))
 HERE = os.path.dirname(HERE)
 
-IS_WINDOWS = "win" in sys.platform
+IS_WINDOWS = sys.platform.startswith("win")
 
 EXPECTED = """[Info]Thread=[MainThread]        ----------Crawl starting----------
 [Debug]Thread=[MainThread]       No urls to crawl, going to sleep. Work in progress=[1]
