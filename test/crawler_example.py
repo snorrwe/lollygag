@@ -16,9 +16,9 @@ class MyCrawler(LinkCrawler):
 
     def handle_starttag(self, tag, attrs):
         super(MyCrawler, self).handle_starttag(tag, attrs)
-        if(tag == 'img'):
+        if tag == 'img':
             self.log_service.info("Yeeeeaaaah, I found an %s" % tag)
-        if(tag == 'a'):
+        if tag == 'a':
             self.log_service.debug("Boi, I found an anchor tag!")
 
 def on_finish(log_service):

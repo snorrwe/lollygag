@@ -1,10 +1,13 @@
 import time
 from lollygag.utility.url import get_domain
 from lollygag.services import register_services, Services
+from lollygag.dependency_injection.inject import Inject
 
 def run(**kwargs):
     register_services()
     url = Services.config_service().urls if "url" not in kwargs else kwargs["url"]
+    if len(url) == 1:
+        url = url[0]
     event_register = None
     if 'subscribe' in kwargs:
         event_register = lambda crawler: register_events(crawler, **kwargs['subscribe'])
@@ -15,7 +18,7 @@ def run(**kwargs):
         crawl_url_list(url, event_register, **kwargs)
 
 def crawl_url_list(url, event_register, **kwargs):
-    work_service = Services.work_service()
+    work_service = Inject('work_service', cache=False).request()
     domains = separate_urls_by_domain(url)
     jobs = Services.queue()
     for domain in domains:

@@ -1,4 +1,4 @@
-from lollygag.main import run as r
+from lollygag.main import run as run
 
-def run(**kwargs):
-    r(**kwargs)
+#def run(**kwargs):
+#    r(**kwargs)

@@ -9,6 +9,7 @@ from lollygag.dependency_injection.inject import Inject
 from lollygag.dependency_injection.requirements import HasMethods, HasAttributes
 from lollygag.utility.observer.subject import Subject
 
+
 class DomainCrawlerStatus(object):
     __slots__ = ["domain", "visited_urls", "urls_to_crawl", "urls_in_progress"]
 
@@ -23,6 +24,7 @@ class DomainCrawlerStatus(object):
         self.urls_to_crawl = urls_to_crawl
         self.urls_in_progress = urls_in_progress
 
+
 class DomainCrawler(object):
     """
     Crawls a resource starting from url
@@ -36,8 +38,9 @@ class DomainCrawler(object):
     site_crawler_factory = Inject("site_crawler_factory", return_factory=True)
     log_service = Inject("log_service", HasMethods("info", "error", "debug"))
     work_service = Inject("work_service",
-                          HasMethods("request_work", "terminate_all", "active_count"),
-                          cache=False)
+                          HasMethods("request_work",
+                                     "terminate_all", "active_count"),
+                          cache=True)
     config_service = Inject("config_service", HasAttributes("skip"))
 
     def __init__(self, url=None):
@@ -68,19 +71,23 @@ class DomainCrawler(object):
         for url in urls[1:]:
             processed = self.process_link(url)
             if not processed:
-                raise AttributeError("Url=[%s] is not valid in this collection!" % url)
+                raise AttributeError(
+                    "Url=[%s] is not valid in this collection!" % url)
             self.status.urls_to_crawl.append(processed)
 
     def crawl_domain(self, url=None):
         """
         Starts the crawl procedure
-        Returns when the crawling is complete or a KeyboardInterrupt or SystemExit is raised
+        Returns when the crawling is complete
+        or a KeyboardInterrupt or SystemExit is raised
         Terminates remaining work if interrupted
         """
         if url:
             self.reset(url)
-        assert self.status.domain, "Cannot start crawling without a URL!"
-        self.log_service.info("----------Crawl starting----------")
+        assert self.status.domain, "Cannot start crawling without a domain!"
+        self.log_service.info(
+            "----------Crawl starting domain=[{domain}]----------".format(domain=self.status.domain)
+        )
         self.on_start.next(url)
         self.__request_crawl_job()
         try:
@@ -91,8 +98,30 @@ class DomainCrawler(object):
         finally:
             self.handle_crawl_finish()
 
+    def _run(self):
+        self.__sleep_until_task_is_available()
+        self.__request_crawl_job()
+
+    def __sleep_until_task_is_available(self):
+        if not self.is_waiting_for_url():
+            return
+        self.log_service.debug("No urls to crawl, going to sleep.",
+                               "Work in progress=[%s]" %
+                               self.work_service.active_count())
+        while self.is_waiting_for_url():
+            time.sleep(1)
+
+    def __request_crawl_job(self):
+        return self.work_service.request_work(self.__crawl_urls)
+
+    def __crawl_urls(self):
+        crawler = self.site_crawler_factory()
+        while self.status.urls_to_crawl:
+            self.__run_crawl(crawler)
+
     def handle_interrupt(self, error):
-        self.log_service.info("----------Crawling was interrupted----------", error)
+        self.log_service.info(
+            "----------Crawling was interrupted----------", error)
         self.on_interrupt.next()
         self.work_service.terminate_all()
 
@@ -110,35 +139,16 @@ class DomainCrawler(object):
         message = """--------------------Crawl status--------------------
                                         Urls visited=[%s]
                                         Urls in progess=[%s]
-                                        Urls left=[%s]""" % (visited, in_progess, todo)
+                                        Urls left=[%s]""" %\
+                                        (visited, in_progess, todo)
         return message
-
-    def _run(self):
-        self.__sleep_until_task_is_available()
-        self.__request_crawl_job()
-
-    def __sleep_until_task_is_available(self):
-        if not self.is_waiting_for_url():
-            return
-        self.log_service.debug("No urls to crawl, going to sleep."\
-                             , "Work in progress=[%s]" % self.work_service.active_count())
-        while self.is_waiting_for_url():
-            time.sleep(1)
 
     def is_waiting_for_url(self):
         return not any(self.status.urls_to_crawl) \
-               and self.work_service.active_count()
+            and self.work_service.active_count()
 
     def is_task_left(self):
         return any(self.status.urls_in_progress + self.status.urls_to_crawl)
-
-    def __request_crawl_job(self):
-        return self.work_service.request_work(self.__crawl_urls)
-
-    def __crawl_urls(self):
-        crawler = self.site_crawler_factory()
-        while self.status.urls_to_crawl:
-            self.__run_crawl(crawler)
 
     def __run_crawl(self, crawler=None):
         try:
@@ -155,7 +165,8 @@ class DomainCrawler(object):
     def crawl_site(self, url, crawler=None):
         """
         Crawls the given url using a crawler made by site_crawler_factory
-        If a requests.exceptions.ConnectionError or requests.exceptions.SSLError is raised
+        If a requests.exceptions.ConnectionError
+        or requests.exceptions.SSLError is raised
         returns None
         """
         try:
@@ -163,7 +174,8 @@ class DomainCrawler(object):
             result = crawler.crawl(url)
             return result
         except (requests.exceptions.ConnectionError, requests.exceptions.SSLError) as error:
-            self.log_service.error("Error while crawling site=[%s]" % url, str(error))
+            self.log_service.error(
+                "Error while crawling site=[%s]" % url, str(error))
             return None
         finally:
             self.status.urls_in_progress.remove(url)
@@ -180,8 +192,8 @@ class DomainCrawler(object):
 
     def is_new_link(self, link):
         return link \
-               and link not in self.status.visited_urls \
-               and link not in self.status.urls_to_crawl
+            and link not in self.status.visited_urls \
+            and link not in self.status.urls_to_crawl
 
     def process_link(self, link):
         if not link or any([x for x in self.config_service.skip if re.search(x, link.lower())]):

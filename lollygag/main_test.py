@@ -1,16 +1,17 @@
 import unittest
-from lollygag.services import register_services, Services
-from lollygag.main import run, separate_urls_by_domain, register_events, register
+from lollygag.main import separate_urls_by_domain, register_events, register
 from lollygag.utility.test_utils import Any, CallableMock
+
 
 class Test_separate_urls_by_domain(unittest.TestCase):
 
     def test_separates_correctly(self):
-        result = separate_urls_by_domain(["github.com", "youtube.com", "youtube.com/1", "asd.youtube.com"])
+        result = separate_urls_by_domain(
+            ["github.com", "youtube.com", "youtube.com/1", "asd.youtube.com"])
         expected = {
-            'github.com': ["github.com"]
-            , 'youtube.com': ["youtube.com", "youtube.com/1"]
-            , 'asd.youtube.com': ["asd.youtube.com"]
+            'github.com': ["github.com"],
+            'youtube.com': ["youtube.com", "youtube.com/1"],
+            'asd.youtube.com': ["asd.youtube.com"]
         }
         self.assertEqual(result, expected)
 
@@ -24,10 +25,13 @@ class Test_separate_urls_by_domain(unittest.TestCase):
         with self.assertRaises(AssertionError):
             separate_urls_by_domain((1,))
 
+
 class Test_register_events(unittest.TestCase):
 
     def setUp(self):
-        self.crawler = Any(on_start=CallableMock(), on_finish=CallableMock(), on_interrupt=CallableMock())
+        self.crawler = Any(on_start=CallableMock(),
+                           on_finish=CallableMock(),
+                           on_interrupt=CallableMock())
 
     def test_subscribes_to_on_finish_with_single_callback(self):
         subs = {
@@ -57,10 +61,13 @@ class Test_register_events(unittest.TestCase):
         register_events(self.crawler, **subs)
         self.assertEqual(self.crawler.on_start.call_count(), 4)
 
+
 class Test_register(unittest.TestCase):
 
     def setUp(self):
-        self.crawler = Any(on_start=CallableMock(), on_finish=CallableMock(), on_interrupt=CallableMock())
+        self.crawler = Any(on_start=CallableMock(),
+                           on_finish=CallableMock(),
+                           on_interrupt=CallableMock())
 
     def test_subscribes_to_on_start(self):
         register(self.crawler, 'on_start', lambda *a, **kw: None)
@@ -91,6 +98,7 @@ class Test_register(unittest.TestCase):
             register(self.crawler, 'on_start', {})
         with self.assertRaises(AssertionError):
             register(self.crawler, 'on_start', [])
+
 
 if __name__ == '__main__':
     unittest.main()
