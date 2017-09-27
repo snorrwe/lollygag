@@ -18,8 +18,8 @@ env:
 install:
 - pip install -r requirements.txt
 before_script:
-- then python setup.py install
-- then chmod -R +xr .
+- python setup.py install
+- chmod -R +xr .
 script:
 - cd $TEST_ENV
 - pytest
