@@ -84,8 +84,10 @@ class DomainCrawler(object):
         """
         if url:
             self.reset(url)
-        assert self.status.domain, "Cannot start crawling without a URL!"
-        self.log_service.info("----------Crawl starting----------")
+        assert self.status.domain, "Cannot start crawling without a domain!"
+        self.log_service.info(
+            "----------Crawl starting domain=[{domain}]----------".format(domain=self.status.domain)
+        )
         self.on_start.next(url)
         self.__request_crawl_job()
         try:

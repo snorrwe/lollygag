@@ -10,6 +10,8 @@ URI = "https://snorrwe.github.io/crawler_test/"
 HERE = os.path.realpath(os.path.abspath(__file__))
 HERE = os.path.dirname(HERE)
 
+IS_WINDOWS = "win" in sys.platform
+
 EXPECTED = """[Info]Thread=[MainThread]        ----------Crawl starting----------
 [Debug]Thread=[MainThread]       No urls to crawl, going to sleep. Work in progress=[1]
 [Info]Thread=[WSc--0]    Yeah boi, a page!
@@ -47,8 +49,10 @@ class BasicTest(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        crawler_process = subprocess.Popen(["%s%scrawler_example.py" % (HERE, os.path.sep), "-u", URI]
-            , stdout=subprocess.PIPE, shell=True)
+        commands = [os.path.join(HERE, "crawler_example.py"), "-u", URI]
+        print("Commands:", commands)
+        crawler_process = subprocess.Popen(commands
+            , stdout=subprocess.PIPE, shell=IS_WINDOWS)
         (output, error) = crawler_process.communicate()
         print(output, error)
         cls.output = output.decode("utf-8") if output else ""
@@ -68,7 +72,7 @@ class BasicTest(TestCase):
     def test_found_all_pages(self):
         found = []
         for line in self.lines:
-            if(re.search(r'Link=\[.+\] StatusCode=\[\d+\] Size=\[\d+\]', line)):
+            if re.search(r'Link=\[.+\] StatusCode=\[\d+\] Size=\[\d+\]', line):
                 found.append(re.search(r'Link=\[.+\]', line).group(0))
         self.assertEqual(len(found), 3)
         self.assertEqual(len(found), len(set(found)))
@@ -91,7 +95,7 @@ class BasicTest(TestCase):
     def test_got_what_was_expected(self):
         for line in self.lines:
             isExpected = EXPECTED.find(line)
-            self.assertTrue(isExpected)
+            self.assertTrue(isExpected, "Line=[{line}] was unexpected!".format(line=line))
 
 if __name__ == '__main__':
     unittest_main()
