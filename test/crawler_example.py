@@ -2,14 +2,14 @@
 
 from lollygag import run
 from lollygag.services import Services
-from lollygag.core.single_site.link_crawler import LinkCrawler
+from lollygag.core.parsers.link_parser import LinkParser
 
 # Override HTMLParser methods to provide a custom implementation
 # https://docs.python.org/2/library/htmlparser.html
 # Be sure to call the super methods so you do not lose existing functionality!
 #
 # Or use a different parser like Beautiful Soup
-class MyCrawler(LinkCrawler):
+class MyCrawler(LinkParser):
     def feed(self, data):
         self.log_service.info("Yeah boi, a page!")
         return super(MyCrawler, self).feed(data)

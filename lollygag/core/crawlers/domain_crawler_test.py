@@ -1,5 +1,5 @@
 import unittest
-from lollygag.core.domain_crawler import DomainCrawler
+from lollygag.core.crawlers.domain_crawler import DomainCrawler
 from lollygag.dependency_injection.inject import Inject
 from lollygag.utility.test_utils import Any, CallableMock
 
@@ -127,12 +127,12 @@ class EventTests(DomainCrawlerTests):
 
     def test_calls_callback_on_interrupt(self):
         crawler.crawl.args["raises"] = KeyboardInterrupt()
-        myCrawler = DomainCrawler()
+        my_crawler = DomainCrawler()
         callback = CallableMock()
-        myCrawler.on_interrupt(callback)
+        my_crawler.on_interrupt(callback)
         self.assertEqual(callback.call_count(), 0)
         with self.assertRaises(KeyboardInterrupt):
-            myCrawler.crawl_domain("tiggers")
+            my_crawler.crawl_domain("tiggers")
             self.assertEqual(callback.call_count(), 1)
 
     def test_on_interrupt_is_not_called_without_interrupt(self):

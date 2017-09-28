@@ -2,12 +2,12 @@ from collections import namedtuple
 from lollygag.dependency_injection.inject import Inject
 from lollygag.dependency_injection.requirements import HasMethods
 
-CrawlResult = namedtuple("CrawlResult", ["link", "status_code", "page_size"])
+ParseResult = namedtuple("ParseResult", ["link", "status_code", "page_size"])
 
-class Crawler(object):
+class Parser(object):
     """
-    Base class for crawlers
-    crawl performs a GET rquest on the url and calls feed with the response.text
+    Base class for parsers
+    The parser performs a GET request on the url and calls feed with the response.text
     Subclasses should implement the feed method
     """
     _requests = Inject("requests", HasMethods("get"))
@@ -18,7 +18,7 @@ class Crawler(object):
         response = self._requests.get(url, verify=False)
         if response.status_code == 200:
             self.feed(response.text)
-        return CrawlResult(link=url, status_code=response.status_code \
+        return ParseResult(link=url, status_code=response.status_code \
             , page_size=len(response.content))
 
     def feed(self, data):
