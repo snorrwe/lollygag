@@ -1,8 +1,7 @@
 import unittest
-from lollygag.core.domain_crawler_test import DomainCrawlerTests, crawler as crawler_mock
-from lollygag.core.mapper_crawler import MapperCrawler, get_all_nodes_in_tree
-from lollygag.dependency_injection.inject import Inject
-from lollygag.utility.test_utils import Any, CallableMock
+from lollygag.core.crawlers.domain_crawler_test import DomainCrawlerTests, crawler as crawler_mock
+from lollygag.core.crawlers.mapper_crawler import MapperCrawler, get_all_nodes_in_tree
+from lollygag.utility.test_utils import Any
 
 class MapperCrawlerTests(DomainCrawlerTests):
     def setUp(self):

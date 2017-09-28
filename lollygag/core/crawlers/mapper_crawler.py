@@ -1,4 +1,4 @@
-from lollygag.core.domain_crawler import DomainCrawler
+from lollygag.core.crawlers.domain_crawler import DomainCrawler
 
 def make_node(lst):
     if isinstance(lst, dict):

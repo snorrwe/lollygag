@@ -3,7 +3,7 @@ import argparse
 import threading
 import requests
 from lollygag.core.parsers.link_parser import LinkParser
-from lollygag.core.domain_crawler import DomainCrawler
+from lollygag.core.crawlers.domain_crawler import DomainCrawler
 from lollygag.services.config_service import ConfigService
 from lollygag.services.print_service import PrintService
 from lollygag.services.work.work_service import WorkService

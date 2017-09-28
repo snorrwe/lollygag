@@ -3,7 +3,7 @@
 from lollygag import run
 from lollygag.services import Services
 from lollygag.dependency_injection.inject import Inject
-from lollygag.core.mapper_crawler import MapperCrawler
+from lollygag.core.crawlers.mapper_crawler import MapperCrawler
 import json
 
 def on_finish(log_service, crawler):
