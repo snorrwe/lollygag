@@ -1,16 +1,19 @@
 import unittest
-from lollygag.core.single_site.link_crawler import LinkCrawler
+from lollygag.core.parsers.link_parser import LinkParser
 from lollygag.dependency_injection.inject import Inject
 from lollygag.utility.test_utils import Any
 
 response = Any(text="", status_code=404, content="")
 requests = Any(get=lambda x, **kw: response)
-log_service = Any(info=lambda *a, **kw: None, debug=lambda *a, **kw: None, error=lambda *a, **kw: None, warn=lambda *a, **kw: None)
+log_service = Any(info=lambda *a, **kw: None, debug=lambda *a,
+                  **kw: None, error=lambda *a, **kw: None, warn=lambda *a, **kw: None)
+
 
 class CanCreateLinkCrawler(unittest.TestCase):
     def test_can_initialize(self):
-        result = LinkCrawler()
+        result = LinkParser()
         self.assertIsNot(result, None)
+
 
 class LinkCrawlerCrawlTests(unittest.TestCase):
     def setUp(self):
@@ -25,7 +28,7 @@ class LinkCrawlerCrawlTests(unittest.TestCase):
         response.status_code = 200
         response.content = "Foobar"
 
-        crawler = LinkCrawler()
+        crawler = LinkParser()
         result = crawler.crawl("http://winnie.thepooh")
 
         self.assertTrue(result)
@@ -39,7 +42,7 @@ class LinkCrawlerCrawlTests(unittest.TestCase):
         response.status_code = 200
         response.content = "Foobar"
 
-        crawler = LinkCrawler()
+        crawler = LinkParser()
         result = crawler.crawl("http://winnie.thepooh")
 
         self.assertTrue(result)
@@ -49,9 +52,10 @@ class LinkCrawlerCrawlTests(unittest.TestCase):
         self.assertEqual(result.links, set(["/tiggers"]))
 
     def test_raises_on_None_url(self):
-        crawler = LinkCrawler()
+        crawler = LinkParser()
         with self.assertRaises(AssertionError):
             crawler.crawl(None)
+
 
 if __name__ == '__main__':
     unittest.main()

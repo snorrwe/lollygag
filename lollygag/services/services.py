@@ -2,7 +2,7 @@ import sys
 import argparse
 import threading
 import requests
-from lollygag.core.single_site.link_crawler import LinkCrawler
+from lollygag.core.parsers.link_parser import LinkParser
 from lollygag.core.domain_crawler import DomainCrawler
 from lollygag.services.config_service import ConfigService
 from lollygag.services.print_service import PrintService
@@ -16,7 +16,7 @@ except ImportError:
 class Services(object):
     #pylint: disable=too-few-public-methods
     requests = requests
-    site_crawler_factory = LinkCrawler
+    site_crawler_factory = LinkParser
     argparse = argparse.ArgumentParser
     config_service = ConfigService
     log_service = PrintService
