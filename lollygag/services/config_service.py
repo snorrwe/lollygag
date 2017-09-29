@@ -6,16 +6,10 @@ DEFAULT_CONFIG = {
     'loglevel': 'all',
     'urls': '',
     'skip': [
-        r'\.pdf$'
-        , r'\.jpg$'
-        , r'\.png$'
-        , r'\.jpeg$', "^#"
-        , r"\.css$"
-        , r"\.ico$"
-        , r"\.docx?$"
-        , r"\.xlsx?$"
+        r'\.pdf$', r'\.jpg$', r'\.png$', r'\.jpeg$', "^#", r"\.css$", r"\.ico$", r"\.docx?$", r"\.xlsx?$"
     ]
 }
+
 
 class ConfigService(object):
     """
@@ -31,10 +25,7 @@ class ConfigService(object):
     urls = DEFAULT_CONFIG['urls']
     skip = DEFAULT_CONFIG['skip']
 
-    def __init__(self):
-        self.reset()
-
-    def reset(self):
+    def setup(self):
         if not ConfigService.state:
             self.__init_args()
             ConfigService.state = self.__parse_args()
@@ -52,13 +43,13 @@ class ConfigService(object):
         return config
 
     def __init_args(self):
-        self.argumentParser.add_argument("--urls", "-u", nargs="+", \
-            help="Base url(s) you wish to crawl", required=False)
-        self.argumentParser.add_argument("--threads", "-t", \
-            help="Maximum number of concurrent threads", required=False)
-        self.argumentParser.add_argument("--loglevel", "-l", \
-            help="Level of logging, possible values = [all, info, debug, warn, error, none]"\
-            , required=False)
-        self.argumentParser.add_argument("--skip", "-s", \
-            help="Regex patterns, when any of them is found in the url, it's skipped"\
-            , required=False)
+        self.argumentParser.add_argument("--urls", "-u", nargs="+",
+                                         help="Base url(s) you wish to crawl", required=False)
+        self.argumentParser.add_argument("--threads", "-t",
+                                         help="Maximum number of concurrent threads", required=False)
+        self.argumentParser.add_argument("--loglevel", "-l",
+                                         help="Level of logging [all, info, debug, warn, error, none]",
+                                         required=False)
+        self.argumentParser.add_argument("--skip", "-s",
+                                         help="Regex patterns, when any of them is found in the url, it's skipped",
+                                         required=False)
