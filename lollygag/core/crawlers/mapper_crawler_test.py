@@ -44,7 +44,7 @@ class graph_tests(MapperCrawlerTests):
                     0: Any(link="winnie.the/pooh",
                            status_code=200,
                            page_size=0,
-                           links=["./b", "./e"]),
+                           links=["./b"]),
                     1: Any(link="winnie.the/b",
                            status_code=200,
                            page_size=0,
@@ -59,10 +59,9 @@ class graph_tests(MapperCrawlerTests):
         mapper = MapperCrawler()
         mapper.crawl("winnie.the/pooh")
         self.assertTrue(mapper.graph)
-        self.assertEqual(len(mapper.graph), 4)
+        self.assertEqual(len(mapper.graph), 3)
         print(mapper.graph)
         self.assertTrue(('http://winnie.the/pooh', 'http://winnie.the/b') in mapper.graph)
-        self.assertTrue(('http://winnie.the/pooh', 'http://winnie.the/e') in mapper.graph)
         self.assertTrue(('http://winnie.the/b', 'http://winnie.the/c') in mapper.graph)
         self.assertTrue(('http://winnie.the/b', 'http://winnie.the/d') in mapper.graph)
 
