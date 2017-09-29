@@ -41,7 +41,14 @@ class graph_tests(MapperCrawlerTests):
         def result(*a, **kw):
             try:
                 return {
-                    0: Any(link="winnie.the/pooh", status_code=200, page_size=0, links=["./b", "./e"]), 1: Any(link="winnie.the/b", status_code=200, page_size=0, links=["./c", "./d"])
+                    0: Any(link="winnie.the/pooh",
+                           status_code=200,
+                           page_size=0,
+                           links=["./b", "./e"]),
+                    1: Any(link="winnie.the/b",
+                           status_code=200,
+                           page_size=0,
+                           links=["./c", "./d"]),
                 }[mock.call_count()]
             except KeyError:
                 return Any(link="winnie.the/Key", status_code=200, page_size=0, links=[])
@@ -53,10 +60,11 @@ class graph_tests(MapperCrawlerTests):
         mapper.crawl("winnie.the/pooh")
         self.assertTrue(mapper.graph)
         self.assertEqual(len(mapper.graph), 4)
+        print(mapper.graph)
         self.assertTrue(('http://winnie.the/pooh', 'http://winnie.the/b') in mapper.graph)
         self.assertTrue(('http://winnie.the/pooh', 'http://winnie.the/e') in mapper.graph)
-        self.assertTrue(('http://winnie.the/e', 'http://winnie.the/c') in mapper.graph)
-        self.assertTrue(('http://winnie.the/e', 'http://winnie.the/d') in mapper.graph)
+        self.assertTrue(('http://winnie.the/b', 'http://winnie.the/c') in mapper.graph)
+        self.assertTrue(('http://winnie.the/b', 'http://winnie.the/d') in mapper.graph)
 
 
 class get_all_nodes_in_tree_Tests(unittest.TestCase):
