@@ -6,12 +6,7 @@ from lollygag.utility.test_utils import Any, CallableMock
 
 crawl_result = Any(link="", status_code=200, page_size=0, links=[])
 parser = Any(crawl=CallableMock(returns=crawl_result))
-
-
-def site_parser_factory():
-    return parser
-
-
+site_parser_factory = lambda: parser
 config = Any(threads=1, url=None, skip=[])
 log = Any(write=CallableMock(), info=CallableMock(),
           error=CallableMock(), debug=CallableMock())
