@@ -6,7 +6,15 @@ DEFAULT_CONFIG = {
     'loglevel': 'all',
     'urls': '',
     'skip': [
-        r'\.pdf$', r'\.jpg$', r'\.png$', r'\.jpeg$', "^#", r"\.css$", r"\.ico$", r"\.docx?$", r"\.xlsx?$"
+        r'\.pdf$',
+        r'\.jpg$',
+        r'\.png$',
+        r'\.jpeg$',
+        "^#",
+        r"\.css$",
+        r"\.ico$",
+        r"\.docx?$",
+        r"\.xlsx?$"
     ]
 }
 
@@ -18,18 +26,22 @@ class ConfigService(object):
     Arguments not in argumentParser will fall back to the DEFAULT_CONFIG
     """
     argumentParser = Inject("argparse", HasMethods("add_argument", "parse_args"))
-    state = None
+    state = {}
 
     threads = DEFAULT_CONFIG['threads']
     loglevel = DEFAULT_CONFIG['loglevel']
     urls = DEFAULT_CONFIG['urls']
     skip = DEFAULT_CONFIG['skip']
 
+    def __init__(self):
+        self.__dict__ = ConfigService.state
+
     def setup(self):
         if not ConfigService.state:
             self.__init_args()
-            ConfigService.state = self.__parse_args()
-        self.__dict__ = ConfigService.state
+            args = self.__parse_args()
+            for key in args:
+                ConfigService.state[key] = args[key]
 
     def __parse_args(self):
         arguments = self.argumentParser.parse_args()
@@ -43,13 +55,21 @@ class ConfigService(object):
         return config
 
     def __init_args(self):
+        helps = {
+            'urls': "Base url(s) you wish to crawl",
+            'threads': "Maximum number of concurrent threads",
+            'loglevel': "Level of logging [all, info, debug, warn, error, none]",
+            'skip': "Regex patterns, when any of them is found in the url, it's skipped"
+        }
         self.argumentParser.add_argument("--urls", "-u", nargs="+",
-                                         help="Base url(s) you wish to crawl", required=False)
+                                         helps=helps['urls'],
+                                         required=False)
         self.argumentParser.add_argument("--threads", "-t",
-                                         help="Maximum number of concurrent threads", required=False)
+                                         helps=helps['threads'],
+                                         required=False)
         self.argumentParser.add_argument("--loglevel", "-l",
-                                         help="Level of logging [all, info, debug, warn, error, none]",
+                                         helps=helps['loglevel'],
                                          required=False)
         self.argumentParser.add_argument("--skip", "-s",
-                                         help="Regex patterns, when any of them is found in the url, it's skipped",
+                                         helps=helps['skip'],
                                          required=False)
