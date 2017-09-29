@@ -22,7 +22,7 @@ class graph_tests(MapperCrawlerTests):
     def test_graph_is_not_empty(self):
         crawler_mock.crawl.reset(callback=self.__test_graph_is_not_empty_crawl_result(crawler_mock.crawl))
         mapper = MapperCrawler()
-        mapper.crawl_domain("winnie.the/pooh")
+        mapper.crawl("winnie.the/pooh")
         self.assertTrue(mapper.graph)
         self.assertEqual(len(mapper.graph), 2)
 
@@ -40,7 +40,7 @@ class graph_tests(MapperCrawlerTests):
     def test_graph_returns_all_paths(self):
         crawler_mock.crawl.reset(callback=self.__test_graph_returns_all_paths_crawl_result(crawler_mock.crawl))
         mapper = MapperCrawler()
-        mapper.crawl_domain("winnie.the/pooh")
+        mapper.crawl("winnie.the/pooh")
         self.assertTrue(mapper.graph)
         self.assertEqual(len(mapper.graph), 4)
         self.assertTrue(('http://winnie.the/pooh', 'http://winnie.the/b') in mapper.graph)

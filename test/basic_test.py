@@ -12,12 +12,12 @@ HERE = os.path.dirname(HERE)
 
 IS_WINDOWS = sys.platform.startswith("win")
 
-EXPECTED = """[Info]Thread=[MainThread]        ----------Crawl starting----------
+EXPECTED = """[Info]Thread=[MainThread]        ----------Crawl starting domain=[snorrwe.github.io]----------
 [Debug]Thread=[MainThread]       No urls to crawl, going to sleep. Work in progress=[1]
-[Info]Thread=[WSc--0]    Yeah boi, a page!
-[Debug]Thread=[WSc--0]   Boi, I found an anchor tag!
-[Debug]Thread=[WSc--0]   Boi, I found an anchor tag!
-[Info]Thread=[WSc--0]    Yeeeeaaaah, I found an img
+[Info]Thread=[WSc--0]    Found, a page!
+[Debug]Thread=[WSc--0]   I found an anchor tag!
+[Debug]Thread=[WSc--0]   I found an anchor tag!
+[Info]Thread=[WSc--0]    I found an img
 [Info]Thread=[WSc--0]    Link=[https://snorrwe.github.io/crawler_test/] StatusCode=[200] Size=[310]
 [Debug]Thread=[WSc--0]   --------------------Crawl status--------------------
                                         Urls visited=[1]
@@ -28,8 +28,8 @@ EXPECTED = """[Info]Thread=[MainThread]        ----------Crawl starting---------
                                         Urls visited=[2]
                                         Urls in progess=[0]
                                         Urls left=[1]
-[Info]Thread=[WSc--0]    Yeah boi, a page!
-[Debug]Thread=[WSc--0]   Boi, I found an anchor tag!
+[Info]Thread=[WSc--0]    Found, a page!
+[Debug]Thread=[WSc--0]   I found an anchor tag!
 [Info]Thread=[WSc--0]    Link=[https://snorrwe.github.io/crawler_test/kanga.html] StatusCode=[200] Size=[220]
 [Debug]Thread=[WSc--0]   --------------------Crawl status--------------------
                                         Urls visited=[3]
@@ -40,7 +40,8 @@ EXPECTED = """[Info]Thread=[MainThread]        ----------Crawl starting---------
                                         Urls visited=[3]
                                         Urls in progess=[0]
                                         Urls left=[0]
-[Info]Thread=[MainThread]        ----------Crawl finished----------"""
+[Info]Thread=[MainThread]        ----------Crawl finished----------
+"""
 
 
 class BasicTest(TestCase):
@@ -51,8 +52,7 @@ class BasicTest(TestCase):
     def setUpClass(cls):
         commands = [os.path.join(HERE, "crawler_example.py"), "-u", URI]
         print("Commands:", commands)
-        crawler_process = subprocess.Popen(commands
-            , stdout=subprocess.PIPE, shell=IS_WINDOWS)
+        crawler_process = subprocess.Popen(commands, stdout=subprocess.PIPE, shell=IS_WINDOWS)
         (output, error) = crawler_process.communicate()
         print(output, error)
         cls.output = output.decode("utf-8") if output else ""
@@ -63,11 +63,14 @@ class BasicTest(TestCase):
         self.assertTrue(self.output)
         self.assertTrue(self.lines)
         try:
-            self.assertTrue(type(self.output) is unicode, "Output should be of type unicode, instead got %s" % (type(self.output)))
-        except NameError: # python 3 support
-            self.assertTrue(type(self.output) is str, "Output should be of type str, instead got %s" % (type(self.output)))
+            self.assertTrue(type(self.output) is unicode,
+                            "Output should be of type unicode, instead got %s" % (type(self.output)))
+        except NameError:  # python 3 support
+            self.assertTrue(type(self.output) is str, "Output should be of type str, instead got %s" %
+                            (type(self.output)))
         expected = len(EXPECTED.splitlines())
-        self.assertTrue(len(self.lines) == expected, "Output should contain %s lines, instead got %s" % (expected, len(self.lines)))
+        self.assertTrue(len(self.lines) == expected, "Output should contain %s lines, instead got %s" %
+                        (expected, len(self.lines)))
 
     def test_found_all_pages(self):
         found = []
@@ -96,6 +99,7 @@ class BasicTest(TestCase):
         for line in self.lines:
             isExpected = EXPECTED.find(line)
             self.assertTrue(isExpected, "Line=[{line}] was unexpected!".format(line=line))
+
 
 if __name__ == '__main__':
     unittest_main()

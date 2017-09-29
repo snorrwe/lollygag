@@ -13,7 +13,7 @@ def run(**kwargs):
         event_register = lambda crawler: register_events(crawler, **kwargs['subscribe'])
     if not url or not isinstance(url, list):
         crawler = get_crawler(event_register, **kwargs)
-        crawler.crawl_domain(url)
+        crawler.crawl(url)
     else:
         crawl_url_list(url, event_register, **kwargs)
 
