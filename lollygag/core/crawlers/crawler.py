@@ -50,26 +50,25 @@ class Crawler(object):
         self.reset(urls)
 
     def reset(self, url):
-        self.status.reset(set(), [], [])
+        self.status.reset(set(), set(), [])
         if not url:
             return
-        if isinstance(url, list):
-            self.initialize_url_list(url)
-        else:
-            self.initialize_url_list([url])
+        if not isinstance(url, list):
+            url = [url]
+        self.initialize_url_list(url)
 
     def initialize_url_list(self, urls):
         self.protocol = get_protocol(urls[0])
         if not self.protocol:
             self.protocol = "http://"
             urls[0] = "%s%s" % (self.protocol, urls[0])
-        self.status.urls_to_crawl.append(urls[0])
+        self.status.urls_to_crawl.add(urls[0])
         for url in urls[1:]:
             processed = self.process_link(None, url)
             if not processed:
                 raise AttributeError(
                     "Url=[%s] is not valid in this collection!" % url)
-            self.status.urls_to_crawl.append(processed)
+            self.status.urls_to_crawl.add(processed)
 
     def crawl(self, url=None):
         """
@@ -114,7 +113,7 @@ class Crawler(object):
             processed_link = self.process_link(origin, link)
             if self.is_new_link(processed_link):
                 result.append(processed_link)
-                self.status.urls_to_crawl.append(processed_link)
+                self.status.urls_to_crawl.add(processed_link)
         return result
 
     def is_new_link(self, link):
@@ -150,7 +149,7 @@ class Crawler(object):
             and self.work_service.active_count()
 
     def is_task_left(self):
-        return any(self.status.urls_in_progress + self.status.urls_to_crawl)
+        return any(self.status.urls_in_progress + list(self.status.urls_to_crawl))
 
     def handle_interrupt(self, error):
         self.log_service.info(
