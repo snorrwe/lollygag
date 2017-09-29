@@ -1,6 +1,6 @@
 import re
 import time
-from lollygag.core.crawlers.crawl_job import CrawlJob
+from lollygag.core.crawlers.jobs.crawl_job import CrawlJob
 from lollygag.dependency_injection.inject import Inject
 from lollygag.dependency_injection.requirements import HasMethods, HasAttributes
 from lollygag.utility.observer.subject import Subject
@@ -81,7 +81,7 @@ class Crawler(object):
         if url:
             self.reset(url)
         self.log_service.info(
-            "----------Crawl starting url=[{url}]----------".format(
+            "----------Crawl starting from url=[{url}]----------".format(
                 url=url)
         )
         self.on_start.next(url)

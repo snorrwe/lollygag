@@ -1,5 +1,5 @@
 import unittest
-from lollygag.core.crawlers.crawl_job import CrawlJob
+from lollygag.core.crawlers.jobs.crawl_job import CrawlJob
 from lollygag.utility.test_utils import Any, CallableMock
 
 
