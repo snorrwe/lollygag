@@ -62,14 +62,14 @@ class ConfigService(object):
             'skip': "Regex patterns, when any of them is found in the url, it's skipped"
         }
         self.argumentParser.add_argument("--urls", "-u", nargs="+",
-                                         helps=helps['urls'],
+                                         help=helps['urls'],
                                          required=False)
         self.argumentParser.add_argument("--threads", "-t",
-                                         helps=helps['threads'],
+                                         help=helps['threads'],
                                          required=False)
         self.argumentParser.add_argument("--loglevel", "-l",
-                                         helps=helps['loglevel'],
+                                         help=helps['loglevel'],
                                          required=False)
         self.argumentParser.add_argument("--skip", "-s",
-                                         helps=helps['skip'],
+                                         help=helps['skip'],
                                          required=False)
