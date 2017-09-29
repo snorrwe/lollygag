@@ -13,6 +13,9 @@ class CrawlJob(object):
         self.run()
 
     def run(self):
+        """
+        Parses sites until there are no more urls_to_crawl in the Crawler
+        """
         parser = self.crawler.site_parser_factory()
         while self.crawler.status.urls_to_crawl:
             try:
