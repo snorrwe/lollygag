@@ -50,14 +50,20 @@ class Crawler(object):
         self.reset(urls)
 
     def reset(self, url):
+        """
+        Reset the crawler's state
+        """
         self.status.reset(set(), set(), [])
         if not url:
             return
         if not isinstance(url, list):
             url = [url]
-        self.initialize_url_list(url)
+        self.initialize_status(url)
 
-    def initialize_url_list(self, urls):
+    def initialize_status(self, urls):
+        """
+        Initialize the crawler's status field by a collection of urls
+        """
         self.protocol = get_protocol(urls[0])
         if not self.protocol:
             self.protocol = "http://"
@@ -107,7 +113,9 @@ class Crawler(object):
         return self.work_service.request_work(CrawlJob(self))
 
     def process_links(self, origin, links):
-        # pylint: disable=unused-argument
+        """
+        Process a collection of links found at origin
+        """
         result = []
         for link in links:
             processed_link = self.process_link(origin, link)
@@ -117,23 +125,33 @@ class Crawler(object):
         return result
 
     def is_new_link(self, link):
+        """
+        Returns if the link has been seen by the crawler before
+        """
         return link \
             and link not in self.status.visited_urls \
             and link not in self.status.urls_to_crawl
 
     def process_link(self, origin, link):
+        """
+        Processes a newly found link
+        For relative links the origin link will be used as base
+        """
         if not link or any([x for x in self.config_service.skip if re.search(x, link.lower())]):
             return None
         if is_relative_link(link):
             if link[0] == ".":
                 link = link[1::]
-            link = "%s%s" % (get_domain(origin), link)
+            link = "%s%s%s" % (self.protocol, get_domain(origin), link)
         link = strip_beginning_slashes(link)
         if not get_protocol(link):
             link = "%s%s" % (self.protocol, link)
         return link
 
     def get_status_message(self):
+        """
+        Returns a message about the current progress
+        """
         visited = len(self.status.visited_urls)
         in_progess = len(self.status.urls_in_progress)
         todo = len(self.status.urls_to_crawl)
@@ -145,19 +163,35 @@ class Crawler(object):
         return message
 
     def is_waiting_for_url(self):
+        """
+        Returns if urls_to_crawl is empty, but there are urls is progress
+        """
         return not any(self.status.urls_to_crawl) \
-            and self.work_service.active_count()
+            and any(self.status.urls_in_progress)
 
     def is_task_left(self):
+        """
+        Returns if there are any urls that haven't been processed yet
+        """
         return any(self.status.urls_in_progress + list(self.status.urls_to_crawl))
 
     def handle_interrupt(self, error):
+        """
+        Handles crawling interruptions
+        Calls on_interrupt obeservers
+        Terminates pending jobs
+        """
         self.log_service.info(
             "----------Crawling was interrupted----------", error)
         self.on_interrupt.next()
         self.work_service.terminate_all()
 
     def handle_crawl_finish(self):
+        """
+        Handles crawling finish
+        Calls on_finish observers
+        Logs the final status
+        """
         self.on_finish.next(self.status.visited_urls,
                             self.status.urls_in_progress,
                             self.status.urls_to_crawl)

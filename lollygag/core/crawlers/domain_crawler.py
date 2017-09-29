@@ -11,9 +11,9 @@ class DomainCrawler(Crawler):
         self.domain = None
         super(DomainCrawler, self).__init__(url)
 
-    def initialize_url_list(self, urls):
+    def initialize_status(self, urls):
         self.domain = get_domain(urls[0])
-        super(DomainCrawler, self).initialize_url_list(urls)
+        super(DomainCrawler, self).initialize_status(urls)
 
     def process_link(self, origin, link):
         result = super(DomainCrawler, self).process_link(origin, link)

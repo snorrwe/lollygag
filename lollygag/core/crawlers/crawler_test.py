@@ -17,28 +17,28 @@ class CrawlerTests(unittest.TestCase):
         self.assertEqual(status.urls_to_crawl, urls_to_crawl)
         self.assertEqual(status.urls_in_progress, urls_in_progress)
 
-    def test_initialize_url_list_no_protocol(self):
+    def test_initialize_status_no_protocol(self):
         crawler = Crawler()
         urls = ["winnie"]
-        crawler.initialize_url_list(urls)
+        crawler.initialize_status(urls)
         self.assertEqual(crawler.protocol, "http://")
 
-    def test_initialize_url_list_http(self):
+    def test_initialize_status_http(self):
         crawler = Crawler()
         urls = ["http://winnie"]
-        crawler.initialize_url_list(urls)
+        crawler.initialize_status(urls)
         self.assertEqual(crawler.protocol, "http://")
 
-    def test_initialize_url_list_https(self):
+    def test_initialize_status_https(self):
         crawler = Crawler()
         urls = ["https://winnie"]
-        crawler.initialize_url_list(urls)
+        crawler.initialize_status(urls)
         self.assertEqual(crawler.protocol, "https://")
 
-    def test_initialize_url_list_inits_status_correctly(self):
+    def test_initialize_status_inits_status_correctly(self):
         crawler = Crawler()
         urls = ["http://a", "http://b", "http://c"]
-        crawler.initialize_url_list(urls)
+        crawler.initialize_status(urls)
         self.__assert_status(crawler.status, set(), set(urls), [])
 
 
