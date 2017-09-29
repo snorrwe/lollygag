@@ -7,6 +7,7 @@ from lollygag.utility.observer.subject import Subject
 from lollygag.utility.url import get_protocol
 from lollygag.utility.url import strip_beginning_slashes
 from lollygag.utility.url import is_relative_link
+from lollygag.utility.url import get_domain
 
 
 class CrawlerStatus(object):
@@ -64,7 +65,7 @@ class Crawler(object):
             urls[0] = "%s%s" % (self.protocol, urls[0])
         self.status.urls_to_crawl.append(urls[0])
         for url in urls[1:]:
-            processed = self.process_link(url)
+            processed = self.process_link(None, url)
             if not processed:
                 raise AttributeError(
                     "Url=[%s] is not valid in this collection!" % url)
@@ -79,10 +80,9 @@ class Crawler(object):
         """
         if url:
             self.reset(url)
-        assert self.status.domain, "Cannot start crawling without a domain!"
         self.log_service.info(
-            "----------Crawl starting domain=[{domain}]----------".format(
-                domain=self.status.domain)
+            "----------Crawl starting url=[{url}]----------".format(
+                url=url)
         )
         self.on_start.next(url)
         self.__request_crawl_job()
@@ -159,7 +159,7 @@ class Crawler(object):
         # pylint: disable=unused-argument
         result = []
         for link in links:
-            processed_link = self.process_link(link)
+            processed_link = self.process_link(origin, link)
             if self.is_new_link(processed_link):
                 result.append(processed_link)
                 self.status.urls_to_crawl.append(processed_link)
@@ -170,13 +170,13 @@ class Crawler(object):
             and link not in self.status.visited_urls \
             and link not in self.status.urls_to_crawl
 
-    def process_link(self, link):
+    def process_link(self, origin, link):
         if not link or any([x for x in self.config_service.skip if re.search(x, link.lower())]):
             return None
         if is_relative_link(link):
             if link[0] == ".":
                 link = link[1::]
-            link = "%s%s" % (self.status.domain, link)
+            link = "%s%s" % (get_domain(origin), link)
         link = strip_beginning_slashes(link)
         if not get_protocol(link):
             link = "%s%s" % (self.protocol, link)
