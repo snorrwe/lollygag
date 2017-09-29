@@ -1,5 +1,6 @@
 from lollygag.core.crawlers.domain_crawler import DomainCrawler
 
+
 def make_node(lst):
     if isinstance(lst, dict):
         return lst
@@ -8,6 +9,7 @@ def make_node(lst):
         result[item] = {}
     return result
 
+
 def get_all_nodes_in_tree(tree):
     result = []
     for node in tree:
@@ -15,6 +17,7 @@ def get_all_nodes_in_tree(tree):
         if tree[node] and isinstance(tree[node], dict):
             result.extend(get_all_nodes_in_tree(tree[node]))
     return result
+
 
 def reduce_map(site_map):
     assert isinstance(site_map, dict)
@@ -25,6 +28,7 @@ def reduce_map(site_map):
             if node in result:
                 del result[node]
     return result
+
 
 class MapperCrawler(DomainCrawler):
     def __init__(self, *args, **kwargs):

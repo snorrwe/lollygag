@@ -40,8 +40,8 @@ class MyCrawler(LinkParser):
             self.log_service.info("Yeeeeaaaah boiiiiiii, I found an %s" % (tag))
 
 def main():
-    # Override site_crawler_factory with my own implementation
-    Services.site_crawler_factory = MyCrawler
+    # Override site_parser_factory with my own implementation
+    Services.site_parser_factory = MyCrawler
     run()
 
 if __name__ == '__main__':

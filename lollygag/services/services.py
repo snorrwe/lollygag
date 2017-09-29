@@ -13,10 +13,11 @@ try:
 except ImportError:
     import queue as Queue
 
+
 class Services(object):
-    #pylint: disable=too-few-public-methods
+    # pylint: disable=too-few-public-methods
     requests = requests
-    site_crawler_factory = LinkParser
+    site_parser_factory = LinkParser
     argparse = argparse.ArgumentParser
     config_service = ConfigService
     log_service = PrintService
@@ -29,10 +30,12 @@ class Services(object):
     def __init__(self):
         self.__dict__ = Services.__dict__
 
+
 def register_services(services=None):
     assert services is dict or services is None
     if not services:
         services = Services.__dict__
     Inject.register_features(**services)
+
 
 register_services()
