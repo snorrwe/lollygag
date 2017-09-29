@@ -1,6 +1,7 @@
 from lollygag.utility.url import get_domain
 from lollygag.core.crawlers.crawler import Crawler
 
+
 class DomainCrawler(Crawler):
     """
     A crawler that does not go outside the domain boundaries of the initial url

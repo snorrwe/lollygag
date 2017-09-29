@@ -1,5 +1,5 @@
 import unittest
-from lollygag.core.crawlers.domain_crawler_test import DomainCrawlerTests, crawler as crawler_mock
+from lollygag.core.crawlers.domain_crawler_test import DomainCrawlerTests, parser as parser_mock
 from lollygag.core.crawlers.mapper_crawler import MapperCrawler, get_all_nodes_in_tree
 from lollygag.utility.test_utils import Any
 
@@ -20,7 +20,7 @@ class graph_tests(MapperCrawlerTests):
         }[mock.call_count()]
 
     def test_graph_is_not_empty(self):
-        crawler_mock.crawl.reset(callback=self.__test_graph_is_not_empty_crawl_result(crawler_mock.crawl))
+        parser_mock.crawl.reset(callback=self.__test_graph_is_not_empty_crawl_result(parser_mock.crawl))
         mapper = MapperCrawler()
         mapper.crawl("winnie.the/pooh")
         self.assertTrue(mapper.graph)
@@ -38,7 +38,7 @@ class graph_tests(MapperCrawlerTests):
         return result
 
     def test_graph_returns_all_paths(self):
-        crawler_mock.crawl.reset(callback=self.__test_graph_returns_all_paths_crawl_result(crawler_mock.crawl))
+        parser_mock.crawl.reset(callback=self.__test_graph_returns_all_paths_crawl_result(parser_mock.crawl))
         mapper = MapperCrawler()
         mapper.crawl("winnie.the/pooh")
         self.assertTrue(mapper.graph)

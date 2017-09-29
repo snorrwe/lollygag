@@ -1,6 +1,6 @@
 import re
 import time
-import requests
+from lollygag.core.crawlers.crawl_job import CrawlJob
 from lollygag.dependency_injection.inject import Inject
 from lollygag.dependency_injection.requirements import HasMethods, HasAttributes
 from lollygag.utility.observer.subject import Subject
@@ -27,13 +27,13 @@ class CrawlerStatus(object):
 class Crawler(object):
     """
     Crawls a resource starting from url
-    Uses Crawlers created by site_crawler_factory to crawl each resource,
+    Uses Crawlers created by site_parser_factory to crawl each resource,
     then decides the next pages to crawl based on the result
 
     Uses work_service to execute crawling jobs
     Uses log_service to display results and errors
     """
-    site_crawler_factory = Inject("site_crawler_factory", return_factory=True)
+    site_parser_factory = Inject("site_parser_factory", return_factory=True)
     log_service = Inject("log_service", HasMethods("info", "error", "debug"))
     work_service = Inject("work_service",
                           HasMethods("request_work",
@@ -105,55 +105,7 @@ class Crawler(object):
             time.sleep(1)
 
     def __request_crawl_job(self):
-        return self.work_service.request_work(self.__crawl_urls)
-
-    def __crawl_urls(self):
-        crawler = self.site_crawler_factory()
-        while self.status.urls_to_crawl:
-            self.__run_crawl(crawler)
-
-    def handle_interrupt(self, error):
-        self.log_service.info(
-            "----------Crawling was interrupted----------", error)
-        self.on_interrupt.next()
-        self.work_service.terminate_all()
-
-    def handle_crawl_finish(self):
-        self.on_finish.next(self.status.visited_urls,
-                            self.status.urls_in_progress,
-                            self.status.urls_to_crawl)
-        self.log_service.info(self.get_status_message())
-        self.log_service.info("----------Crawl finished----------\n")
-
-    def __run_crawl(self, crawler=None):
-        try:
-            url = self.status.urls_to_crawl.pop()
-        except IndexError:
-            return
-        self.status.urls_in_progress.append(url)
-        result = self.crawl_site(url, crawler)
-        self.status.visited_urls.add(url)
-        if result:
-            self.process_links(url, result.links)
-        self.log_service.debug(self.get_status_message())
-
-    def crawl_site(self, url, crawler=None):
-        """
-        Crawls the given url using a crawler made by site_crawler_factory
-        If a requests.exceptions.ConnectionError
-        or requests.exceptions.SSLError is raised
-        returns None
-        """
-        try:
-            crawler = self.site_crawler_factory() if crawler is None else crawler
-            result = crawler.crawl(url)
-            return result
-        except (requests.exceptions.ConnectionError, requests.exceptions.SSLError) as error:
-            self.log_service.error(
-                "Error while crawling site=[%s]" % url, str(error))
-            return None
-        finally:
-            self.status.urls_in_progress.remove(url)
+        return self.work_service.request_work(CrawlJob(self))
 
     def process_links(self, origin, links):
         # pylint: disable=unused-argument
@@ -199,3 +151,16 @@ class Crawler(object):
 
     def is_task_left(self):
         return any(self.status.urls_in_progress + self.status.urls_to_crawl)
+
+    def handle_interrupt(self, error):
+        self.log_service.info(
+            "----------Crawling was interrupted----------", error)
+        self.on_interrupt.next()
+        self.work_service.terminate_all()
+
+    def handle_crawl_finish(self):
+        self.on_finish.next(self.status.visited_urls,
+                            self.status.urls_in_progress,
+                            self.status.urls_to_crawl)
+        self.log_service.info(self.get_status_message())
+        self.log_service.info("----------Crawl finished----------\n")

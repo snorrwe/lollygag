@@ -31,8 +31,8 @@ def on_finish(log_service):
 
 
 def main():
-    # Override site_crawler_factory with my own implementation
-    Services.site_crawler_factory = MyCrawler
+    # Override site_parser_factory with my own implementation
+    Services.site_parser_factory = MyCrawler
     # Subscribe to events by passing a 'subscribe' dictionary
     run(subscribe={'on_finish': on_finish(Services.log_service())})
 

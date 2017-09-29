@@ -1,14 +1,15 @@
 import unittest
 from lollygag.core.crawlers.domain_crawler import DomainCrawler
+from lollygag.core.crawlers.crawl_job import CrawlJob
 from lollygag.dependency_injection.inject import Inject
 from lollygag.utility.test_utils import Any, CallableMock
 
 crawl_result = Any(link="", status_code=200, page_size=0, links=[])
-crawler = Any(crawl=CallableMock(returns=crawl_result))
+parser = Any(crawl=CallableMock(returns=crawl_result))
 
 
-def site_crawler_factory():
-    return crawler
+def site_parser_factory():
+    return parser
 
 
 config = Any(threads=1, url=None, skip=[])
@@ -20,14 +21,14 @@ work_service = Any(request_work=CallableMock(),
 
 class DomainCrawlerTests(unittest.TestCase):
     def setUp(self):
-        Inject.register_feature("site_crawler_factory", site_crawler_factory)
+        Inject.register_feature("site_parser_factory", site_parser_factory)
         Inject.register_feature("config_service", config)
         Inject.register_feature("log_service", log)
         Inject.register_feature("work_service", work_service)
 
     def tearDown(self):
         Inject.reset()
-        crawler.crawl.reset()
+        parser.crawl.reset()
         log.write.reset()
         log.info.reset()
         log.error.reset()
@@ -65,47 +66,35 @@ class DomainCrawlerMethodTests(DomainCrawlerTests):
     def setUp(self):
         DomainCrawlerTests.setUp(self)
         self.crawler = DomainCrawler("http://winnie_the_pooh")
-        crawler.crawl.reset(returns=crawl_result)
+        parser.crawl.reset(returns=crawl_result)
         self.__reset_threadmocks()
 
-    def test_crawl_site_returns_the_crawl_result_from_crawler(self):
-        self.crawler.status.urls_in_progress.append("http://winnie_the_pooh")
-        result = self.crawler.crawl_site("http://winnie_the_pooh")
-        self.assertTrue(result)
-        self.assertEqual(result, crawl_result)
-
-    def test_crawl_site_returns_none_on_interrupt(self):
-        self.crawler.status.urls_in_progress.append("http://winnie_the_pooh")
-        crawler.crawl.args["raises"] = KeyboardInterrupt()
-        with self.assertRaises(KeyboardInterrupt):
-            result = self.crawler.crawl_site("http://winnie_the_pooh")
-            self.assertEqual(result, None)
 
     def test_crawl_calls_crawler(self):
         self.crawler.crawl()
-        self.assertEqual(crawler.crawl.call_count(), 1)
+        self.assertEqual(parser.crawl.call_count(), 1)
 
     def test_crawls_all_links(self):
         crawl_result.links = [
             "http://winnie_the_pooh/kanga", "http://winnie_the_pooh/tiggers"]
         self.crawler.crawl()
-        self.assertEqual(crawler.crawl.call_count(), 3)
+        self.assertEqual(parser.crawl.call_count(), 3)
 
     def test_does_not_crawl_out_of_domain(self):
         crawl_result.links = ["http://kanga.com", "http://roo.com"]
         self.crawler.crawl()
-        self.assertEqual(crawler.crawl.call_count(), 1)
+        self.assertEqual(parser.crawl.call_count(), 1)
 
     def test_recognizes_domain(self):
         crawl_result.links = ["http://kanga.com", "http://roo.com",
                               "http://www.winnie_the_pooh/tiggers", "http://winnie_the_pooh/tiggers"]
         self.crawler.crawl()
-        self.assertEqual(crawler.crawl.call_count(), 3)
+        self.assertEqual(parser.crawl.call_count(), 3)
 
     def test_recognizes_slashslash_domain(self):
         crawl_result.links = ["//www.winnie_the_pooh/tiggers"]
         self.crawler.crawl()
-        self.assertEqual(crawler.crawl.call_count(), 2)
+        self.assertEqual(parser.crawl.call_count(), 2)
 
 
 class DomainCrawlerNoUrlTests(DomainCrawlerTests):
@@ -121,7 +110,7 @@ class DomainCrawlerNoUrlTests(DomainCrawlerTests):
     def test_works_with_url_in_crawl(self):
         mycrawler = DomainCrawler()
         mycrawler.crawl("www.winnie_the_pooh")
-        self.assertEqual(crawler.crawl.call_count(), 1)
+        self.assertEqual(parser.crawl.call_count(), 1)
 
 
 class EventTests(DomainCrawlerTests):
@@ -142,7 +131,7 @@ class EventTests(DomainCrawlerTests):
         self.assertEqual(callback.call_count(), 1)
 
     def test_calls_callback_on_interrupt(self):
-        crawler.crawl.args["raises"] = KeyboardInterrupt()
+        parser.crawl.args["raises"] = KeyboardInterrupt()
         my_crawler = DomainCrawler()
         callback = CallableMock()
         my_crawler.on_interrupt(callback)
