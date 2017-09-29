@@ -149,3 +149,5 @@ crawler.sublime-workspace
 .suo
 README.html
 .vs
+
+tmp*
