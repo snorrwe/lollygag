@@ -16,6 +16,7 @@ work_service = Any(request_work=CallableMock(),
 
 class DomainCrawlerTests(unittest.TestCase):
     def setUp(self):
+        Inject.reset()
         Inject.register_feature("site_parser_factory", site_parser_factory)
         Inject.register_feature("config_service", config)
         Inject.register_feature("log_service", log)

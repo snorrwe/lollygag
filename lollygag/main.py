@@ -53,7 +53,7 @@ def separate_urls_by_domain(urls):
 def get_crawler(event_register=None, **kwargs):
     result = None
     if "crawler" not in kwargs:
-        result = Inject("domain_crawler_factory").request()
+        result = Inject("crawler_factory").request()
     else:
         result = kwargs["crawler"]()
     if event_register:

@@ -16,6 +16,7 @@ log_service_mock = Any(debug=CallableMock(), info=CallableMock())
 
 class WorkServiceTests(unittest.TestCase):
     def setUp(self):
+        Inject.reset()
         self.startMock = CallableMock()
         threading_mock.Thread.reset(returns=Any(daemon=False, start=self.startMock))
         Inject.register_feature("threading", threading_mock)

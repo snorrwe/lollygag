@@ -25,7 +25,7 @@ class Services(object):
     threading = threading
     queue = Queue.Queue
     logging_output = sys.stdout
-    domain_crawler_factory = DomainCrawler
+    crawler_factory = DomainCrawler
 
     def __init__(self):
         self.__dict__ = Services.__dict__

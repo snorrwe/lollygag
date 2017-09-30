@@ -17,6 +17,7 @@ class CanCreateLinkCrawler(unittest.TestCase):
 
 class LinkCrawlerCrawlTests(unittest.TestCase):
     def setUp(self):
+        Inject.reset()
         Inject.register_feature("requests", requests)
         Inject.register_feature("log_service", log_service)
 
