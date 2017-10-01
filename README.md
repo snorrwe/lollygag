@@ -142,7 +142,7 @@ python crawler_example.py -u snorrwe.github.io/crawler_test
 
 ## Contributing
 
-Please refer to the [contribution guidelines](https://github.com/snorrwe/lollygag/blob/community/CONTRIBUTING.md)
+Please refer to the [contribution guidelines](https://github.com/snorrwe/lollygag/blob/master/.github/CONTRIBUTING.md)
 
 ## License
 
