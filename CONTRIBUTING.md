@@ -38,6 +38,8 @@ We accept purely cosmetic fixes aswell. Submit a pull request!
 
 * Please see the __Test code__ section of this document about test code.
 
+* Write docstrings for your classes and public methods
+
 ### Test code
 
 #### Unit testing
