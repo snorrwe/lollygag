@@ -17,7 +17,7 @@ def on_finish(log_service, crawler):
     return callback
 
 def main():
-    Services.domain_crawler_factory = MapperCrawler
+    Services.crawler_factory = MapperCrawler
     crawler.on_finish(on_finish(Services.log_service(), crawler))
     run(subscribe={'on_finish': on_finish(Services.log_service())})
 

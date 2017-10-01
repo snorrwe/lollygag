@@ -5,6 +5,7 @@ DEFAULT_CONFIG = {
 
 CACHE = {}
 
+
 class Inject(object):
     """
     Represents a required field in a class
@@ -66,4 +67,4 @@ class Inject(object):
 
     def _make_assertion(self, assertion, obj):
         assert assertion(obj), "The value=[%s] of feature=[%s] does not match a criteria" \
-                                 % (obj, self.key)
+            % (obj, self.key)

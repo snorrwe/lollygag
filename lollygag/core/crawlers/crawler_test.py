@@ -1,5 +1,7 @@
 import unittest
 from lollygag.core.crawlers.crawler import Crawler
+from lollygag.utility.test_utils import Any, CallableMock
+from lollygag.dependency_injection.inject import Inject
 
 
 class CrawlerTests(unittest.TestCase):
@@ -40,6 +42,38 @@ class CrawlerTests(unittest.TestCase):
         urls = ["http://a", "http://b", "http://c"]
         crawler.initialize_status(urls)
         self.__assert_status(crawler.status, set(), set(urls), [])
+
+
+class Crawler_crawl_Tests(unittest.TestCase):
+
+    def setUp(self):
+        Inject.reset()
+        Inject.register_feature('site_parser_factory', lambda: Any(crawl=CallableMock()))
+        Inject.register_feature('log_service',
+                                Any(info=CallableMock(),
+                                    error=CallableMock(),
+                                    debug=CallableMock()))
+        Inject.register_feature('work_service',
+                                Any(request_work=CallableMock(callback=lambda cb: cb()),
+                                    terminate_all=CallableMock(),
+                                    active_count=CallableMock))
+
+    def tearDown(self):
+        Inject.reset()
+
+    def test_crawl_calls_on_start(self):
+        crawler = Crawler()
+        callback = CallableMock()
+        crawler.on_start(callback)
+        crawler.crawl("foo")
+        self.assertEqual(callback.call_count(), 1)
+
+    def test_crawl_passes_crawljob_to_work_service(self):
+        crawler = Crawler()
+        crawler.crawl("bar")
+        self.assertEqual(Inject.features['work_service'].request_work.call_count(), 1)
+        job = Inject.features['work_service'].request_work.calls[0][0][0]
+        self.assertTrue(callable(job))
 
 
 if __name__ == '__main__':

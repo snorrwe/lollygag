@@ -2,6 +2,7 @@ class Any(object):
     def __init__(self, **kwargs):
         self.__dict__ = kwargs
 
+
 class CallableMock(object):
     def __init__(self, **kwargs):
         self.reset(**kwargs)

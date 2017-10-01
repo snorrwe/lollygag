@@ -90,11 +90,11 @@ class Crawler(object):
                 url=url)
         )
         self.on_start.next(url)
-        self.__request_crawl_job()
+        self.__request_crawl_work()
         try:
             while self.is_task_left():
                 self.__sleep_until_task_is_available()
-                self.__request_crawl_job()
+                self.__request_crawl_work()
         except (KeyboardInterrupt, SystemExit) as error:
             self.handle_interrupt(error)
         finally:
@@ -109,7 +109,7 @@ class Crawler(object):
         while self.is_waiting_for_url():
             time.sleep(1)
 
-    def __request_crawl_job(self):
+    def __request_crawl_work(self):
         return self.work_service.request_work(CrawlJob(self))
 
     def process_links(self, origin, links):

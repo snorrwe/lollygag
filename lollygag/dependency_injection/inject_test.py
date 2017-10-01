@@ -1,8 +1,12 @@
 import unittest
 from lollygag.dependency_injection.inject import Inject
 
+
 class InjectTests(unittest.TestCase):
     def setUp(self):
+        Inject.reset()
+
+    def tearDown(self):
         Inject.reset()
 
     def test_init(self):
@@ -41,15 +45,16 @@ class InjectTests(unittest.TestCase):
             Test().kanga
             self.fail()
         except AssertionError as error:
-            self.assertEqual(str(error), "The value=[%s] of feature=[%s] does not match a criteria" \
-                % ("Roo", "Kanga"))
+            self.assertEqual(str(error), "The value=[%s] of feature=[%s] does not match a criteria"
+                             % ("Roo", "Kanga"))
 
     def test_factory_method(self):
         class Test(object):
             kanga = Inject("Kanga", lambda f: isinstance(f, str), cache=False)
-        
+
         class TestKangaFactory(object):
             id = 0
+
             def __call__(self):
                 TestKangaFactory.id += 1
                 return "#%s" % TestKangaFactory.id
@@ -61,6 +66,7 @@ class InjectTests(unittest.TestCase):
 
     def test_reset(self):
         Inject.register_features(Kanga=1, Tiggers=2)
+
         class Test(object):
             kanga = Inject("Kanga")
             tiggers = Inject("Tiggers")
@@ -73,6 +79,7 @@ class InjectTests(unittest.TestCase):
             test.kanga
         with self.assertRaises(KeyError):
             test.tiggers
+
 
 if __name__ == '__main__':
     unittest.main()
