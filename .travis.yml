@@ -37,12 +37,6 @@ jobs:
     - pip install -r requirements.txt
     script:
     - pylint lollygag
-  - stage: install
-    env:
-    language: python
-    python: 3.6
-    script:
-    - python setup.py install
   - stage: deploy
     language: python
     python: 3.6
