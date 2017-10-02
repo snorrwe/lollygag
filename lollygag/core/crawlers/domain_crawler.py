@@ -17,7 +17,7 @@ class DomainCrawler(Crawler):
 
     def process_link(self, origin, link):
         result = super(DomainCrawler, self).process_link(origin, link)
-        if get_domain(result) != self.domain:
+        if result is None or get_domain(result) != self.domain:
             return None
         return result
 

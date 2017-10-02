@@ -140,26 +140,9 @@ python crawler_example.py -u snorrwe.github.io/crawler_test
     </tbody>
 </table>
 
-## Testing
+## Contributing
 
-### Running the unit tests
-
-Running the unit tests with the __pytest__ package.<br>
-To install pytest via pip run `pip install pytest`.
-
-To run the tests run `pytest` in the root folder.
-
-### Test code
-
-#### Unit testing
-
-Test files are located next to the files they meant to test.<br>
-Test files have the same base name, and end with *_test*<br>
-For example: tests for file *some_source.py* are in the file *some_source_test.py*
-
-#### End-to-end testing
-
-Test files are located in the _test_ directory.<br>
+Please refer to the [contribution guidelines](https://github.com/snorrwe/lollygag/blob/master/.github/CONTRIBUTING.md)
 
 ## License
 
