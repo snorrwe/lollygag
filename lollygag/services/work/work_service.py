@@ -1,27 +1,52 @@
+from threading import Lock
 from lollygag.dependency_injection.inject import Inject
 from lollygag.dependency_injection.requirements import HasMethods, HasAttributes
 
+
+def get_labels(count, collection):
+    current = 0
+    for i in range(count):
+        while current in collection:
+            current += 1
+        yield current
+
+
 class WorkService(object):
-    threading = Inject("threading", \
-                    HasMethods("Thread", "Lock"))
+    __worker_labels = set()
+    __instances = 0
+    __init_lock = Lock()
+
+    threading = Inject("threading", HasMethods("Thread"))
     config_service = Inject("config_service", HasAttributes("threads"))
     log_service = Inject("log_service", HasMethods("debug", "info"))
     queue_factory = Inject("queue", return_factory=True)
-    __count = 0
 
     def __init__(self):
-        self.queue = self.queue_factory()
-        self.request_lock = self.threading.Lock()
         worker_count = int(self.config_service.threads)
-        if worker_count < 1:
-            raise ValueError("Thread count cannot be less than 1!")
-        self.__init_workers(worker_count)
+        assert worker_count > 0, "Thread count cannot be less than 1!"
+        WorkService.__init_lock.acquire(True)
+        try:
+            self.__active_count = 0
+            self.__worker_labels = set()
+            self.queue = self.queue_factory()
+            self.__init_workers(worker_count, WorkService.__instances)
+            WorkService.__instances += 1
+        finally:
+            WorkService.__init_lock.release()
 
-    def __init_workers(self, number):
+    def __init_workers(self, number, instance_number):
+        label = max(WorkService.__worker_labels) if WorkService.__worker_labels else 0
         for i in range(number):
-            worker = self.threading.Thread(target=self.__worker, name="WSc--%s" % i)
+            label += 1
+            self.__worker_labels.add(label)
+            WorkService.__worker_labels.add(label)
+            worker = self.threading.Thread(target=self.__worker, name="WSc[%s]--%s" % (instance_number, label))
             worker.daemon = True
             worker.start()
+
+    def __del__(self):
+        for label in self.__worker_labels:
+            WorkService.__worker_labels.remove(label)
 
     def request_work(self, target, blocking=True):
         assert target is not None
@@ -34,12 +59,12 @@ class WorkService(object):
             self.queue.join()
 
     def active_count(self):
-        return self.__count
+        return self.__active_count
 
     def __worker(self):
         while 1:
             task = self.queue.get()
-            self.__count += 1
+            self.__active_count += 1
             task()
-            self.__count -= 1
+            self.__active_count -= 1
             self.queue.task_done()
