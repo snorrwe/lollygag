@@ -47,22 +47,22 @@ class Inject(object):
         for key in DEFAULT_CONFIG:
             if key not in self.config:
                 self.config[key] = DEFAULT_CONFIG[key]
+        self.config_key = json.JSONEncoder().encode(self.config)
 
     def __get__(self, instance, owner):
         return self.request()
 
     def request(self):
         try:
-            config_key = json.JSONEncoder().encode(self.config)
-            if self.config["cache"] and self.key in CACHE and config_key in CACHE[self.key]:
-                return CACHE[self.key][config_key]
+            if self.config["cache"] and self.key in CACHE and self.config_key in CACHE[self.key]:
+                return CACHE[self.key][self.config_key]
             feature = Inject.features[self.key]
             if callable(feature) and not self.config["return_factory"]:
                 feature = feature()
             if self.config["cache"]:
                 if self.key not in CACHE:
                     CACHE[self.key] = {}
-                CACHE[self.key][config_key] = feature
+                CACHE[self.key][self.config_key] = feature
             for assertion in self.assertions:
                 self._make_assertion(assertion, feature)
             return feature
