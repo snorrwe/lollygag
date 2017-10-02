@@ -1,8 +1,6 @@
 #!/usr/bin/python
 
-from lollygag import run
-from lollygag.services import Services
-from lollygag.core.parsers.link_parser import LinkParser
+from lollygag import run, Services, LinkParser
 
 # Override HTMLParser methods to provide a custom implementation
 # https://docs.python.org/2/library/htmlparser.html
