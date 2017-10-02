@@ -48,12 +48,12 @@ class Inject(object):
                 self.config[key] = DEFAULT_CONFIG[key]
 
     def __get__(self, instance, owner):
-        if self.config["cache"] and self.key in CACHE and CACHE[self.key]:
-            return CACHE[self.key]
         return self.request()
 
     def request(self):
         try:
+            if self.config["cache"] and self.key in CACHE:
+                return CACHE[self.key]
             feature = Inject.features[self.key]
             if callable(feature) and not self.config["return_factory"]:
                 feature = feature()
