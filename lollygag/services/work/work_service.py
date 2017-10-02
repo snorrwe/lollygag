@@ -5,7 +5,7 @@ from lollygag.dependency_injection.requirements import HasMethods, HasAttributes
 
 def get_labels(count, collection):
     current = 0
-    for i in range(count):
+    for _ in range(count):
         while current in collection:
             current += 1
         yield current
@@ -36,11 +36,12 @@ class WorkService(object):
 
     def __init_workers(self, number, instance_number):
         label = max(WorkService.__worker_labels) if WorkService.__worker_labels else 0
-        for i in range(number):
+        for _ in range(number):
             label += 1
             self.__worker_labels.add(label)
             WorkService.__worker_labels.add(label)
-            worker = self.threading.Thread(target=self.__worker, name="WSc[%s]--%s" % (instance_number, label))
+            worker = self.threading.Thread(target=self.__worker, name="WSc[%s]--%s" %
+                                           (instance_number, label))
             worker.daemon = True
             worker.start()
 
