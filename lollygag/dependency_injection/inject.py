@@ -1,3 +1,4 @@
+import json
 DEFAULT_CONFIG = {
     "return_factory": False,
     "cache": True
@@ -52,13 +53,16 @@ class Inject(object):
 
     def request(self):
         try:
-            if self.config["cache"] and self.key in CACHE:
-                return CACHE[self.key]
+            config_key = json.JSONEncoder().encode(self.config)
+            if self.config["cache"] and self.key in CACHE and config_key in CACHE[self.key]:
+                return CACHE[self.key][config_key]
             feature = Inject.features[self.key]
             if callable(feature) and not self.config["return_factory"]:
                 feature = feature()
             if self.config["cache"]:
-                CACHE[self.key] = feature
+                if self.key not in CACHE:
+                    CACHE[self.key] = {}
+                CACHE[self.key][config_key] = feature
             for assertion in self.assertions:
                 self._make_assertion(assertion, feature)
             return feature
