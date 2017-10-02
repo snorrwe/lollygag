@@ -17,6 +17,7 @@ EXPECTED = """[Info]Thread=[MainThread]        ----------Crawl starting domain=[
 [Info]Thread=[WSc--0]    Found, a page!
 [Debug]Thread=[WSc--0]   I found an anchor tag!
 [Debug]Thread=[WSc--0]   I found an anchor tag!
+[Debug]Thread=[WSc--0]   I found an anchor tag!
 [Info]Thread=[WSc--0]    I found an img
 [Info]Thread=[WSc--0]    Link=[https://snorrwe.github.io/crawler_test/] StatusCode=[200] Size=[310]
 [Debug]Thread=[WSc--0]   --------------------Crawl status--------------------
