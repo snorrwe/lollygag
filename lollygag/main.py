@@ -36,7 +36,7 @@ def crawl_url_list(url, event_register, **kwargs):
 
 
 def get_crawl_job(crawler, domain):
-    return lambda: crawler.crawl_domain(domain)
+    return lambda: crawler.crawl(domain)
 
 
 def separate_urls_by_domain(urls):
