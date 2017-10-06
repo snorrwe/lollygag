@@ -27,3 +27,15 @@ class CallableMock(object):
             return result
         finally:
             self.calls.append((a, kw, result))
+
+    def returns(self, result):
+        self.args = {'returns': result}
+        return self
+
+    def raises(self, exception):
+        self.args = {'raises': exception}
+        return self
+
+    def callback(self, callback):
+        self.args = {'callback': callback}
+        return self
