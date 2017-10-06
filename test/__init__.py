@@ -1,5 +1,6 @@
 import re
 import os
+import sys
 import subprocess
 from unittest import TestCase
 
@@ -24,10 +25,12 @@ def parse_crawler_output(output, pattern=None):
 
 
 class CrawlerTest(TestCase):
+    IS_WINDOWS = sys.platform.startswith("win")
+
     @classmethod
     def setUpClass(cls):
         uris = [cls.URI] if not isinstance(cls.URI, list) else cls.URI
-        commands = [os.path.join(cls.HERE, "crawler_example.py"), "-u", *uris]
+        commands = [os.path.join(cls.HERE, "crawler_example.py"), "-u"] + uris
         print("Commands:", commands)
         crawler_process = subprocess.Popen(commands, stdout=subprocess.PIPE, shell=cls.IS_WINDOWS)
         (output, error) = crawler_process.communicate()
