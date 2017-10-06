@@ -15,6 +15,10 @@ class Parser(object):
     log_service = Inject("log_service", HasMethods("debug", "info", "error", "warn"))
 
     def parse(self, url):
+        """
+        Send a GET request to the given url and parse the response.
+        :returns: ParseResult containing the link, status_code and page_size of the result
+        """
         assert url is not None
         response = self._requests.get(url, verify=False)
         if response.status_code == 200:
@@ -24,4 +28,8 @@ class Parser(object):
                            page_size=len(response.content))
 
     def feed(self, data):
+        """
+        Parser.parse feeds the response data to the method.
+        Override to customize parsing.
+        """
         pass
