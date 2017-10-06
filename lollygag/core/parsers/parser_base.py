@@ -19,7 +19,9 @@ class Parser(object):
         response = self._requests.get(url, verify=False)
         if response.status_code == 200:
             self.feed(response.text)
-        return ParseResult(link=url, status_code=response.status_code, page_size=len(response.content))
+        return ParseResult(link=url,
+                           status_code=response.status_code,
+                           page_size=len(response.content))
 
     def feed(self, data):
         pass
