@@ -1,4 +1,4 @@
-from test import parse_crawler_output
+from black_box_tests import parse_crawler_output
 import unittest
 
 OUTPUT = """[Debug]Thread=[WSc[0]--2]        No urls to crawl, going to sleep. Work in progress=[1]
