@@ -1,13 +1,13 @@
 import requests
 from lollygag.dependency_injection.inject import Inject
-from lollygag.dependency_injection.requirements import HasMethods, HasAttributes
+from lollygag.dependency_injection.requirements import HasMethods
 
 
 class CrawlJob(object):
     """
     A single crawl job, that parses sites until it's crawler runs out of urls
     """
-    log_service = Inject("log_service", HasMethods("info", "error", "debug"))
+    log_service = Inject("log_service", HasMethods("error", "debug"))
 
     def __init__(self, crawler):
         self.crawler = crawler
@@ -48,4 +48,10 @@ class CrawlJob(object):
                 "Error while crawling site=[%s]" % url, str(error))
             return None
         finally:
+            self.__remove_url_from_crawler(url)
+
+    def __remove_url_from_crawler(self, url):
+        try:
             self.crawler.status.urls_in_progress.remove(url)
+        except ValueError:
+            pass

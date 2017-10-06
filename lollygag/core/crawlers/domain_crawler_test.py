@@ -127,7 +127,7 @@ class EventTests(DomainCrawlerTests):
         self.assertEqual(callback.call_count(), 1)
 
     def test_calls_callback_on_interrupt(self):
-        parser.parse.args["raises"] = KeyboardInterrupt()
+        parser.parse.raises(KeyboardInterrupt())
         my_crawler = DomainCrawler()
         callback = CallableMock()
         my_crawler.on_interrupt(callback)
