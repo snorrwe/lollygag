@@ -40,8 +40,8 @@ class WorkService(object):
             label += 1
             self.__worker_labels.add(label)
             WorkService.__worker_labels.add(label)
-            worker = self.threading.Thread(target=self.__worker, name="WSc[%s]--%s" %
-                                           (instance_number, label))
+            worker = self.threading.Thread(target=self.__worker,
+                                           name="WSc[%s]--%s" % (instance_number, label))
             worker.daemon = True
             worker.start()
 

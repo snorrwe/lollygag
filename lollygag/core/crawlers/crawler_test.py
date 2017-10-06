@@ -48,7 +48,7 @@ class Crawler_crawl_Tests(unittest.TestCase):
 
     def setUp(self):
         Inject.reset()
-        Inject.register_feature('site_parser_factory', lambda: Any(crawl=CallableMock()))
+        Inject.register_feature('site_parser_factory', lambda: Any(parse=CallableMock()))
         Inject.register_feature('log_service',
                                 Any(info=CallableMock(),
                                     error=CallableMock(),

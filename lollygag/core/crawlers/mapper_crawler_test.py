@@ -31,7 +31,7 @@ class graph_tests(MapperCrawlerTests):
         }[mock.call_count()]
 
     def test_graph_is_not_empty(self):
-        parser_mock.crawl.reset(callback=self.__test_graph_is_not_empty_crawl_result(parser_mock.crawl))
+        parser_mock.parse.reset(callback=self.__test_graph_is_not_empty_crawl_result(parser_mock.parse))
         mapper = MapperCrawler()
         mapper.crawl("winnie.the/pooh")
         self.assertTrue(mapper.graph)
@@ -55,7 +55,7 @@ class graph_tests(MapperCrawlerTests):
         return result
 
     def test_graph_returns_all_paths(self):
-        parser_mock.crawl.reset(callback=self.__test_graph_returns_all_paths_crawl_result(parser_mock.crawl))
+        parser_mock.parse.reset(callback=self.__test_graph_returns_all_paths_crawl_result(parser_mock.parse))
         mapper = MapperCrawler()
         mapper.crawl("winnie.the/pooh")
         self.assertTrue(mapper.graph)
