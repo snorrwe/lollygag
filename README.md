@@ -99,7 +99,7 @@ run()
                     Note that if you pass the url argument to run() or crawl_domain() this option will be ignored.
                 </i>
                 </td>
-                <td> - </td>
+                <td> None </td>
             </tr>
             <tr>
             </tr>
