@@ -3,10 +3,11 @@ from lollygag.services import Services
 from lollygag.core.parsers.link_parser import LinkParser
 from lollygag.core.crawlers.domain_crawler import DomainCrawler, Crawler
 
+
 class MyParser(LinkParser):
     def __init__(self, *args, **kwargs):
         super(MyParser, self).__init__(*args, **kwargs)
-        self.use_next_data = False	
+        self.use_next_data = False
 
     # on new page is found and shall be processed, 'data' contains full html-source
     def feed(self, data):
@@ -33,10 +34,11 @@ class MyParser(LinkParser):
         if tag == "script":
             self.use_next_data = False
 
-# `Services.site_parser_factory` defines how a single page is parsed 
+
+# `Services.site_parser_factory` defines how a single page is parsed
 Services.site_parser_factory = MyParser
-# `Services.crawler_factory` defines the Crawler, thus how links are handled (where to crawl?) 
-# - By default `DomainCrawler` is used, which restricts crawling to _one_ domain 
+# `Services.crawler_factory` defines the Crawler, thus how links are handled (where to crawl?)
+# - By default `DomainCrawler` is used, which restricts crawling to _one_ domain
 # - You "might" put `Crawler` here, this will lead to endless crawling...
-#Services.crawler_factory = Crawler
+# Services.crawler_factory = Crawler
 run()
