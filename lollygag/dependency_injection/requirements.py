@@ -1,3 +1,8 @@
+"""
+Holds helper classes for callers of Inject to specify dependencies.
+"""
+
+
 class HasAttributes(object):
     """
     Callable object for checking if an object obj has the specified attributes
@@ -10,20 +15,20 @@ class HasAttributes(object):
     """
 
     def __init__(self, *keys):
-        self._keys = keys
+        self.keys = keys
 
     def __call__(self, obj):
         return self.evaluate(obj)
 
     def evaluate(self, obj):
-        for key in self._keys:
+        """
+        Checks if the passed in object has all required fields.
+        """
+        for key in self.keys:
             assert hasattr(
                 obj, key),\
                 "Attribute named=[%s] is not found in obj=[%s]" % (key, obj)
         return True
-
-    def get_keys(self):
-        return self._keys
 
 
 class HasMethods(HasAttributes):
@@ -39,7 +44,10 @@ class HasMethods(HasAttributes):
     """
 
     def evaluate(self, obj):
-        for key in self._keys:
+        """
+        Checks if the passed obj has the required field and they are callable.
+        """
+        for key in self.keys:
             method = getattr(obj, key)
             assert callable(method),\
                 "Attribute named=[%s] is not callable in obj=[%s]" % (key, obj)

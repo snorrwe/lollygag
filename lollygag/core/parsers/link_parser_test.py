@@ -30,7 +30,7 @@ class LinkCrawlerCrawlTests(unittest.TestCase):
         response.content = "Foobar"
 
         crawler = LinkParser()
-        result = crawler.crawl("http://winnie.thepooh")
+        result = crawler.parse("http://winnie.thepooh")
 
         self.assertTrue(result)
         self.assertEqual(result.link, "http://winnie.thepooh")
@@ -44,7 +44,7 @@ class LinkCrawlerCrawlTests(unittest.TestCase):
         response.content = "Foobar"
 
         crawler = LinkParser()
-        result = crawler.crawl("http://winnie.thepooh")
+        result = crawler.parse("http://winnie.thepooh")
 
         self.assertTrue(result)
         self.assertEqual(result.link, "http://winnie.thepooh")
@@ -55,7 +55,7 @@ class LinkCrawlerCrawlTests(unittest.TestCase):
     def test_raises_on_None_url(self):
         crawler = LinkParser()
         with self.assertRaises(AssertionError):
-            crawler.crawl(None)
+            crawler.parse(None)
 
 
 if __name__ == '__main__':

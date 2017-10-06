@@ -1,3 +1,6 @@
+"""
+Holds the LinkParser class.
+"""
 from collections import namedtuple
 from lollygag.core.parsers.parser_base import Parser
 try:
@@ -17,12 +20,12 @@ class LinkParser(HTMLParser, Parser):
         super(LinkParser, self).__init__(*args, **kwargs)
         self._links = set()
 
-    def crawl(self, url):
+    def parse(self, url):
         """
         Performs a GET request on the resource and collects links in href attributes
         """
         self._links = set()
-        result = Parser.crawl(self, url)
+        result = Parser.parse(self, url)
         self.log_service.info("Link=[%s] StatusCode=[%s] Size=[%s]"
                               % (result.link, result.status_code, result.page_size))
         return ParseResult(link=result.link,

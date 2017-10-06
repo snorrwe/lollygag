@@ -1,3 +1,6 @@
+"""
+Holds the Crawler class.
+"""
 import re
 import time
 from lollygag.core.crawlers.jobs.crawl_job import CrawlJob
@@ -11,6 +14,9 @@ from lollygag.utility.url import get_domain
 
 
 class CrawlerStatus(object):
+    """
+    Represents the status of a crawl.
+    """
     __slots__ = ["visited_urls", "urls_to_crawl", "urls_in_progress"]
 
     def __init__(self, *args):
@@ -19,6 +25,9 @@ class CrawlerStatus(object):
             self.reset(*args)
 
     def reset(self, visited_urls, urls_to_crawl, urls_in_progress):
+        """
+        Resets the instance's state.
+        """
         self.visited_urls = visited_urls
         self.urls_to_crawl = urls_to_crawl
         self.urls_in_progress = urls_in_progress
