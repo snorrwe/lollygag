@@ -1,3 +1,6 @@
+"""
+Holds the ConfigService service.
+"""
 from lollygag.dependency_injection.inject import Inject
 from lollygag.dependency_injection.requirements import HasMethods
 
@@ -21,9 +24,10 @@ DEFAULT_CONFIG = {
 
 class ConfigService(object):
     """
-    Stores configuration details
-    Parses arguments in argumentParser on construction
-    Arguments not in argumentParser will fall back to the DEFAULT_CONFIG
+    Stores configuration details.
+    Parses arguments in argumentParser on construction.
+    Arguments not in argumentParser will fall back to the DEFAULT_CONFIG.
+    Implements the Borg pattern so all instances share state with the class itself.
     """
     argumentParser = Inject("argparse", HasMethods("add_argument", "parse_args"))
     state = {}
@@ -37,6 +41,10 @@ class ConfigService(object):
         self.__dict__ = ConfigService.state
 
     def setup(self):
+        """
+        Initialize ConfigService.state if it hasn't been already.
+        Parses args from the standard input.
+        """
         if not ConfigService.state:
             self.__init_args()
             args = self.__parse_args()

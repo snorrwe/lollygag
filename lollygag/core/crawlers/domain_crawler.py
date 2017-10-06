@@ -1,3 +1,6 @@
+"""
+Holds the DomainCrawler class.
+"""
 from lollygag.utility.url import get_domain
 from lollygag.core.crawlers.crawler import Crawler
 

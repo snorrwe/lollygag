@@ -1,3 +1,6 @@
+"""
+Holds the CrawlJob class
+"""
 import requests
 from lollygag.dependency_injection.inject import Inject
 from lollygag.dependency_injection.requirements import HasMethods

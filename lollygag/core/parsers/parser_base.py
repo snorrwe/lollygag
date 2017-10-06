@@ -1,3 +1,6 @@
+"""
+Holds the Parser class.
+"""
 from collections import namedtuple
 from lollygag.dependency_injection.inject import Inject
 from lollygag.dependency_injection.requirements import HasMethods

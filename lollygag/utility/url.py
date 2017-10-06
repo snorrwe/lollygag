@@ -1,16 +1,22 @@
+"""
+Holds functionality to process urls.
+"""
 import re
 
 
 def get_protocol(url):
     """
-    Returns wether the protocol of the url is http or https
-    Returns none if another protocol or no protocol is present in the url
+    Returns wether the protocol of the url is http or https.
+    Returns none if another protocol or no protocol is present in the url.
     """
     result = re.search(r"^https?://", url)
     return result.group(0) if result else None
 
 
 def strip_beginning_slashes(url):
+    """
+    Removes unnecessary slashes from the beginning of the url.
+    """
     find = re.search(r"^/+", url)
     if find:
         url = re.sub(find.group(0), "", url)
@@ -19,7 +25,7 @@ def strip_beginning_slashes(url):
 
 def get_domain(url):
     """
-    Returns the domain of the given url
+    Returns the domain of the given url.
     Examples:
         get_domain("http://winnie.thepooh") -> "winnie.thepooh"
 
@@ -42,4 +48,7 @@ def get_domain(url):
 
 
 def is_relative_link(link):
+    """
+    Returns wether the passed link is a relative link or not.
+    """
     return not get_protocol(link) and re.search(r"^\.?/([a-z]|[A-Z]|[0-9]|\.)+", link)

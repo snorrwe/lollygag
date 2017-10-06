@@ -1,5 +1,5 @@
 import unittest
-from lollygag.main import separate_urls_by_domain, register_events, register
+from lollygag.main import separate_urls_by_domain, subscribe_to_crawler, register
 from lollygag.utility.test_utils import Any, CallableMock
 
 
@@ -37,28 +37,28 @@ class Test_register_events(unittest.TestCase):
         subs = {
             'on_finish': lambda *a, **kw: None
         }
-        register_events(self.crawler, **subs)
+        subscribe_to_crawler(self.crawler, **subs)
         self.assertEqual(self.crawler.on_finish.call_count(), 1)
 
     def test_subscribes_to_on_start_with_single_callback(self):
         subs = {
             'on_start': lambda *a, **kw: None
         }
-        register_events(self.crawler, **subs)
+        subscribe_to_crawler(self.crawler, **subs)
         self.assertEqual(self.crawler.on_start.call_count(), 1)
 
     def test_subscribes_to_on_interrupt_with_single_callback(self):
         subs = {
             'on_interrupt': lambda *a, **kw: None
         }
-        register_events(self.crawler, **subs)
+        subscribe_to_crawler(self.crawler, **subs)
         self.assertEqual(self.crawler.on_interrupt.call_count(), 1)
 
     def test_subscribes_to_on_start_with_list(self):
         subs = {
             'on_start': [lambda *a, **kw: None] * 4
         }
-        register_events(self.crawler, **subs)
+        subscribe_to_crawler(self.crawler, **subs)
         self.assertEqual(self.crawler.on_start.call_count(), 4)
 
 

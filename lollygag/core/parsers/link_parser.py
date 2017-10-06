@@ -1,3 +1,6 @@
+"""
+Holds the LinkParser class.
+"""
 from collections import namedtuple
 from lollygag.core.parsers.parser_base import Parser
 try:

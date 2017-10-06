@@ -1,4 +1,9 @@
+"""
+Holds the Inject class.
+"""
 import json
+
+
 DEFAULT_CONFIG = {
     "return_factory": False,
     "cache": True
@@ -13,7 +18,7 @@ class Inject(object):
     On __get__ injects the required feature from features is present
     raises an error is it's not present
 
-    assertions are used to further specify a feature's required interface
+    specifications are used to further specify a feature's required interface
 
     Example:
         class MyClass(object):
@@ -25,24 +30,41 @@ class Inject(object):
 
     @staticmethod
     def register_feature(name, feature):
+        """
+        Registers a new injectable feature by name.
+        """
         Inject.features[name] = feature
 
     @staticmethod
     def register_features(**dictionary):
+        """
+        Registers injectable features.
+
+        Example:
+            my_winnie = Inject('winnie').request() # not ok
+            Inject.register_features(foo='bar', winnie=Pooh())
+            my_winnie = Inject('winnie').request() # ok
+        """
         for key in dictionary:
-            Inject.features[key] = dictionary[key]
+            Inject.register_feature(key, dictionary[key])
 
     @staticmethod
     def reset():
+        """
+        Removes all features from Inject and resets the cache.
+        """
         Inject.features = {}
         CACHE.clear()
 
     def __init__(self, key, *assertions, **config):
         self.key = key
-        self.assertions = assertions
+        self.specifications = assertions
         self.init_config(config)
 
     def init_config(self, config):
+        """
+        Initializes the configuration of the instance.
+        """
         self.config = config
         for key in DEFAULT_CONFIG:
             if key not in self.config:
@@ -53,6 +75,12 @@ class Inject(object):
         return self.request()
 
     def request(self):
+        """
+        Return the feature by the instance's key.
+        Raises KeyError if the feature isn't registered at the time of request.
+        Raises AssertionError if the registered feature fails to
+        fulfill a specification of the instance.
+        """
         try:
             if self.config["cache"] and self.key in CACHE and self.config_key in CACHE[self.key]:
                 return CACHE[self.key][self.config_key]
@@ -63,7 +91,7 @@ class Inject(object):
                 if self.key not in CACHE:
                     CACHE[self.key] = {}
                 CACHE[self.key][self.config_key] = feature
-            for assertion in self.assertions:
+            for assertion in self.specifications:
                 self._make_assertion(assertion, feature)
             return feature
         except KeyError:
