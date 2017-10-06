@@ -1,7 +1,4 @@
-from lollygag import run
-from lollygag.services import Services
-from lollygag.core.parsers.link_parser import LinkParser
-from lollygag.core.crawlers.domain_crawler import DomainCrawler, Crawler
+from lollygag import run, Services, LinkParser, DomainCrawler, Crawler
 
 
 class MyParser(LinkParser):
