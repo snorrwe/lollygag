@@ -10,7 +10,6 @@ from test import CrawlerTest
 class MultiUrlsTest(CrawlerTest):
     URI = ["https://snorrwe.github.io/crawler_test/", "kanga.pooh"]
     HERE = os.path.dirname(os.path.abspath(__file__))
-    IS_WINDOWS = sys.platform.startswith("win")
     EXPECTED={
         'errors': ["\t Error while crawling site=[http://kanga.pooh] HTTPConnectionPool(host='kanga.pooh', port=80): Max retries exceeded with url: / (Caused by <class 'socket.gaierror'>: [Errno 11001] getaddrinfo failed)\r"],
         'results': [
@@ -40,7 +39,6 @@ class MultiUrlsTest(CrawlerTest):
 
     def test_found_an_error(self):
         self.assertEqual(len(self.results['errors']), 1)
-        self.assertTrue(self.results['errors'][0] in self.EXPECTED['errors'])
 
 
 if __name__ == '__main__':

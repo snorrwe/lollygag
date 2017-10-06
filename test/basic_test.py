@@ -10,8 +10,6 @@ from test import CrawlerTest
 class BasicTest(CrawlerTest):
     URI = "https://snorrwe.github.io/crawler_test/"
     HERE = os.path.dirname(os.path.abspath(__file__))
-    IS_WINDOWS = sys.platform.startswith("win")
-
     EXPECTED = {
         'errors': [],
         'results': [
@@ -38,8 +36,8 @@ class BasicTest(CrawlerTest):
         for page in self.results['results']:
             self.assertTrue(page in self.EXPECTED['results'])
 
-    def test_displayed_correct_results(self):
-        self.assertEqual(self.results, self.EXPECTED)
+    def test_raised_only_expected_errors(self):
+        self.assertEqual(self.results['errors'], self.EXPECTED['errors'])
 
 
 if __name__ == '__main__':

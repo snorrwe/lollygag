@@ -6,6 +6,7 @@ from lollygag.dependency_injection.inject import Inject
 from lollygag.core.crawlers.mapper_crawler import MapperCrawler
 import json
 
+
 def on_finish(log_service, crawler):
     def callback(*args):
         log_service.important("-------------Yeah boiiii, done-----------------")
@@ -16,10 +17,12 @@ def on_finish(log_service, crawler):
         log_service.important("------------Done processing the tree-----------")
     return callback
 
+
 def main():
     Services.crawler_factory = MapperCrawler
     crawler.on_finish(on_finish(Services.log_service(), crawler))
     run(subscribe={'on_finish': on_finish(Services.log_service())})
+
 
 if __name__ == '__main__':
     main()

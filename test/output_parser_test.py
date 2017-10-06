@@ -16,10 +16,12 @@ class OutputParserTests(object):
         self.assertEqual([("https://snorrwe.github.io/crawler_test/", 200, 404)], result['results'])
 
     def test_can_parse_errors(self):
-        self.assertEqual(["Error while crawling site=[http://kanga.pooh] HTTPConnectionPool(host='kanga.pooh', port=80)"], result['errors'])
+        self.assertEqual(
+            ["Error while crawling site=[http://kanga.pooh] HTTPConnectionPool(host='kanga.pooh', port=80)"], result['errors'])
 
     def test_can_parse_custom(self):
-        self.assertEqual(["[Debug]Thread=[WSc[0]--2]        No urls to crawl, going to sleep. Work in progress=[1]\n"], result['custom'])
+        self.assertEqual(
+            ["[Debug]Thread=[WSc[0]--2]        No urls to crawl, going to sleep. Work in progress=[1]\n"], result['custom'])
 
 
 if __name__ == '__main__':
