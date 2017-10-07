@@ -50,7 +50,7 @@ For example: tests for file *some_source.py* are in the file *some_source_test.p
 
 #### End-to-end testing
 
-Test files are located in the _test_ directory.<br>
+Test files are located in the *black_box_tests* directory.<br>
 
 ### Do you have questions about the source code?
 

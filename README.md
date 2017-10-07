@@ -15,70 +15,57 @@
 
 ## Usage
 
+1. Create a custom _Parser_ to define behaviour
+1. Configure the _Crawler_ via either the _run_ method or command line arguments
+1. Run your script `python my_crawler.py`
+
 ### Sample code
 
+Find the source code [here](https://github.com/snorrwe/lollygag/blob/master/examples/daringer_example.py)
+
 ```python
-#!/usr/bin/python
+from lollygag import run, Services, LinkParser, DomainCrawler, Crawler
 
-from lollygag import run
-from lollygag.services import Services
-from lollygag.core.parsers.link_parser import LinkParser
 
-# Override HTMLParser methods to provide a custom implementation
-# https://docs.python.org/2/library/htmlparser.html
-# Be sure to call the super methods so you do not lose existing functionality!
-#
-# Or use a different parser like Beautiful Soup
-class MyCrawler(LinkParser):
+class MyParser(LinkParser):
+    def __init__(self, *args, **kwargs):
+        super(MyParser, self).__init__(*args, **kwargs)
+        self.use_next_data = False
+
+    # on new page is found and shall be processed, 'data' contains full html-source
     def feed(self, data):
-        self.log_service.info("Yeah boi, a page!")
-        return super(MyCrawler, self).feed(data)
+        return super(MyParser, self).feed(data)
 
+    # on each start-tag found inside the full html-source
     def handle_starttag(self, tag, attrs):
-        super(MyCrawler, self).handle_starttag(tag, attrs)
-        if(tag == 'img'):
-            self.log_service.info("Yeeeeaaaah boiiiiiii, I found an %s" % (tag))
+        # super() will handle links (<a>) parsing, you can add() arbitrary links to self._links
+        super(MyParser, self).handle_starttag(tag, attrs)
 
-def main():
-    # Override site_parser_factory with my own implementation
-    Services.site_parser_factory = MyCrawler
-    run()
+        # for <script> the contents are needed, set flag to remember it
+        if tag == "script":
+            self.use_next_data = True
+        if tag == "img":
+            self.log_service.info("found img: {}".format(dict(attrs).get("src", "<no src attr>")))
 
-if __name__ == '__main__':
-    main()
+    # on each data (between two tags)
+    def handle_data(self, data):
+        if self.use_next_data:
+            self.log_service.info("script contents: {}".format(data))
 
-```
+    # on each end-tag found
+    def handle_endtag(self, tag):
+        if tag == "script":
+            self.use_next_data = False
 
-```bash
-python crawler_example.py -u snorrwe.github.io/crawler_test
 
-[Info]Thread=[MainThread]        ----------Crawl starting----------
-[Debug]Thread=[MainThread]       No urls to crawl, going to sleep. Work in progress=[1]
-[Info]Thread=[WSc--0]    Yeah boi, a page!
-[Info]Thread=[WSc--0]    Yeeeeaaaah boiiiiiii, I found an img
-[Info]Thread=[WSc--0]    Link=[http://snorrwe.github.io/crawler_test] StatusCode=[200] Size=[310]
-[Debug]Thread=[WSc--0]
-    Urls visited=[1]
-    Urls in progess=[0]
-    Urls left=[2]
-[Debug]Thread=[MainThread]       No urls to crawl, going to sleep. Work in progress=[2]
-[Info]Thread=[WSc--3]    Link=[http://snorrwe.github.io/crawler_test/kanga2.html] StatusCode=[404] Size=[9340]
-[Debug]Thread=[WSc--3]
-    Urls visited=[2]
-    Urls in progess=[1]
-    Urls left=[0]
-[Info]Thread=[WSc--4]    Yeah boi, a page!
-[Info]Thread=[WSc--4]    Link=[http://snorrwe.github.io/crawler_test/kanga.html] StatusCode=[200] Size=[220]
-[Debug]Thread=[WSc--4]
-    Urls visited=[3]
-    Urls in progess=[0]
-    Urls left=[0]
-[Info]Thread=[MainThread]        -------------Yeah boiiii, done-----------------
-[Info]Thread=[MainThread]        --------------------Crawl status--------------------
-                                        Urls visited=[3]
-                                        Urls in progess=[0]
-                                        Urls left=[0]
-[Info]Thread=[MainThread]        ----------Crawl finished----------
+# `Services.site_parser_factory` defines how a single page is parsed
+Services.site_parser_factory = MyParser
+
+# `Services.crawler_factory` defines the Crawler, thus how links are handled (where to crawl?)
+# - By default `DomainCrawler` is used, which restricts crawling to _one_ domain
+# - You "might" put `Crawler` here, this will lead to endless crawling...
+# Services.crawler_factory = Crawler
+run()
 ```
 
 ### Command line arguments
@@ -112,7 +99,7 @@ python crawler_example.py -u snorrwe.github.io/crawler_test
                     Note that if you pass the url argument to run() or crawl_domain() this option will be ignored.
                 </i>
                 </td>
-                <td> - </td>
+                <td> None </td>
             </tr>
             <tr>
             </tr>
