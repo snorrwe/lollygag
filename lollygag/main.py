@@ -31,8 +31,8 @@ def run(**kwargs):
         crawler = get_crawler(subscriber, **kwargs)
         crawler.crawl(url)
     else:
-        kw = {k: kwargs[k] for k in kwargs if k != 'url'}
-        crawl_url_list(url, subscriber, **kw)
+        url_list_kwargs = {k: kwargs[k] for k in kwargs if k != 'url'}
+        crawl_url_list(url, subscriber, **url_list_kwargs)
 
 
 def crawl_url_list(url, event_register=None, **kwargs):
