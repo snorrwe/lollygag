@@ -14,7 +14,7 @@ def run(**kwargs):
     All arguments are optional and will fall back to the ConfigService
     if not specified
     Arguments:
-        url: url(s) here to start crawling.
+        url: url(s) where to start crawling.
         subscribe: method(s) to subscribe to Crawler events.
         crawler: factory method for the desired crawler.
     """
@@ -31,7 +31,8 @@ def run(**kwargs):
         crawler = get_crawler(subscriber, **kwargs)
         crawler.crawl(url)
     else:
-        crawl_url_list(url, subscriber, **kwargs)
+        kw = {k: kwargs[k] for k in kwargs if k != 'url'}
+        crawl_url_list(url, subscriber, **kw)
 
 
 def crawl_url_list(url, event_register=None, **kwargs):
