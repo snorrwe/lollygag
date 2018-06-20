@@ -1,0 +1,12 @@
+[package]
+name = "lollygag_ext"
+version = "0.1.0"
+authors = ["Daniel Kiss <littlesnorrboy@gmail.com>"]
+
+[lib]
+name = "lollygag_ext"
+crate-type = ["cdylib"]
+
+[dependencies]
+cpython = "0.1"
+html5ever = "*"
