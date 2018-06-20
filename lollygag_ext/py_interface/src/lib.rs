@@ -8,9 +8,9 @@ use html5ever::rcdom::NodeData;
 use html5ever::rcdom::RcDom;
 use html5ever::tendril::TendrilSink;
 
-mod parsing;
+extern crate lollygag;
 
-use parsing::{find_children_by_query, HtmlQuery};
+use lollygag::{find_children_by_query, HtmlQuery};
 
 const QUERY_NONE: u8 = 0;
 const QUERY_ATTRIBUTE: u8 = 1;
@@ -78,7 +78,7 @@ pub fn query_html(py: Python, html: PyString, query: PyObject) -> PyResult<Strin
     for r in result {
         match r.data {
             NodeData::Text { ref contents } => println!("text boi\n{}", &contents.borrow()),
-            NodeData::Element { ref name, .. } => println!("element boi\n{}", name.local),
+            NodeData::Element { ref name, .. } => println!("element boi <{}>", name.local),
             _ => println!("idk lol"),
         }
     }

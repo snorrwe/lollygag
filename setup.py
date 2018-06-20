@@ -24,8 +24,8 @@ if __name__ == '__main__':
         install_requires=DEPENDENCIES,
         rust_extensions=[
             RustExtension(
-                'lollygag_ext',
-                'lollygag_ext/Cargo.toml',
+                'lollygag_ext/py_interface',
+                'lollygag_ext/py_interface/Cargo.toml',
                 binding=Binding.RustCPython)
         ],
         tests_require=TEST_DEPENDENCIES)
