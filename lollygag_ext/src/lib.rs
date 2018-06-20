@@ -12,7 +12,7 @@ mod parsing;
 
 use parsing::{find_by_rule, HtmlQuery};
 
-pub fn hello(py: Python, html: PyString) -> PyResult<String> {
+pub fn query_html(py: Python, html: PyString, query: PyString) -> PyResult<String> {
     let query = HtmlQuery::Attribute {
         key: "style".to_string(),
         value: "boi".to_string(),
@@ -44,7 +44,11 @@ py_module_initializer!(
     PyInit_lollygag_ext,
     |py, module| {
         module.add(py, "__doc__", "Rust extension for lollygag")?;
-        module.add(py, "hello", py_fn!(py, hello(a: PyString)))?;
+        module.add(
+            py,
+            "query_html",
+            py_fn!(py, query_html(html: PyString, query: PyString)),
+        )?;
         Ok(())
     }
 );

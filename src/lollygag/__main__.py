@@ -1,12 +1,10 @@
-from lollygag_ext import hello
+from lollygag_ext import query_html
 
-print(hello("asdasd"))
-
-print(
-    hello("""
+some_html = """
            <asd-node style='boi'>
           asdkjaksdjaskjdjs
           </asd-node>
             <li>
             </li>
-           """))
+           """
+print(query_html(some_html, "attr: style => boi"))
