@@ -13,16 +13,15 @@ jobs:
       - restore_cache:
           key: project-cache
       - run:
-          name: Move to the extension lib
-          command: cd lollygag_ext/lollygag
-      - run:
           name: Check formatting
           command: |
+            cd lollygag_ext/lollygag
             rustfmt --version
             cargo fmt -- --write-mode=diff
       - run:
           name: Stable Build
           command: |
+            cd lollygag_ext/lollygag
             rustup run stable rustc --version --verbose
             rustup run stable cargo --version --verbose
             rustup run stable cargo build
