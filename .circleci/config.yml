@@ -8,14 +8,13 @@ jobs:
       # and replace here. I put my own image here for
       # the example.
       - image: abronan/rust-circleci:latest
-    working_directory: "~/project/lollygag_ext/lollygag"
     steps:
       - checkout
       - restore_cache:
           key: project-cache
       - run:
-          name: Debug
-          command: ls -al
+          name: Move to the extension lib
+          command: cd lollygag_ext/lollygag
       - run:
           name: Check formatting
           command: |
