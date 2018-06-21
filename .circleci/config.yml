@@ -27,7 +27,9 @@ jobs:
             rustup run stable cargo build
       - run:
           name: Test
-          command: rustup run stable cargo test
+          command: |
+            cd lollygag_ext/lollygag
+            rustup run stable cargo test
       - save_cache:
           key: project-cache
           paths:
