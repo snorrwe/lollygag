@@ -1,72 +1,61 @@
 extern crate html5ever;
+extern crate regex;
 
 use html5ever::rcdom::{Handle, NodeData};
+use regex::Regex;
+
+mod query;
+
+pub use query::HtmlQuery;
 
 pub struct ParseError {}
 
-pub enum HtmlQuery {
-    None,
-    Attribute {
-        key: String,
-        value: String,
-    },
-    Name(String),
-    Data(String),
-    And {
-        x: Box<HtmlQuery>,
-        y: Box<HtmlQuery>,
-    },
-    Or {
-        x: Box<HtmlQuery>,
-        y: Box<HtmlQuery>,
-    },
-    Parent(Box<HtmlQuery>),
-    Child(Box<HtmlQuery>),
-    Sibling(Box<HtmlQuery>),
-}
-
-impl HtmlQuery {
-    pub fn and(self, query: HtmlQuery) -> HtmlQuery {
-        match self {
-            HtmlQuery::None => return query,
-            _ => HtmlQuery::And {
-                x: Box::new(self),
-                y: Box::new(query),
-            },
-        }
-    }
-}
-
-pub fn find_children_by_query(node: &Handle, query: &HtmlQuery) -> Result<Vec<Handle>, ParseError> {
+/// Get all nodes in a html tree matching the query
+pub fn query_tree(node: &Handle, query: &HtmlQuery) -> Result<Vec<Handle>, ParseError> {
     let mut result = vec![];
-    if query_node(node, query) {
+    if matches_node(node, query) {
         result.push(node.clone());
     }
     for child in node.children.borrow().iter() {
-        let mut res = try!(find_children_by_query(child, &query));
+        let mut res = try!(query_tree(child, &query));
         result.append(&mut res);
     }
     Ok(result)
 }
 
-pub fn query_node(node: &Handle, query: &HtmlQuery) -> bool {
+/// Check if the html node matches the query
+/// `HtmlQuery::None` does not match any nodes
+pub fn matches_node(node: &Handle, query: &HtmlQuery) -> bool {
     match query {
         HtmlQuery::Attribute { key, value } => has_attribute(&node, &key, &value),
         HtmlQuery::Name(query_name) => match node.data {
-            NodeData::Element { ref name, .. } => name.local.to_string() == *query_name,
+            NodeData::Element { ref name, .. } => Regex::new(query_name)
+                .unwrap()
+                .is_match(&name.local.to_string()),
             _ => false,
         },
+        HtmlQuery::And { x, y } => matches_node(&node, &x) && matches_node(&node, &y),
+        HtmlQuery::Or { x, y } => matches_node(&node, &x) || matches_node(&node, &y),
         HtmlQuery::None => false,
         _ => unimplemented!(),
     }
 }
 
-fn has_attribute(node: &Handle, key: &String, value: &String) -> bool {
+/// Check if the html node has an attribute named `key` with value of `value`
+/// Example:
+/// ```
+/// // node represents html: `<div bar="zoinks"></div>`
+/// // has_attribute(&node, &"bar".to_string(), &"z.{4}s".to_string()) // true
+/// ```
+pub fn has_attribute(node: &Handle, key: &String, value: &String) -> bool {
     match node.data {
         NodeData::Element { ref attrs, .. } => {
+            let key = Regex::new(key).unwrap();
+            let value = Regex::new(value).unwrap();
             for attr in attrs.borrow().iter() {
-                // TODO: upgrade to regex
-                if attr.name.local.to_string() == *key && attr.value.to_string() == *value {
+                if key.is_match(&attr.name.local.to_string())
+                    && value.is_match(&attr.value.to_string())
+                {
                     return true;
                 }
             }
@@ -111,7 +100,7 @@ mod tests {
             Err(e) => panic!(e),
         };
 
-        let result = find_children_by_query(&handle, query);
+        let result = query_tree(&handle, query);
         match result {
             Ok(result) => {
                 assert_eq!(result.len(), expected_num);
@@ -141,6 +130,12 @@ mod tests {
     }
 
     #[test]
+    fn can_find_nodes_by_name_regex() {
+        let query = HtmlQuery::Name("^f.*".to_string());
+        assert_element(BASIC_TEST_HTML, &query, 1, "foo");
+    }
+
+    #[test]
     fn finds_all_code_nodes() {
         let query = HtmlQuery::Name("code".to_string());
         assert_element(LARGE_TEST_HTML, &query, 74, "code");
@@ -162,5 +157,74 @@ mod tests {
             value: "zoinks".to_string(),
         };
         assert_element(INVALID_TEST_HTML, &query, 1, "foo");
+    }
+
+    #[test]
+    fn can_find_nodes_by_attribute_regex() {
+        let query = HtmlQuery::Attribute {
+            key: "bar".to_string(),
+            value: "z.{4}s".to_string(),
+        };
+        assert_element(BASIC_TEST_HTML, &query, 1, "foo");
+    }
+
+    #[test]
+    fn can_find_nodes_by_name_and_attribute() {
+        let query = HtmlQuery::Attribute {
+            key: "bar".to_string(),
+            value: "z.{4}s".to_string(),
+        };
+        let query = query.and(HtmlQuery::Name("foo".to_string()));
+        assert_element(BASIC_TEST_HTML, &query, 1, "foo");
+    }
+
+    #[test]
+    fn can_find_nodes_by_name_and_attribute_no_match() {
+        let query = HtmlQuery::Attribute {
+            key: "bar".to_string(),
+            value: "z.{4}s".to_string(),
+        };
+        let query = query.and(HtmlQuery::Name("fooq".to_string()));
+        assert_element(BASIC_TEST_HTML, &query, 0, "");
+    }
+
+    #[test]
+    fn can_find_nodes_by_name_or_attribute() {
+        let query = HtmlQuery::Attribute {
+            key: "bar".to_string(),
+            value: "z.{4}s".to_string(),
+        };
+        let query = query.or(HtmlQuery::Name("foo".to_string()));
+        assert_element(BASIC_TEST_HTML, &query, 1, "foo");
+    }
+
+    #[test]
+    fn can_find_nodes_by_name_or_attribute_lhs_only() {
+        let query = HtmlQuery::Attribute {
+            key: "bar".to_string(),
+            value: "z.{4}s".to_string(),
+        };
+        let query = query.or(HtmlQuery::Name("fooq".to_string()));
+        assert_element(BASIC_TEST_HTML, &query, 1, "foo");
+    }
+
+    #[test]
+    fn can_find_nodes_by_name_or_attribute_rhs_only() {
+        let query = HtmlQuery::Attribute {
+            key: "barasd".to_string(),
+            value: ".*".to_string(),
+        };
+        let query = query.or(HtmlQuery::Name("foo".to_string()));
+        assert_element(BASIC_TEST_HTML, &query, 1, "foo");
+    }
+
+    #[test]
+    fn find_nodes_by_name_or_attribute_no_match() {
+        let query = HtmlQuery::Attribute {
+            key: "barasd".to_string(),
+            value: ".*".to_string(),
+        };
+        let query = query.or(HtmlQuery::Name("fooq".to_string()));
+        assert_element(BASIC_TEST_HTML, &query, 0, "");
     }
 }
