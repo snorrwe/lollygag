@@ -2,9 +2,6 @@ extern crate html5ever;
 
 use html5ever::rcdom::{Handle, NodeData};
 
-#[cfg(test)]
-mod test_html;
-
 pub struct ParseError {}
 
 pub enum HtmlQuery {
@@ -82,23 +79,37 @@ fn has_attribute(node: &Handle, key: &String, value: &String) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    use std::fs::File;
+    use std::io::Read;
+
     use html5ever::parse_document;
     use html5ever::rcdom::{Handle, NodeData, RcDom};
     use html5ever::tendril::TendrilSink;
 
-    use test_html::html::*;
+    const BASIC_TEST_HTML: &str = "test/data/basic.html";
+    const INVALID_TEST_HTML: &str = "test/data/invalid.html";
+    const LARGE_TEST_HTML: &str = "test/data/pyerr.html";
 
-    fn get_handle(html: &str) -> Handle {
+    fn get_handle(html_path: &str) -> std::io::Result<Handle> {
+        let mut html_file = File::open(html_path)?;
+        let mut html = String::new();
+        html_file.read_to_string(&mut html)?;
         let mut html = html.as_bytes();
         let handle = parse_document(RcDom::default(), Default::default())
             .from_utf8()
             .read_from(&mut html)
             .unwrap();
-        handle.document
+        Ok(handle.document)
     }
 
+    /// Asserts if the query finds nodes in the html
+    /// Note: html file paths are relative to the lollygag dir make sure your cwd is correct!
     fn assert_element(html: &str, query: &HtmlQuery, expected_num: usize, expected_tag: &str) {
-        let handle = get_handle(html);
+        let handle = match get_handle(html) {
+            Ok(r) => r,
+            Err(e) => panic!(e),
+        };
 
         let result = find_children_by_query(&handle, query);
         match result {
