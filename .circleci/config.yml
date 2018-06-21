@@ -9,8 +9,7 @@ jobs:
       # and replace here. I put my own image here for
       # the example.
       - image: abronan/rust-circleci:latest
-    working_directory:
-      - "~/project/lollygag_ext/lollygag"
+    working_directory: "~/project/lollygag_ext/lollygag"
     steps:
       - checkout
       - restore_cache:
