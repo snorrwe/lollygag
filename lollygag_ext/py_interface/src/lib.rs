@@ -18,9 +18,8 @@ pub mod query {
     pub const QUERY_NAME: u8 = 2;
     pub const QUERY_OR: u8 = 3;
     pub const QUERY_AND: u8 = 4;
+    pub const QUERY_DATA: u8 = 5;
 }
-
-py_class!(class KeyError |py| {});
 
 pub fn get_strs_from_dict(dict: &PyDict, py: Python, key: &str) -> PyResult<String> {
     let pykey = PyString::new(py, key);
@@ -30,22 +29,17 @@ pub fn get_strs_from_dict(dict: &PyDict, py: Python, key: &str) -> PyResult<Stri
             let string = try!(string.to_string(py));
             Ok(string.into_owned())
         }
-        _ => panic!(format!("KeyError \"{}\"", key)),
+        _ => panic!(format!("KeyError \"{}\"", key)), // FIXME: return proper error
     }
 }
 
 py_class!(class PyQuery |py| {
-
     data kind: u8;
     data value: PyObject;
 
-
     def __new__(_cls, kind: u8, value: PyObject) -> PyResult<PyQuery> {
-
         PyQuery::create_instance(py, kind, value)
-
     }
-
 });
 
 trait Getter {
@@ -63,12 +57,9 @@ impl Getter for PyDict {
     {
         let result = match self.get_item(py, key) {
             Some(val) => val,
-            _ => panic!(format!("KeyError")),
+            _ => panic!(format!("KeyError")), // FIXME: return proper error
         };
-        match result.cast_into::<TReturn>(py) {
-            Ok(r) => Ok(r),
-            Err(_) => panic!("Unexpected fatal error"),
-        }
+        Ok(result.cast_into::<TReturn>(py).unwrap())
     }
 }
 
@@ -154,6 +145,7 @@ py_module_initializer!(
         module.add(py, "QUERY_ATTRIBUTE", query::QUERY_ATTRIBUTE)?;
         module.add(py, "QUERY_AND", query::QUERY_AND)?;
         module.add(py, "QUERY_OR", query::QUERY_OR)?;
+        module.add(py, "QUERY_DATA", query::QUERY_DATA)?;
         module.add_class::<PyQuery>(py)?;
         Ok(())
     }

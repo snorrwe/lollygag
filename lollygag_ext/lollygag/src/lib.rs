@@ -37,16 +37,15 @@ pub fn matches_node(node: &Handle, query: &HtmlQuery) -> bool {
         HtmlQuery::And { x, y } => matches_node(&node, &x) && matches_node(&node, &y),
         HtmlQuery::Or { x, y } => matches_node(&node, &x) || matches_node(&node, &y),
         HtmlQuery::None => false,
+        HtmlQuery::Data(pattern) => matches_data(node, &pattern),
         _ => unimplemented!(),
     }
 }
 
 /// Check if the html node has an attribute named `key` with value of `value`
 /// Example:
-/// ```
 /// // node represents html: `<div bar="zoinks"></div>`
-/// // has_attribute(&node, &"bar".to_string(), &"z.{4}s".to_string()) // true
-/// ```
+/// assert_eq!(has_attribute(&node, &"bar".to_string(), &"z.{4}s".to_string()), true)
 pub fn has_attribute(node: &Handle, key: &String, value: &String) -> bool {
     match node.data {
         NodeData::Element { ref attrs, .. } => {
@@ -65,6 +64,16 @@ pub fn has_attribute(node: &Handle, key: &String, value: &String) -> bool {
     }
 }
 
+/// Check if the pattern is found in the `Text` node
+/// Other types of nodes are ignored
+pub fn matches_data(node: &Handle, pattern: &String) -> bool {
+    let re = Regex::new(pattern).unwrap();
+    match node.data {
+        NodeData::Text { ref contents } => re.is_match(&contents.borrow()),
+        _ => false,
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -79,6 +88,7 @@ mod tests {
     const BASIC_TEST_HTML: &str = "test/data/basic.html";
     const INVALID_TEST_HTML: &str = "test/data/invalid.html";
     const LARGE_TEST_HTML: &str = "test/data/pyerr.html";
+    const FORGE_HTML: &str = "test/data/rust_forge.html";
 
     fn get_handle(html_path: &str) -> std::io::Result<Handle> {
         let mut html_file = File::open(html_path)?;
@@ -109,7 +119,8 @@ mod tests {
                         NodeData::Element { ref name, .. } => {
                             assert_eq!(name.local.to_string(), expected_tag.to_string())
                         }
-                        _ => panic!("Unexpected node type!"),
+                        NodeData::Text { .. } => {}
+                        _ => unimplemented!(),
                     };
                 }
             }
@@ -226,5 +237,17 @@ mod tests {
         };
         let query = query.or(HtmlQuery::Name("fooq".to_string()));
         assert_element(BASIC_TEST_HTML, &query, 0, "");
+    }
+
+    #[test]
+    fn finds_text_data_by_pattern() {
+        let query = HtmlQuery::Data(r"Rust".to_string());
+        assert_element(LARGE_TEST_HTML, &query, 1, "");
+    }
+
+    #[test]
+    fn finds_text_data_by_pattern_2() {
+        let query = HtmlQuery::Data(r"Rust".to_string());
+        assert_element(FORGE_HTML, &query, 11, "");
     }
 }

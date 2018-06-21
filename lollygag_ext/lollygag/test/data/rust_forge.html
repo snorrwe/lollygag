@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<!-- saved from url=(0028)https://forge.rust-lang.org/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <title>The Rust Forge</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="Rust, Rust programming language, rustlang, rust-lang, Mozilla Rust">
+    <meta name="description" content="A systems programming language that runs blazingly fast, prevents segfaults, and guarantees thread safety.">
+    <link rel="stylesheet" href="./The Rust Forge_files/bootstrap.css">
+    <link rel="stylesheet" href="./The Rust Forge_files/style.css">
+    <link rel="stylesheet" href="./The Rust Forge_files/forge.css">
+    <link rel="stylesheet" href="./The Rust Forge_files/bootstrap(1).css">
+    <link rel="stylesheet" href="./The Rust Forge_files/style(1).css">
+    <link rel="stylesheet" href="./The Rust Forge_files/forge(1).css">
+  <style type="text/css">.backpack.dropzone {
+  font-family: 'SF UI Display', 'Segoe UI';
+  font-size: 15px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 250px;
+  height: 150px;
+  font-weight: lighter;
+  color: white;
+  will-change: right;
+  z-index: 2147483647;
+  bottom: 20%;
+  background: #333;
+  position: fixed;
+  user-select: none;
+  transition: left .5s, right .5s;
+  right: 0px; }
+  .backpack.dropzone .animation {
+    height: 80px;
+    width: 250px;
+    background: url("chrome-extension://lifbcibllhkdhoafpjfnlhfpfgnpldfl/assets/backpack/dropzone/hoverstate.png") left center; }
+  .backpack.dropzone .title::before {
+    content: 'Save to'; }
+  .backpack.dropzone.closed {
+    right: -250px; }
+  .backpack.dropzone.hover .animation {
+    animation: sxt-play-anim-hover 0.91s steps(21);
+    animation-fill-mode: forwards;
+    background: url("chrome-extension://lifbcibllhkdhoafpjfnlhfpfgnpldfl/assets/backpack/dropzone/hoverstate.png") left center; }
+
+@keyframes sxt-play-anim-hover {
+  from {
+    background-position: 0px; }
+  to {
+    background-position: -5250px; } }
+  .backpack.dropzone.saving .title::before {
+    content: 'Saving to'; }
+  .backpack.dropzone.saving .animation {
+    background: url("chrome-extension://lifbcibllhkdhoafpjfnlhfpfgnpldfl/assets/backpack/dropzone/saving_loop.png") left center;
+    animation: sxt-play-anim-saving steps(59) 2.46s infinite; }
+
+@keyframes sxt-play-anim-saving {
+  100% {
+    background-position: -14750px; } }
+  .backpack.dropzone.saved .title::before {
+    content: 'Saved to'; }
+  .backpack.dropzone.saved .animation {
+    background: url("chrome-extension://lifbcibllhkdhoafpjfnlhfpfgnpldfl/assets/backpack/dropzone/saved.png") left center;
+    animation: sxt-play-anim-saved steps(20) 0.83s forwards; }
+
+@keyframes sxt-play-anim-saved {
+  100% {
+    background-position: -5000px; } }
+</style></head>
+
+  <body class="container">
+
+    <header>
+
+    <ul class="row menu">
+      <li class="col-xs-12 col-md-2">
+        <a href="https://forge.rust-lang.org/index.html">
+	  <!-- FIXME: absolute urls -->
+          <img class="img-responsive" src="./The Rust Forge_files/rust-logo-blk.svg" onerror="this.src=&#39;https://www.rust-lang.org/logos/rust-logo-256x256-blk.png&#39;" height="128" width="128" alt="Rust logo">
+        </a>
+      </li>
+      <li class="col-xs-12 col-md-6 menu">
+	<h1>Rust Forge</h1>
+      </li>
+    </ul>
+    </header>
+
+    <div class="content"><p>This site contains supplementary documentation useful to the members
+of <a href="https://www.rust-lang.org/">The Rust Project</a>. To edit it submit
+PRs against <a href="https://github.com/rust-lang-nursery/rust-forge">rust-lang-nursery/rust-forge</a>.</p>
+
+<div id="release_info"><hr><h3>Release Dates</h3><p>Rust 1.26 stable was released on Fri May 11 2018.</p><p></p><h4>Rust 1.27 stable will be released on Fri Jun 22 2018.</h4><p></p><p>Rust 1.28 stable will be released on Fri Aug 03 2018.</p></div>
+
+<hr>
+
+<h3 id="interested-in-hacking-the-compiler">Interested in hacking the compiler?</h3>
+
+<ul>
+  <li><a href="https://rust-lang-nursery.github.io/rustc-guide/">The rustc-guide is a book about how rustc works</a></li>
+  <li><a href="https://doc.rust-lang.org/nightly/nightly-rustc/rustc/">The rustc API docs are hosted here</a></li>
+  <li><a href="https://forge.rust-lang.org/x-py.html">Building rustc with x.py</a>.</li>
+  <li><a href="https://forge.rust-lang.org/debugging.html">Debugging the compiler</a>. Tips for debugging the compiler.</li>
+  <li><a href="https://forge.rust-lang.org/profile-queries.html">Profile queries</a>. Tips for tracking what the compiler does.</li>
+  <li><a href="https://forge.rust-lang.org/rustc-bug-fix-procedure.html">Rustc bug fix procedure</a>: Describes the process for bug fixes that may cause existing code to stop
+compiling.</li>
+  <li><a href="https://forge.rust-lang.org/feature-guide.html">So you want to implement a feature?</a>: Describes the procedure for implementing new features in rustc.</li>
+  <li><a href="https://forge.rust-lang.org/stabilization-guide.html">So you want to stabilize a feature?</a>: Describes the procedure for stabilizing features in rustc.</li>
+</ul>
+
+<h3 id="interested-in-infrastructure-and-the-release-process">Interested in infrastructure and the release process?</h3>
+
+<ul>
+  <li><a href="https://buildbot2.rust-lang.org/homu/queue/rust">The current PR testing queue</a></li>
+  <li><a href="https://rust-lang-nursery.github.io/rustc-pr-tracking/">The PR queue over time</a></li>
+  <li><a href="https://rust-lang-nursery.github.io/rust-toolstate/">Toolstate (rls, rustfmt, clippy)</a></li>
+  <li><a href="https://forge.rust-lang.org/releases.html">Release history</a>. Links to previous release artifacts.</li>
+  <li><a href="https://forge.rust-lang.org/platform-support.html">Platform support</a>.</li>
+  <li><a href="https://forge.rust-lang.org/release-process.html">Release process</a>. How to make releases of Rust.</li>
+  <li><a href="https://forge.rust-lang.org/release-notes.html">How to prepare Rust release notes</a>.</li>
+  <li><a href="https://forge.rust-lang.org/beta-backporting.html">Beta backporting</a>. The mystery of the oft-misinterpreted <code class="highlighter-rouge">beta-nominated</code> / <code class="highlighter-rouge">beta-accepted</code> tags finally revealed.</li>
+  <li><a href="https://forge.rust-lang.org/infrastructure.html">Bots, websites and infrastructure</a>. A catalog of the IRC bots, websites and other infrastructure used by the project, what they do, and who maintains them (i.e. who to contact when they malfunction and go on a bot rampage).</li>
+  <li><a href="https://buildbot2.rust-lang.org/homu/">Homu/Bors Syntax</a></li>
+</ul>
+
+<h3 id="meta-processes-managing-the-rfc-repo-teams-etc">Meta-processes: managing the RFC repo, teams, etc</h3>
+
+<ul>
+  <li><a href="https://forge.rust-lang.org/rfc-merge-procedure.html">RFC merge procedure</a></li>
+  <li><a href="https://forge.rust-lang.org/rustc-team-maintenance.html">Team maintenance</a></li>
+  <li><a href="https://forge.rust-lang.org/triage-procedure.html">Issue &amp; PR Triage Procedure</a></li>
+</ul>
+
+<h3 id="other-things">Other things</h3>
+
+<ul>
+  <li><a href="https://forge.rust-lang.org/fott.html">Friend of the Tree archives</a>.</li>
+  <li><a href="https://forge.rust-lang.org/bibliography.html">Bibliography</a>. Research papers and other links to projects that influenced Rust. Papers about Rust.</li>
+  <li><a href="https://forge.rust-lang.org/cross-compilation/index.html">Cross compilation resources</a></li>
+</ul>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function() {
+
+  // rust 1.5's release date
+  var prevDate = new Date('2015-12-11');
+  // #nevertwopointoh -- we render "1." in the string literals below, this is easier to increment
+  var prevRelease = 5;
+
+  var nextDate = new Date('2016-01-22');
+  var nextRelease = 6;
+
+  var nextNextDate = new Date('2016-03-04');
+  var nextNextRelease = 7;
+
+  while (Date.now() > nextDate) {
+    prevDate = new Date(nextDate);
+    // there are 6 weeks in between releases
+    nextDate.setDate(nextDate.getDate() + (7 * 6));
+    nextNextDate.setDate(nextNextDate.getDate() + (7 * 6));
+
+    prevRelease += 1;
+    nextRelease += 1;
+    nextNextRelease += 1;
+  }
+
+  prevDate = prevDate.toDateString();
+  nextDate = nextDate.toDateString();
+  nextNextDate = nextNextDate.toDateString();
+
+  var toWrite = "<hr/><h3>Release Dates</h3>";
+
+  toWrite += "<p>Rust 1." + prevRelease + " stable was released on " + prevDate + ".</p>";
+  toWrite += "<p><h4>Rust 1." + nextRelease + " stable will be released on " + nextDate + ".</h4></p>";
+  toWrite += "<p>Rust 1." + nextNextRelease + " stable will be released on " + nextNextDate + ".</p>";
+
+  document.getElementById('release_info').innerHTML = toWrite;
+});
+</script>
+
+</div>
+
+  
+
+</body></html>
