@@ -12,12 +12,12 @@ jobs:
       - checkout
       - restore_cache:
           key: project-cache
-      - run:
-          name: Check formatting
-          command: |
-            cd lollygag_ext/lollygag
-            rustfmt --version
-            cargo fmt -- --write-mode=diff
+      # - run:
+      #     name: Check formatting
+      #     command: |
+      #       cd lollygag_ext/lollygag
+      #       rustfmt --version
+      #       cargo fmt -- --write-mode=diff
       - run:
           name: Stable Build
           command: |
