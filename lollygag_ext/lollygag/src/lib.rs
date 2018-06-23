@@ -11,6 +11,7 @@ pub use query::HtmlQuery;
 pub struct ParseError {}
 
 /// Get all nodes in a html tree matching the query
+/// Returns a vector of matching nodes
 pub fn query_tree(node: &Handle, query: &HtmlQuery) -> Result<Vec<Handle>, ParseError> {
     let mut result = vec![];
     if matches_node(node, query) {
@@ -28,6 +29,7 @@ pub fn query_tree(node: &Handle, query: &HtmlQuery) -> Result<Vec<Handle>, Parse
 pub fn matches_node(node: &Handle, query: &HtmlQuery) -> bool {
     match query {
         HtmlQuery::Attribute { key, value } => has_attribute(&node, &key, &value),
+        HtmlQuery::Data(pattern) => matches_data(node, &pattern),
         HtmlQuery::Name(query_name) => match node.data {
             NodeData::Element { ref name, .. } => Regex::new(query_name)
                 .unwrap()
@@ -37,15 +39,11 @@ pub fn matches_node(node: &Handle, query: &HtmlQuery) -> bool {
         HtmlQuery::And { x, y } => matches_node(&node, &x) && matches_node(&node, &y),
         HtmlQuery::Or { x, y } => matches_node(&node, &x) || matches_node(&node, &y),
         HtmlQuery::None => false,
-        HtmlQuery::Data(pattern) => matches_data(node, &pattern),
         _ => unimplemented!(),
     }
 }
 
 /// Check if the html node has an attribute named `key` with value of `value`
-/// Example:
-/// // node represents html: `<div bar="zoinks"></div>`
-/// assert_eq!(has_attribute(&node, &"bar".to_string(), &"z.{4}s".to_string()), true)
 pub fn has_attribute(node: &Handle, key: &String, value: &String) -> bool {
     match node.data {
         NodeData::Element { ref attrs, .. } => {

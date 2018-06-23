@@ -5,6 +5,9 @@ from lollygag_ext import query_html as _query_html
 
 
 def query_html(html: str, query: PyQuery):
+    """
+    Query an html string
+    """
     return _query_html(html, query)
 
 

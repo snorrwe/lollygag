@@ -152,3 +152,5 @@ README.html
 
 tmp*
 docs
+
+\.pytest_cache/
