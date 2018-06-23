@@ -14,7 +14,6 @@ pub enum HtmlQuery {
         x: Box<HtmlQuery>,
         y: Box<HtmlQuery>,
     },
-    Parent(Box<HtmlQuery>),
     Child(Box<HtmlQuery>),
     Sibling(Box<HtmlQuery>),
 }
