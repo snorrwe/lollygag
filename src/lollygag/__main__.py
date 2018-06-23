@@ -1,4 +1,5 @@
-from lollygag_ext import query_html, PyQuery, QUERY_NAME, QUERY_ATTRIBUTE, QUERY_AND
+from time import time
+from lollygag.query import compile_query, query_html
 
 some_html = """
 <asd-node style='boi' foo='bar'>
@@ -6,21 +7,25 @@ some_html = """
         asdkjaksdjaskjdjs
     </some-node>
 </asd-node>
+<asd-node>
+</asd-node>
 <li>
 </li>
 """
 
-query_html(some_html, PyQuery(QUERY_NAME, "asd-node"))
-
-query = PyQuery(QUERY_ATTRIBUTE, {"name": "foo", "value": "bar"})
-query_html(some_html, query)
-
-and_query = PyQuery(
-    QUERY_AND, {
-        'x': PyQuery(QUERY_NAME, "asd-node"),
-        'y': PyQuery(QUERY_ATTRIBUTE, {
+query = compile_query({
+    "or": ({
+        "attribute": {
             "name": "foo",
-            "value": ".*",
-        })
+            "value": ".*"
+        },
+        "name": "asd-node",
+    }, {
+        "data": "asd"
     })
-query_html(some_html, and_query)
+})
+start = time()
+result = query_html(some_html, query)
+delta = time() - start
+print("boi", result, delta)
+print(result.get_result())

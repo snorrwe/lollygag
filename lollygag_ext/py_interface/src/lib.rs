@@ -2,7 +2,7 @@ extern crate html5ever;
 #[macro_use]
 extern crate cpython;
 
-use cpython::{PyDict, PyObject, PyResult, PyString, Python};
+use cpython::{PyDict, PyObject, PyResult, PyString, PyTuple, Python};
 use html5ever::parse_document;
 use html5ever::rcdom::NodeData;
 use html5ever::rcdom::RcDom;
@@ -33,15 +33,6 @@ pub fn get_strs_from_dict(dict: &PyDict, py: Python, key: &str) -> PyResult<Stri
     }
 }
 
-py_class!(class PyQuery |py| {
-    data kind: u8;
-    data value: PyObject;
-
-    def __new__(_cls, kind: u8, value: PyObject) -> PyResult<PyQuery> {
-        PyQuery::create_instance(py, kind, value)
-    }
-});
-
 trait Getter {
     fn get<TKey, TReturn>(&self, py: Python, key: &TKey) -> PyResult<TReturn>
     where
@@ -63,15 +54,28 @@ impl Getter for PyDict {
     }
 }
 
+py_class!(class PyQuery |py| {
+    data kind: u8;
+    data value: PyObject;
+
+    def __new__(_cls, kind: u8, value: PyObject) -> PyResult<PyQuery> {
+        PyQuery::create_instance(py, kind, value)
+    }
+
+    def __repr__(&self) -> PyResult<String> {
+        Ok(format!("<LollygagQueryProxyObject>, kind: {}, value: {}", self.kind(py), self.value(py)))
+    }
+});
+
 impl PyQuery {
     pub fn to_query(&self, py: Python) -> PyResult<HtmlQuery> {
         macro_rules! binary_query {
             ($query:ident) => {{
-                let dict = try!(self.value(py).cast_as::<PyDict>(py));
-                let x = dict.get::<PyString, PyQuery>(py, &PyString::new(py, "x"))?
-                    .to_query(py)?;
-                let y = dict.get::<PyString, PyQuery>(py, &PyString::new(py, "y"))?
-                    .to_query(py)?;
+                let list = try!(self.value(py).cast_as::<PyTuple>(py));
+                let (x, y) = (
+                    try!(list.get_item(py, 0).cast_as::<PyQuery>(py)?.to_query(py)),
+                    try!(list.get_item(py, 1).cast_as::<PyQuery>(py)?.to_query(py)),
+                );
                 Ok(HtmlQuery::$query {
                     x: Box::new(x),
                     y: Box::new(y),
@@ -97,16 +101,37 @@ impl PyQuery {
             query::QUERY_AND => binary_query!(And),
             query::QUERY_OR => binary_query!(Or),
             query::QUERY_NONE => Ok(HtmlQuery::None),
+            query::QUERY_DATA => {
+                let string = try!(self.value(py).cast_as::<PyString>(py));
+                let string = try!(string.to_string(py));
+                Ok(HtmlQuery::Data(string.into_owned()))
+            }
             _ => unimplemented!(),
         }
     }
 }
 
+py_class!(class PyQueryResult |py| {
+    data result: bool;
+
+    def __new__(_cls, result: bool) -> PyResult<PyQueryResult > {
+        PyQueryResult::create_instance(py, result)
+    }
+
+    def __repr__(&self) -> PyResult<String> {
+        Ok(format!("<LollygagQueryResultProxyObject>, result: {}", self.result(py)))
+    }
+
+    def get_result(&self) -> PyResult<bool> {
+        Ok(*self.result(py))
+    }
+});
+
 /// Run a query on a single html file
 /// Params:
 /// html: str
 /// query: PyQuery object
-pub fn query_html(py: Python, html: PyString, query: PyObject) -> PyResult<String> {
+fn query_html(py: Python, html: PyString, query: PyObject) -> PyResult<PyQueryResult> {
     let query = try!(query.cast_as::<PyQuery>(py));
     let query = try!(query.to_query(py));
     let html = try!(html.to_string(py));
@@ -119,6 +144,7 @@ pub fn query_html(py: Python, html: PyString, query: PyObject) -> PyResult<Strin
         Ok(result) => result,
         Err(_) => vec![],
     };
+    let found = result.len() > 0;
     for r in result {
         match r.data {
             NodeData::Text { ref contents } => println!("text boi\n{}", &contents.borrow()),
@@ -126,7 +152,7 @@ pub fn query_html(py: Python, html: PyString, query: PyObject) -> PyResult<Strin
             _ => println!("idk lol"),
         }
     }
-    Ok("done".to_string())
+    PyQueryResult::create_instance(py, found)
 }
 
 py_module_initializer!(
@@ -147,6 +173,7 @@ py_module_initializer!(
         module.add(py, "QUERY_OR", query::QUERY_OR)?;
         module.add(py, "QUERY_DATA", query::QUERY_DATA)?;
         module.add_class::<PyQuery>(py)?;
+        module.add_class::<PyQueryResult>(py)?;
         Ok(())
     }
 );

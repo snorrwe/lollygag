@@ -67,9 +67,21 @@ pub fn has_attribute(node: &Handle, key: &String, value: &String) -> bool {
 /// Check if the pattern is found in the `Text` node
 /// Other types of nodes are ignored
 pub fn matches_data(node: &Handle, pattern: &String) -> bool {
-    let re = Regex::new(pattern).unwrap();
     match node.data {
-        NodeData::Text { ref contents } => re.is_match(&contents.borrow()),
+        NodeData::Element { .. } => {
+            let re = Regex::new(pattern).unwrap();
+            for child in node.children.borrow().iter() {
+                match child.data {
+                    NodeData::Text { ref contents, .. } => {
+                        if re.is_match(&contents.borrow()) {
+                            return true;
+                        }
+                    }
+                    _ => (),
+                }
+            }
+            false
+        }
         _ => false,
     }
 }
