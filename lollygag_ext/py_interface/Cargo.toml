@@ -9,5 +9,5 @@ crate-type = ["cdylib"]
 
 [dependencies]
 lollygag = {path = "../lollygag"}
-cpython = "0.1"
+cpython = "0.2"
 html5ever = "*"

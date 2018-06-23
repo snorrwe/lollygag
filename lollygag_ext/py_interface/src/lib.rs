@@ -1,37 +1,16 @@
-extern crate html5ever;
 #[macro_use]
 extern crate cpython;
+extern crate html5ever;
 
 use cpython::{PyDict, PyObject, PyResult, PyString, PyTuple, Python};
-use html5ever::parse_document;
-use html5ever::rcdom::NodeData;
-use html5ever::rcdom::RcDom;
-use html5ever::tendril::TendrilSink;
 
 extern crate lollygag;
+mod query;
+mod utils;
 
-use lollygag::{query_tree, HtmlQuery};
-
-pub mod query {
-    pub const QUERY_NONE: u8 = 0;
-    pub const QUERY_ATTRIBUTE: u8 = 1;
-    pub const QUERY_NAME: u8 = 2;
-    pub const QUERY_OR: u8 = 3;
-    pub const QUERY_AND: u8 = 4;
-    pub const QUERY_DATA: u8 = 5;
-}
-
-pub fn get_strs_from_dict(dict: &PyDict, py: Python, key: &str) -> PyResult<String> {
-    let pykey = PyString::new(py, key);
-    match dict.get_item(py, pykey) {
-        Some(string) => {
-            let string = try!(string.cast_as::<PyString>(py));
-            let string = try!(string.to_string(py));
-            Ok(string.into_owned())
-        }
-        _ => panic!(format!("KeyError \"{}\"", key)), // FIXME: return proper error
-    }
-}
+use lollygag::HtmlQuery;
+use query::{query as query_consts, query_html};
+use utils::get_strs_from_dict;
 
 trait Getter {
     fn get<TKey, TReturn>(&self, py: Python, key: &TKey) -> PyResult<TReturn>
@@ -84,12 +63,12 @@ impl PyQuery {
         }
 
         match *self.kind(py) {
-            query::QUERY_NAME => {
+            query_consts::QUERY_NAME => {
                 let string = try!(self.value(py).cast_as::<PyString>(py));
                 let string = try!(string.to_string(py));
                 Ok(HtmlQuery::Name(string.into_owned()))
             }
-            query::QUERY_ATTRIBUTE => {
+            query_consts::QUERY_ATTRIBUTE => {
                 let dict = try!(self.value(py).cast_as::<PyDict>(py));
                 let name = try!(get_strs_from_dict(&dict, py, "name"));
                 let value = try!(get_strs_from_dict(&dict, py, "value"));
@@ -98,10 +77,10 @@ impl PyQuery {
                     value: value,
                 })
             }
-            query::QUERY_AND => binary_query!(And),
-            query::QUERY_OR => binary_query!(Or),
-            query::QUERY_NONE => Ok(HtmlQuery::None),
-            query::QUERY_DATA => {
+            query_consts::QUERY_AND => binary_query!(And),
+            query_consts::QUERY_OR => binary_query!(Or),
+            query_consts::QUERY_NONE => Ok(HtmlQuery::None),
+            query_consts::QUERY_DATA => {
                 let string = try!(self.value(py).cast_as::<PyString>(py));
                 let string = try!(string.to_string(py));
                 Ok(HtmlQuery::Data(string.into_owned()))
@@ -111,7 +90,7 @@ impl PyQuery {
     }
 }
 
-py_class!(class PyQueryResult |py| {
+py_class!(pub class PyQueryResult |py| {
     data result: bool;
 
     def __new__(_cls, result: bool) -> PyResult<PyQueryResult > {
@@ -127,34 +106,6 @@ py_class!(class PyQueryResult |py| {
     }
 });
 
-/// Run a query on a single html file
-/// Params:
-/// html: str
-/// query: PyQuery object
-fn query_html(py: Python, html: PyString, query: PyObject) -> PyResult<PyQueryResult> {
-    let query = try!(query.cast_as::<PyQuery>(py));
-    let query = try!(query.to_query(py));
-    let html = try!(html.to_string(py));
-    let mut html = html.as_bytes();
-    let handle = parse_document(RcDom::default(), Default::default())
-        .from_utf8()
-        .read_from(&mut html)
-        .unwrap();
-    let result = match query_tree(&handle.document, &query) {
-        Ok(result) => result,
-        Err(_) => vec![],
-    };
-    let found = result.len() > 0;
-    for r in result {
-        match r.data {
-            NodeData::Text { ref contents } => println!("text boi\n{}", &contents.borrow()),
-            NodeData::Element { ref name, .. } => println!("element boi <{}>", name.local),
-            _ => println!("idk lol"),
-        }
-    }
-    PyQueryResult::create_instance(py, found)
-}
-
 py_module_initializer!(
     lollygag_ext,
     init_lollygag_ext,
@@ -166,12 +117,12 @@ py_module_initializer!(
             "query_html",
             py_fn!(py, query_html(html: PyString, query: PyObject)),
         )?;
-        module.add(py, "QUERY_NONE", query::QUERY_NONE)?;
-        module.add(py, "QUERY_NAME", query::QUERY_NAME)?;
-        module.add(py, "QUERY_ATTRIBUTE", query::QUERY_ATTRIBUTE)?;
-        module.add(py, "QUERY_AND", query::QUERY_AND)?;
-        module.add(py, "QUERY_OR", query::QUERY_OR)?;
-        module.add(py, "QUERY_DATA", query::QUERY_DATA)?;
+        module.add(py, "QUERY_NONE", query_consts::QUERY_NONE)?;
+        module.add(py, "QUERY_NAME", query_consts::QUERY_NAME)?;
+        module.add(py, "QUERY_ATTRIBUTE", query_consts::QUERY_ATTRIBUTE)?;
+        module.add(py, "QUERY_AND", query_consts::QUERY_AND)?;
+        module.add(py, "QUERY_OR", query_consts::QUERY_OR)?;
+        module.add(py, "QUERY_DATA", query_consts::QUERY_DATA)?;
         module.add_class::<PyQuery>(py)?;
         module.add_class::<PyQueryResult>(py)?;
         Ok(())
