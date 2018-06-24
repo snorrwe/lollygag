@@ -5,10 +5,12 @@ extern crate html5ever;
 use cpython::{PyDict, PyObject, PyResult, PyString, Python};
 
 extern crate lollygag;
+mod html_node;
 mod query;
 mod utils;
 
-use query::{query as query_consts, query_html, HtmlNode, PyQuery};
+use html_node::HtmlNode;
+use query::{query as query_consts, query_html, PyQuery};
 
 trait Getter {
     fn get<TKey, TReturn>(&self, py: Python, key: &TKey) -> PyResult<TReturn>
