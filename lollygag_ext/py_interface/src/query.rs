@@ -4,7 +4,6 @@ use html5ever::parse_document;
 use html5ever::rcdom::RcDom;
 use html5ever::rcdom::{Handle, NodeData};
 use html5ever::tendril::TendrilSink;
-use std;
 
 use lollygag::{query_tree, HtmlQuery};
 use utils::get_strs_from_dict;
@@ -112,33 +111,39 @@ impl PyQuery {
 
 py_class!(pub class HtmlNode |py| {
     data name: String;
-    data attributes: Vec<(String, String)>;
+    data attributes: PyList;
     data text: String;
-    data children: Vec<HtmlNode>;
+    data children: PyList;
 
     def __str__(&self) -> PyResult<String> {
         self.write(py, 0)
     }
 
     def __repr__(&self) -> PyResult<String> {
-        Ok(format!("<HtmlNode name=[{}] attributes=[{:?}] text=[{}]>",
+        Ok(format!("<HtmlNode name=[{}] text=[{}]>",
                    self.name(py),
-                   self.attributes(py),
-                   self.text(py)))
+                   self.text(py).len()))
     }
 
     def write(&self, indent: usize = 0) -> PyResult<String> {
         let text = self.text(py);
-        if !text.is_empty() {
-            return Ok(format!("{}", text));
+        if !text.is_empty()  {
+            return Ok(format!("{}{}\n", " ".repeat(indent), text));
+        }
+        let name = self.name(py);
+        if name.is_empty() {
+            return Ok("".to_string());
         }
         let mut result = " ".repeat(indent);
-        result += &format!("<{}", self.name(py));
-        for (key, val) in self.attributes(py) {
-            result += &format!(" {}={}", key, val);
+        result += &format!("<{}", name);
+        for tuple in self.attributes(py).iter(py) {
+            let tuple = tuple.cast_as::<PyTuple>(py)?;
+            let (key,val) = (tuple.get_item(py, 0), tuple.get_item(py,1));
+            result += &format!(" {}=\"{}\"", key, val);
         }
         result += ">\n";
-        for child in self.children(py) {
+        for child in self.children(py).iter(py) {
+            let child = child.cast_as::<HtmlNode>(py)?;
             result += &try!(child.write(py, indent+4));
         }
         result += &format!("{}</{}>\n", " ".repeat(indent), self.name(py));
@@ -147,25 +152,22 @@ py_class!(pub class HtmlNode |py| {
 
     def get_children(&self) -> PyResult<PyList> {
         let children = self.children(py);
-        make_result(py, children.to_vec())
+        let mut result = vec![];
+        for child in self.children(py).iter(py) {
+            result.push(child);
+        }
+        Ok(PyList::new(py, result.as_slice()))
     }
 
     def __traverse__(&self, visit) {
-        for child in self.children(py) {
-            try!(visit.call(child));
-        }
+        visit.call(self.attributes(py));
+        visit.call(self.children(py));
         Ok(())
     }
 
     def __clear__(&self) {
     }
 });
-
-impl std::clone::Clone for HtmlNode {
-    fn clone(&self) -> HtmlNode {
-        unimplemented!() // FIXME
-    }
-}
 
 impl HtmlNode {
     pub fn new(py: Python, rc_handle: &Handle) -> PyResult<HtmlNode> {
@@ -175,14 +177,20 @@ impl HtmlNode {
                 ref attrs,
                 ..
             } => {
-                let mut children: Vec<HtmlNode> = vec![];
+                let mut children = vec![];
                 for child in rc_handle.children.borrow().iter() {
-                    children.push(try!(HtmlNode::new(py, child)));
+                    children.push(HtmlNode::new(py, child)?.into_object());
                 }
-                let mut attributes: Vec<(String, String)> = vec![];
+                let mut attributes = vec![];
                 for attr in attrs.borrow().iter() {
-                    attributes.push((attr.name.local.to_string(), attr.value.to_string()));
+                    let attr = vec![
+                        PyString::new(py, &attr.name.local.to_string()).into_object(),
+                        PyString::new(py, &attr.value.to_string()).into_object(),
+                    ];
+                    attributes.push(PyTuple::new(py, attr.as_slice()).into_object());
                 }
+                let attributes = PyList::new(py, attributes.as_slice());
+                let children = PyList::new(py, children.as_slice());
                 HtmlNode::create_instance(
                     py,
                     format!("{}", name.local),
@@ -194,9 +202,9 @@ impl HtmlNode {
             NodeData::Text { ref contents, .. } => HtmlNode::create_instance(
                 py,
                 "".to_string(),
-                vec![],
-                contents.borrow().to_string(),
-                vec![],
+                PyList::new(py, &[]),
+                contents.borrow().trim().to_string(),
+                PyList::new(py, &[]),
             ),
             _ => unimplemented!(),
         }
