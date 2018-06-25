@@ -6,7 +6,7 @@ from lollygag_ext import query_html as _query_html
 
 def query_html(html: str, query: PyQuery):
     """
-    Query an html string
+    Get nodes matching the query from an html string
     """
     return _query_html(html, query)
 
@@ -29,29 +29,33 @@ def compile_query(query: dict) -> PyQuery:
         except (KeyError, IndexError):
             return _pair_to_dict(pair)
 
+    def _get_first_pair(d: dict):
+        return list(query.items())[0]
+
     if len(query) < 2:
-        return compile_single_item(*(list(query.items())[0]))
+        return compile_single_item(*_get_first_pair(query))
     try:
         reduced = reduce(lambda x, y: _reduce((x, y)), query.items())
     except KeyError:
         print(query)
         reduced = query
         raise
-    return compile_single_item(*(list(reduced.items())[0]))
+    return compile_single_item(*_get_first_pair(reduced))
 
 
 def compile_single_item(key: str, value, parent: PyQuery = None) -> PyQuery:
     try:
-        return {
+        compiler = {
             'name': lambda: compile_name(value),
             'attribute': lambda: compile_attribute(value),
             'data': lambda: compile_data(value),
             'or': lambda: compile_binary(QUERY_OR, value, parent),
             'and': lambda: compile_binary(QUERY_AND, value, parent),
-        }[key]()
+        }[key]
     except KeyError:
         warn(f"{key} is not a recognised query type!")
         return PyQuery(QUERY_NONE)
+    return compiler()
 
 
 def compile_name(value: str) -> PyQuery:

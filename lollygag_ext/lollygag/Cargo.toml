@@ -6,3 +6,5 @@ authors = ["Daniel Kiss <littlesnorrboy@gmail.com>"]
 [dependencies]
 html5ever = "*"
 regex = "1.0.0"
+reqwest = "0.8.6"
+tokio = "0.1.7"
