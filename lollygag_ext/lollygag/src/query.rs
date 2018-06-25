@@ -25,6 +25,30 @@ pub enum HtmlQuery {
     Sibling(Box<HtmlQuery>),
 }
 
+impl Clone for HtmlQuery {
+    fn clone(&self) -> HtmlQuery {
+        match self {
+            HtmlQuery::None => HtmlQuery::None,
+            HtmlQuery::Attribute { ref key, ref value } => HtmlQuery::Attribute {
+                key: key.clone(),
+                value: value.clone(),
+            },
+            HtmlQuery::Name(name) => HtmlQuery::Name(name.clone()),
+            HtmlQuery::Data(name) => HtmlQuery::Data(name.clone()),
+            HtmlQuery::And { ref x, ref y } => HtmlQuery::And {
+                x: x.clone(),
+                y: y.clone(),
+            },
+            HtmlQuery::Or { ref x, ref y } => HtmlQuery::Or {
+                x: x.clone(),
+                y: y.clone(),
+            },
+            HtmlQuery::Child(child) => unimplemented!(),
+            HtmlQuery::Sibling(sibling) => unimplemented!(),
+        }
+    }
+}
+
 impl HtmlQuery {
     pub fn and(self, query: HtmlQuery) -> HtmlQuery {
         match self {

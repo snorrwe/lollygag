@@ -17,18 +17,27 @@ type LollygagResult = Result<Vec<Handle>, LollygagError>;
 /// Then run the query against the returned responses
 pub fn query_multiple_endpoints(
     urls: Vec<String>,
-    query: &'static HtmlQuery,
-) -> Vec<Result<SimpleHtmlNode, LollygagError>> {
-    let mut result = Arc::new(Mutex::new(vec![]));
+    query: &HtmlQuery,
+) -> Vec<Result<Vec<SimpleHtmlNode>, LollygagError>> {
+    let result = Arc::new(Mutex::new(vec![]));
     let mut threads = vec![];
     for url in urls {
+        let query = query.clone();
         let result_vector = result.clone();
         threads.push(thread::spawn(move || {
-            let result = match query_http_endpoint(&url, query) {
-                Ok(result) => Ok(SimpleHtmlNode::new(
-                    NodeData::Text("asd".to_string()),
-                    vec![],
-                )),
+            let result = match query_http_endpoint(&url, &query) {
+                Ok(results) => {
+                    let mut mapped = vec![];
+                    for result in results {
+                        mapped.push(SimpleHtmlNode::new(
+                            NodeData::Text("asd".to_string()),
+                            vec![],
+                        ));
+                        // FIXME
+                        unimplemented!()
+                    }
+                    Ok(mapped)
+                }
                 Err(e) => Err(e),
             };
             let mut result_vector = result_vector.lock().unwrap();
@@ -112,6 +121,26 @@ mod tests {
         ) {
             Ok(result) => assert_eq!(result.len(), 3),
             Err(e) => panic!("{:?}", e),
+        }
+    }
+
+    #[test]
+    fn test_can_query_multiple_urls() {
+        let query: HtmlQuery = HtmlQuery::Data("goo.{3}".to_string());
+        let results = query_multiple_endpoints(
+            vec![
+                String::from("https://google.com"),
+                String::from("https://youtube.com"),
+            ],
+            &query,
+        );
+        assert_eq!(results.len(), 2);
+        for result in results {
+            match result {
+                // Ok(result) => assert_eq!(result.len(), 3),
+                _ => {}
+                Err(e) => panic!("{:?}", e),
+            }
         }
     }
 }
