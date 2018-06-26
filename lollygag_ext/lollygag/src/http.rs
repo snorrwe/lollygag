@@ -9,7 +9,7 @@ use std::thread;
 
 use super::LollygagError;
 use query::{query_tree, HtmlQuery};
-use simple_node::{NodeData, SimpleHtmlNode};
+use simple_node::SimpleHtmlNode;
 
 type LollygagResult = Result<Vec<Handle>, LollygagError>;
 
@@ -25,33 +25,37 @@ pub fn query_multiple_endpoints(
         let query = query.clone();
         let result_vector = result.clone();
         threads.push(thread::spawn(move || {
-            let result = match query_http_endpoint(&url, &query) {
-                Ok(results) => {
-                    let mut mapped = vec![];
-                    for result in results {
-                        mapped.push(SimpleHtmlNode::new(
-                            NodeData::Text("asd".to_string()),
-                            vec![],
-                        ));
-                        // FIXME
-                        unimplemented!()
-                    }
-                    Ok(mapped)
-                }
-                Err(e) => Err(e),
-            };
+            let result = query_endpoint_worker(url, query);
             let mut result_vector = result_vector.lock().unwrap();
             result_vector.push(result);
         }));
     }
     for thread in threads {
-        thread.join().expect("Failed to join threads!");
+        thread
+            .join()
+            .expect("Failed to join threads in [query_multiple_endpoints]!");
     }
     let lock = match Arc::try_unwrap(result) {
         Ok(lock) => lock,
         _ => panic!("Arc still has owners!"),
     };
     lock.into_inner().expect("Mutex cannot be locked!")
+}
+
+fn query_endpoint_worker(
+    url: String,
+    query: HtmlQuery,
+) -> Result<Vec<SimpleHtmlNode>, LollygagError> {
+    match query_http_endpoint(&url, &query) {
+        Ok(results) => {
+            let mut mapped = vec![];
+            for result in results {
+                mapped.push(SimpleHtmlNode::from_html5ever_node(&result));
+            }
+            Ok(mapped)
+        }
+        Err(e) => Err(e),
+    }
 }
 
 /// Send a GET request to the specified url
@@ -65,7 +69,7 @@ pub fn query_http_endpoint(url: &str, query: &HtmlQuery) -> LollygagResult {
                 url, e
             ))),
         },
-        Err(e) => unimplemented!(),
+        Err(e) => panic!(e),
     }
 }
 
@@ -98,7 +102,6 @@ fn fetch_url(url: &str) -> Result<Response, reqwest::Error> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use reqwest::StatusCode;
 
     #[test]
     fn test_can_fetch_google_via_https() {
@@ -137,8 +140,7 @@ mod tests {
         assert_eq!(results.len(), 2);
         for result in results {
             match result {
-                // Ok(result) => assert_eq!(result.len(), 3),
-                _ => {}
+                Ok(_result) => {}
                 Err(e) => panic!("{:?}", e),
             }
         }
