@@ -1,6 +1,5 @@
 use html5ever::rcdom::{Handle, NodeData};
 use regex::Regex;
-use std;
 
 use super::LollygagError;
 
@@ -23,6 +22,7 @@ pub enum HtmlQuery {
     },
     Child(Box<HtmlQuery>),
     Sibling(Box<HtmlQuery>),
+    Not(Box<HtmlQuery>),
 }
 
 impl Clone for HtmlQuery {
@@ -43,8 +43,8 @@ impl Clone for HtmlQuery {
                 x: x.clone(),
                 y: y.clone(),
             },
-            HtmlQuery::Child(child) => unimplemented!(),
-            HtmlQuery::Sibling(sibling) => unimplemented!(),
+            HtmlQuery::Not(ref query) => HtmlQuery::Not(query.clone()),
+            _ => unimplemented!(),
         }
     }
 }
@@ -52,21 +52,21 @@ impl Clone for HtmlQuery {
 impl HtmlQuery {
     pub fn and(self, query: HtmlQuery) -> HtmlQuery {
         match self {
+            HtmlQuery::None => return HtmlQuery::None,
             _ => HtmlQuery::And {
                 x: Box::new(self),
                 y: Box::new(query),
             },
-            HtmlQuery::None => return HtmlQuery::None,
         }
     }
 
     pub fn or(self, query: HtmlQuery) -> HtmlQuery {
         match self {
+            HtmlQuery::None => return query,
             _ => HtmlQuery::Or {
                 x: Box::new(self),
                 y: Box::new(query),
             },
-            HtmlQuery::None => return query,
         }
     }
 }
@@ -149,6 +149,7 @@ pub fn matches_data(node: &Handle, pattern: &String) -> bool {
 mod tests {
     use super::*;
 
+    use std;
     use std::fs::File;
     use std::io::Read;
 
