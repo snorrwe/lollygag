@@ -5,7 +5,7 @@ use html5ever::rcdom::RcDom;
 use html5ever::rcdom::{Handle, NodeData};
 use html5ever::tendril::TendrilSink;
 
-use html_node::HtmlNode;
+use html_node::{node_type, HtmlNode};
 use lollygag::{query_tree, HtmlQuery};
 use utils::get_strs_from_dict;
 
@@ -16,6 +16,7 @@ pub mod query {
     pub const QUERY_OR: u8 = 3;
     pub const QUERY_AND: u8 = 4;
     pub const QUERY_DATA: u8 = 5;
+    pub const QUERY_NOT: u8 = 6;
 }
 
 /// Run a query on a single html file
@@ -39,7 +40,10 @@ pub fn query_html(py: Python, html: PyString, query: PyObject) -> PyResult<PyLis
     let found = result.len() > 0;
     let mut result_nodes: Vec<HtmlNode> = vec![];
     for res in result {
-        result_nodes.push(try!(HtmlNode::new(py, &res)));
+        let node = try!(HtmlNode::new(py, &res));
+        if try!(node.get_type(py)) != node_type::UNKNOWN {
+            result_nodes.push(node);
+        }
     }
     make_result(py, result_nodes)
 }
@@ -104,6 +108,10 @@ impl PyQuery {
                 let string = try!(self.value(py).cast_as::<PyString>(py));
                 let string = try!(string.to_string(py));
                 Ok(HtmlQuery::Data(string.into_owned()))
+            }
+            query::QUERY_NOT => {
+                let compiled = try!(self.value(py).cast_as::<PyQuery>(py)).to_query(py);
+                Ok(compiled?.not())
             }
             _ => unimplemented!(),
         }

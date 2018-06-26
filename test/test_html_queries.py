@@ -1,4 +1,5 @@
 from lollygag.query import compile_query, query_html
+from lollygag_ext import NODE_DOCUMENT, NODE_ELEMENT, NODE_TEXT
 
 some_html = """
 <asd-node style="boi" foo="bar">   <some-node foo="baz">
@@ -95,6 +96,43 @@ def test_attribute_query():
     </some-node>
 </asd-node>
 """
+
+
+def test_not_attribute_query():
+    """
+    Query:
+        element should not have `foo="bar"` attribute nor should be named any of ['html', 'head', 'body]
+    """
+    query = compile_query({
+        "not": {
+            "or": (
+                {
+                    "attribute": {
+                        "name": "foo",
+                        "value": "bar"
+                    }
+                },
+                {
+                    "name": "html|head|body"
+                },
+            )
+        },
+    })
+    html = """<foo foo="bar"></foo><foo >boingatros</foo>"""
+    result = query_html(html, query)
+    print(result)
+    assert result
+    for r in result:
+        print(str(r))
+    assert len(result) == 3
+    assert result[0].get_type() == NODE_DOCUMENT
+    assert result[1].get_type() == NODE_ELEMENT
+    assert str(result[1]) == """<foo>
+    boingatros
+</foo>
+"""
+    assert result[2].get_type() == NODE_TEXT
+    assert str(result[2]) == "boingatros\n"
 
 
 def test_or_query():

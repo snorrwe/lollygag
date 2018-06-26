@@ -1,6 +1,6 @@
 from functools import reduce
 from warnings import warn
-from lollygag_ext import PyQuery, QUERY_NAME, QUERY_ATTRIBUTE, QUERY_AND, QUERY_OR, QUERY_DATA, QUERY_NONE
+from lollygag_ext import PyQuery, QUERY_NAME, QUERY_ATTRIBUTE, QUERY_AND, QUERY_OR, QUERY_DATA, QUERY_NONE, QUERY_NOT
 from lollygag_ext import query_html as _query_html
 
 
@@ -51,11 +51,16 @@ def compile_single_item(key: str, value, parent: PyQuery = None) -> PyQuery:
             'data': lambda: compile_data(value),
             'or': lambda: compile_binary(QUERY_OR, value, parent),
             'and': lambda: compile_binary(QUERY_AND, value, parent),
+            'not': lambda: compile_not(value),
         }[key]
     except KeyError:
         warn(f"{key} is not a recognised query type!")
         return PyQuery(QUERY_NONE)
     return compiler()
+
+
+def compile_not(query) -> PyQuery:
+    return PyQuery(QUERY_NOT, compile_query(query))
 
 
 def compile_name(value: str) -> PyQuery:

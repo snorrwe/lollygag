@@ -9,7 +9,7 @@ mod html_node;
 mod query;
 mod utils;
 
-use html_node::HtmlNode;
+use html_node::{node_type, HtmlNode};
 use query::{query as query_consts, query_html, PyQuery};
 
 trait Getter {
@@ -50,8 +50,13 @@ py_module_initializer!(
         module.add(py, "QUERY_AND", query_consts::QUERY_AND)?;
         module.add(py, "QUERY_OR", query_consts::QUERY_OR)?;
         module.add(py, "QUERY_DATA", query_consts::QUERY_DATA)?;
+        module.add(py, "QUERY_NOT", query_consts::QUERY_NOT)?;
         module.add_class::<PyQuery>(py)?;
         module.add_class::<HtmlNode>(py)?;
+        module.add(py, "NODE_UNKNOWN", node_type::UNKNOWN)?;
+        module.add(py, "NODE_DOCUMENT", node_type::DOCUMENT)?;
+        module.add(py, "NODE_ELEMENT", node_type::ELEMENT)?;
+        module.add(py, "NODE_TEXT", node_type::TEXT)?;
         Ok(())
     }
 );

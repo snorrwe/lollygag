@@ -3,6 +3,13 @@ use cpython::{PyList, PyResult, PyString, PyTuple, Python};
 use html5ever::rcdom::{Handle, NodeData};
 use html5ever::tendril::TendrilSink;
 
+pub mod node_type {
+    pub const UNKNOWN: u8 = 0;
+    pub const DOCUMENT: u8 = 1;
+    pub const ELEMENT: u8 = 2;
+    pub const TEXT: u8 = 3;
+}
+
 py_class!(pub class HtmlNode |py| {
     data nodetype: u8;
     data name: Option<String>;
@@ -23,7 +30,8 @@ py_class!(pub class HtmlNode |py| {
             Some(t) => t,
             None => "",
         };
-        Ok(format!("<HtmlNode name=[{}] text=[{}]>",
+        Ok(format!("<HtmlNode type=[{}] name=[{}] text=[{}]>",
+                   self.nodetype(py),          
                    name,
                    text.len()))
     }
@@ -74,6 +82,10 @@ py_class!(pub class HtmlNode |py| {
         Ok(PyList::new(py, result.as_slice()))
     }
 
+    def get_type(&self) -> PyResult<u8> {
+        Ok(*self.nodetype(py))
+    }
+
     def __traverse__(&self, visit) {
         match self.attributes(py) {
             Some(a) => {visit.call(a);},
@@ -111,7 +123,7 @@ impl HtmlNode {
                 let children = PyList::new(py, children.as_slice());
                 HtmlNode::create_instance(
                     py,
-                    0, // FIXME
+                    node_type::ELEMENT,
                     Some(format!("{}", name.local)),
                     Some(attributes),
                     None,
@@ -120,13 +132,28 @@ impl HtmlNode {
             }
             NodeData::Text { ref contents, .. } => HtmlNode::create_instance(
                 py,
-                0, // FIXME
+                node_type::TEXT,
                 None,
                 None,
                 Some(contents.borrow().trim().to_string()),
                 PyList::new(py, &[]),
             ),
-            _ => unimplemented!(),
+            NodeData::Document => HtmlNode::create_instance(
+                py,
+                node_type::DOCUMENT,
+                None,
+                None,
+                None,
+                PyList::new(py, &[]),
+            ),
+            _ => HtmlNode::create_instance(
+                py,
+                node_type::UNKNOWN,
+                None,
+                None,
+                None,
+                PyList::new(py, &[]),
+            ),
         }
     }
 }
