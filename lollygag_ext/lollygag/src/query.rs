@@ -69,6 +69,10 @@ impl HtmlQuery {
             },
         }
     }
+
+    pub fn not(self) -> HtmlQuery {
+        HtmlQuery::Not(Box::new(self))
+    }
 }
 
 /// Get all nodes in a html tree matching the query
@@ -100,6 +104,7 @@ pub fn matches_node(node: &Handle, query: &HtmlQuery) -> bool {
         HtmlQuery::And { x, y } => matches_node(&node, &x) && matches_node(&node, &y),
         HtmlQuery::Or { x, y } => matches_node(&node, &x) || matches_node(&node, &y),
         HtmlQuery::None => false,
+        HtmlQuery::Not(query) => !matches_node(&node, &query),
         _ => unimplemented!(),
     }
 }
@@ -192,7 +197,8 @@ mod tests {
                             assert_eq!(name.local.to_string(), expected_tag.to_string())
                         }
                         NodeData::Text { .. } => {}
-                        _ => unimplemented!(),
+                        NodeData::Document { .. } => {}
+                        _ => panic!("Unexpected NodeData in result!"),
                     };
                 }
             }
@@ -222,6 +228,15 @@ mod tests {
     fn finds_all_code_nodes() {
         let query = HtmlQuery::Name("code".to_string());
         assert_element(LARGE_TEST_HTML, &query, 74, "code");
+    }
+
+    #[test]
+    fn finds_all_not_code_nodes() {
+        let query_meta_names = HtmlQuery::Name("(html|head|body|div)".to_string());
+        let query = HtmlQuery::Name("code".to_string())
+            .not()
+            .and(query_meta_names.not());
+        assert_element(BASIC_TEST_HTML, &query, 5, "foo");
     }
 
     #[test]
