@@ -22,18 +22,20 @@ py_class!(pub class HtmlNode |py| {
     }
 
     def __repr__(&self) -> PyResult<String> {
+        const NONE: &str = "None";
         let name = match self.name(py) {
             Some(name) => name,
-            None => "",
+            None => NONE,
         };
         let text = match self.text(py) {
-            Some(t) => t,
-            None => "",
+            Some(t) => format!("{}", t.len()),
+            None => NONE.to_string(),
         };
-        Ok(format!("<HtmlNode type=[{}] name=[{}] text=[{}]>",
-                   self.nodetype(py),          
-                   name,
-                   text.len()))
+        let result = format!("<HtmlNode type=[{}] name=[{}] text=[{}]>",
+                                self.nodetype(py),          
+                                name,
+                                text);
+        Ok(result)
     }
 
     def write(&self, indent: usize = 0) -> PyResult<String> {
@@ -49,7 +51,7 @@ py_class!(pub class HtmlNode |py| {
         let name = match self.name(py) {
             Some(name) => name,
             None => {
-                return Ok("".to_string());
+                return Ok(format!(""));
             }
         };
         let mut result = " ".repeat(indent);
