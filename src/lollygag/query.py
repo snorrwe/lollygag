@@ -2,6 +2,7 @@ from functools import reduce
 from warnings import warn
 from lollygag_ext import PyQuery, QUERY_NAME, QUERY_ATTRIBUTE, QUERY_AND, QUERY_OR, QUERY_DATA, QUERY_NONE, QUERY_NOT
 from lollygag_ext import query_html as _query_html
+from lollygag_ext import query_http_endpoint as _query_http_endpoint
 
 
 def query_html(html: str, query: PyQuery):
@@ -9,6 +10,10 @@ def query_html(html: str, query: PyQuery):
     Get nodes matching the query from an html string
     """
     return _query_html(html, query)
+
+
+def query_http_endpoint(url: str, query: PyQuery):
+    return _query_http_endpoint(url, query)
 
 
 def compile_query(query: dict) -> PyQuery:

@@ -88,6 +88,20 @@ py_class!(pub class HtmlNode |py| {
         Ok(*self.nodetype(py))
     }
 
+    def get_attributes(&self) -> PyResult<Option<PyList>> {
+        let attributes = self.attributes(py);
+        match attributes {
+            Some(attributes) => {
+                let mut result = vec![];
+                for attr in attributes.iter(py) {
+                    result.push(attr);
+                }
+                Ok(Some(PyList::new(py, result.as_slice())))
+            },
+            None => Ok(None)
+        }
+    }
+
     def __traverse__(&self, visit) {
         match self.attributes(py) {
             Some(a) => {visit.call(a);},

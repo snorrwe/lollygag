@@ -6,7 +6,7 @@ use html5ever::rcdom::{Handle, NodeData};
 use html5ever::tendril::TendrilSink;
 
 use html_node::{node_type, HtmlNode};
-use lollygag::{query_tree, HtmlQuery};
+use lollygag::{self, query_tree, HtmlQuery};
 use utils::get_strs_from_dict;
 
 pub mod query {
@@ -19,13 +19,28 @@ pub mod query {
     pub const QUERY_NOT: u8 = 6;
 }
 
+pub fn query_multiple_endpoints(py: Python, url: PyList, query: PyQuery) -> PyResult<PyList> {
+    unimplemented!()
+}
+
+/// Run a query on a single http endpoint's response
+/// Params:
+/// url: str
+/// query: PyQuery object
+/// returns: List of nodes matching the query
+pub fn query_http_endpoint(py: Python, url: PyString, query: PyQuery) -> PyResult<PyList> {
+    let url = try!(url.to_string(py));
+    let query = try!(query.to_query(py));
+    let result = lollygag::query_http_endpoint(&url, &query);
+    lollygag_to_py_result(py, result)
+}
+
 /// Run a query on a single html file
 /// Params:
 /// html: str
 /// query: PyQuery object
 /// returns: List of nodes matching the query
-pub fn query_html(py: Python, html: PyString, query: PyObject) -> PyResult<PyList> {
-    let query = try!(query.cast_as::<PyQuery>(py));
+pub fn query_html(py: Python, html: PyString, query: PyQuery) -> PyResult<PyList> {
     let query = try!(query.to_query(py));
     let html = try!(html.to_string(py));
     let mut html = html.as_bytes();
@@ -33,11 +48,21 @@ pub fn query_html(py: Python, html: PyString, query: PyObject) -> PyResult<PyLis
         .from_utf8()
         .read_from(&mut html)
         .unwrap();
-    let result = match query_tree(&handle.document, &query) {
+    let result = query_tree(&handle.document, &query);
+    lollygag_to_py_result(py, result)
+}
+fn lollygag_to_py_result(
+    py: Python,
+    result: Result<Vec<Handle>, lollygag::LollygagError>,
+) -> PyResult<PyList> {
+    let result = match result {
         Ok(result) => result,
         Err(_) => vec![],
     };
-    let found = result.len() > 0;
+    map_results(py, result)
+}
+
+fn map_results(py: Python, result: Vec<Handle>) -> PyResult<PyList> {
     let mut result_nodes: Vec<HtmlNode> = vec![];
     for res in result {
         let node = try!(HtmlNode::new(py, &res));
