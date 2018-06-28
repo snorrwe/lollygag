@@ -1,7 +1,7 @@
 use cpython::PythonObject;
 use cpython::{PyList, PyResult, PyString, PyTuple, Python};
 use html5ever::rcdom::{Handle, NodeData};
-use html5ever::tendril::TendrilSink;
+use lollygag;
 
 pub mod node_type {
     pub const UNKNOWN: u8 = 0;
@@ -11,165 +11,69 @@ pub mod node_type {
 }
 
 py_class!(pub class HtmlNode |py| {
-    data nodetype: u8;
-    data name: Option<String>;
-    data attributes: Option<PyList>;
-    data text: Option<String>;
-    data children: PyList;
+    data node: lollygag::SimpleHtmlNode;
 
     def __str__(&self) -> PyResult<String> {
-        self.write(py, 0)
+        Ok(self.node(py).to_string())
     }
 
     def __repr__(&self) -> PyResult<String> {
-        const NONE: &str = "None";
-        let name = match self.name(py) {
-            Some(name) => name,
-            None => NONE,
-        };
-        let text = match self.text(py) {
-            Some(t) => format!("{}", t.len()),
-            None => NONE.to_string(),
-        };
-        let result = format!("<HtmlNode type=[{}] name=[{}] text=[{}]>",
-                                self.nodetype(py),          
-                                name,
-                                text);
-        Ok(result)
-    }
-
-    def write(&self, indent: usize = 0) -> PyResult<String> {
-        let text = self.text(py);
-        match text {
-            Some(ref text) => {
-                if text.len() > 0 {
-                    return Ok(format!("{}{}\n", " ".repeat(indent), text));
-                }
+        let result = match self.node(py).data {
+            lollygag::NodeData::Element {ref name, ref attributes } => {
+                format!("HtmlNode <{}>", name)
             },
-            None => {},
-        }
-        let name = match self.name(py) {
-            Some(name) => name,
-            None => {
-                return Ok(format!(""));
+            lollygag::NodeData::Text (ref content) => {
+                format!("TextNode[{}]", content.len())
+            },
+            lollygag::NodeData::Document => {
+                format!("Document")
             }
+            _ => format!("UNKNOWN")
         };
-        let mut result = " ".repeat(indent);
-        result += &format!("<{}", name);
-        match self.attributes(py) {
-            Some(a) => {
-                for tuple in a.iter(py) {
-                    let tuple = tuple.cast_as::<PyTuple>(py)?;
-                    let (key,val) = (tuple.get_item(py, 0), tuple.get_item(py,1));
-                    result += &format!(" {}=\"{}\"", key, val);
-                }
-            },
-            None => {}
-        }
-        result += ">\n";
-        for child in self.children(py).iter(py) {
-            let child = child.cast_as::<HtmlNode>(py)?;
-            result += &try!(child.write(py, indent+4));
-        }
-        result += &format!("{}</{}>\n", " ".repeat(indent), name);
-        Ok(result)
+        Ok(format!("<Lollygag::HtmlNode {}>", result))
     }
 
     def get_children(&self) -> PyResult<PyList> {
-        let children = self.children(py);
-        let mut result = vec![];
-        for child in self.children(py).iter(py) {
-            result.push(child);
-        }
-        Ok(PyList::new(py, result.as_slice()))
+        unimplemented!()
     }
 
     def get_type(&self) -> PyResult<u8> {
-        Ok(*self.nodetype(py))
+        let result = match self.node(py).data {
+            lollygag::NodeData::Element { .. } => {
+                node_type::ELEMENT
+            },
+            lollygag::NodeData::Text (_) => {
+                node_type::TEXT
+            },
+            lollygag::NodeData::Document => {
+                node_type::DOCUMENT
+            },
+            _ => node_type::UNKNOWN
+        };
+        Ok(result)
     }
 
     def get_attributes(&self) -> PyResult<Option<PyList>> {
-        let attributes = self.attributes(py);
-        match attributes {
-            Some(attributes) => {
+        let result = match self.node(py).data {
+            lollygag::NodeData::Element { ref attributes, .. } => {
                 let mut result = vec![];
-                for attr in attributes.iter(py) {
-                    result.push(attr);
+                for (key, value) in attributes {
+                    result.push( PyTuple::new(py,
+                        &[
+                            PyString::new(py, key).into_object(), 
+                            PyString::new(py, value).into_object()
+                        ]).into_object());
                 }
-                Ok(Some(PyList::new(py, result.as_slice())))
-            },
-            None => Ok(None)
-        }
-    }
-
-    def __traverse__(&self, visit) {
-        match self.attributes(py) {
-            Some(a) => {visit.call(a);},
-            None => {},
-        }
-        visit.call(self.children(py));
-        Ok(())
-    }
-
-    def __clear__(&self) {
+                Some(PyList::new(py, result.as_slice()))
+            }
+            _ => None
+        };
+        Ok(result)
     }
 });
 
 impl HtmlNode {
-    pub fn new(py: Python, rc_handle: &Handle) -> PyResult<HtmlNode> {
-        match rc_handle.data {
-            NodeData::Element {
-                ref name,
-                ref attrs,
-                ..
-            } => {
-                let mut children = vec![];
-                for child in rc_handle.children.borrow().iter() {
-                    children.push(HtmlNode::new(py, child)?.into_object());
-                }
-                let mut attributes = vec![];
-                for attr in attrs.borrow().iter() {
-                    let attr = vec![
-                        PyString::new(py, &attr.name.local.to_string()).into_object(),
-                        PyString::new(py, &attr.value.to_string()).into_object(),
-                    ];
-                    attributes.push(PyTuple::new(py, attr.as_slice()).into_object());
-                }
-                let attributes = PyList::new(py, attributes.as_slice());
-                let children = PyList::new(py, children.as_slice());
-                HtmlNode::create_instance(
-                    py,
-                    node_type::ELEMENT,
-                    Some(format!("{}", name.local)),
-                    Some(attributes),
-                    None,
-                    children,
-                )
-            }
-            NodeData::Text { ref contents, .. } => HtmlNode::create_instance(
-                py,
-                node_type::TEXT,
-                None,
-                None,
-                Some(contents.borrow().trim().to_string()),
-                PyList::new(py, &[]),
-            ),
-            NodeData::Document => HtmlNode::create_instance(
-                py,
-                node_type::DOCUMENT,
-                None,
-                None,
-                None,
-                PyList::new(py, &[]),
-            ),
-            _ => HtmlNode::create_instance(
-                py,
-                node_type::UNKNOWN,
-                None,
-                None,
-                None,
-                PyList::new(py, &[]),
-            ),
-        }
+    pub fn new(py: Python, node: lollygag::SimpleHtmlNode) -> PyResult<HtmlNode> {
+        HtmlNode::create_instance(py, node)
     }
 }

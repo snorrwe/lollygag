@@ -7,27 +7,29 @@ use std;
 use std::sync::{Arc, Mutex};
 use std::thread;
 
+use std::collections::HashMap;
+
 use super::LollygagError;
 use query::{query_tree, HtmlQuery};
 use simple_node::SimpleHtmlNode;
 
-type LollygagResult = Result<Vec<Handle>, LollygagError>;
+type LollygagResult = Result<Vec<SimpleHtmlNode>, LollygagError>;
 
 /// Send a GET request to each url
 /// Then run the query against the returned responses
 pub fn query_multiple_endpoints(
     urls: Vec<String>,
     query: &HtmlQuery,
-) -> Vec<Result<Vec<SimpleHtmlNode>, LollygagError>> {
-    let result = Arc::new(Mutex::new(vec![]));
+) -> HashMap<String, LollygagResult> {
+    let result = Arc::new(Mutex::new(HashMap::new()));
     let mut threads = vec![];
     for url in urls {
         let query = query.clone();
-        let result_vector = result.clone();
+        let retval = result.clone();
         threads.push(thread::spawn(move || {
-            let result = query_endpoint_worker(url, query);
-            let mut result_vector = result_vector.lock().unwrap();
-            result_vector.push(result);
+            let result = query_endpoint_worker(url.clone(), query);
+            let mut retval = retval.lock().unwrap();
+            retval.insert(url, result);
         }));
     }
     for thread in threads {
@@ -42,15 +44,12 @@ pub fn query_multiple_endpoints(
     lock.into_inner().expect("Mutex cannot be locked!")
 }
 
-fn query_endpoint_worker(
-    url: String,
-    query: HtmlQuery,
-) -> Result<Vec<SimpleHtmlNode>, LollygagError> {
+fn query_endpoint_worker(url: String, query: HtmlQuery) -> LollygagResult {
     match query_http_endpoint(&url, &query) {
         Ok(results) => {
             let mut mapped = vec![];
             for result in results {
-                mapped.push(SimpleHtmlNode::from_html5ever_node(&result));
+                mapped.push(result);
             }
             Ok(mapped)
         }
@@ -134,14 +133,14 @@ mod tests {
             vec![
                 String::from("https://google.com"),
                 String::from("https://youtube.com"),
+                String::from("https://github.com"),
             ],
             &query,
         );
-        assert_eq!(results.len(), 2);
-        for result in results {
-            match result {
-                Ok(_result) => {}
-                Err(e) => panic!("{:?}", e),
+        assert_eq!(results.len(), 3);
+        for (_url, result) in results {
+            if let Err(e) = result {
+                panic!("{:?}", e);
             }
         }
     }

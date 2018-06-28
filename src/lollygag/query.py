@@ -5,15 +5,18 @@ from lollygag_ext import query_html as _query_html
 from lollygag_ext import query_http_endpoint as _query_http_endpoint
 
 
+def query_http_endpoint(url: str, query: PyQuery):
+    """
+    Get nodes matching the query in the response of the GET request sent to `url`
+    """
+    return _query_http_endpoint(url, query)
+
+
 def query_html(html: str, query: PyQuery):
     """
     Get nodes matching the query from an html string
     """
     return _query_html(html, query)
-
-
-def query_http_endpoint(url: str, query: PyQuery):
-    return _query_http_endpoint(url, query)
 
 
 def compile_query(query: dict) -> PyQuery:

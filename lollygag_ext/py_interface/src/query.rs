@@ -2,7 +2,6 @@ use cpython::PythonObject;
 use cpython::{PyDict, PyList, PyObject, PyResult, PyString, PyTuple, Python};
 use html5ever::parse_document;
 use html5ever::rcdom::RcDom;
-use html5ever::rcdom::{Handle, NodeData};
 use html5ever::tendril::TendrilSink;
 
 use html_node::{node_type, HtmlNode};
@@ -19,8 +18,27 @@ pub mod query {
     pub const QUERY_NOT: u8 = 6;
 }
 
-pub fn query_multiple_endpoints(py: Python, url: PyList, query: PyQuery) -> PyResult<PyList> {
-    unimplemented!()
+pub fn query_multiple_endpoints(py: Python, urls: &PyList, query: &PyQuery) -> PyResult<PyDict> {
+    let mut query_urls: Vec<String> = vec![];
+    for url in urls.iter(py) {
+        let url = try!(url.cast_into::<PyString>(py));
+        let url = try!(url.to_string(py)).into_owned();
+        query_urls.push(url);
+    }
+    let query = try!(query.to_query(py));
+    let mut query_results = PyDict::new(py);
+    for (url, result) in lollygag::query_multiple_endpoints(query_urls, &query) {
+        if let Ok(result) = result {
+            let mut query_result_values = vec![];
+            for res in result {
+                query_result_values.push(HtmlNode::new(py, res)?.into_object());
+            }
+            query_results.set_item(py, url, PyList::new(py, query_result_values.as_slice()));
+        } else {
+            unimplemented!()
+        }
+    }
+    Ok(query_results)
 }
 
 /// Run a query on a single http endpoint's response
@@ -28,7 +46,7 @@ pub fn query_multiple_endpoints(py: Python, url: PyList, query: PyQuery) -> PyRe
 /// url: str
 /// query: PyQuery object
 /// returns: List of nodes matching the query
-pub fn query_http_endpoint(py: Python, url: PyString, query: PyQuery) -> PyResult<PyList> {
+pub fn query_http_endpoint(py: Python, url: &PyString, query: &PyQuery) -> PyResult<PyList> {
     let url = try!(url.to_string(py));
     let query = try!(query.to_query(py));
     let result = lollygag::query_http_endpoint(&url, &query);
@@ -40,7 +58,7 @@ pub fn query_http_endpoint(py: Python, url: PyString, query: PyQuery) -> PyResul
 /// html: str
 /// query: PyQuery object
 /// returns: List of nodes matching the query
-pub fn query_html(py: Python, html: PyString, query: PyQuery) -> PyResult<PyList> {
+pub fn query_html(py: Python, html: &PyString, query: &PyQuery) -> PyResult<PyList> {
     let query = try!(query.to_query(py));
     let html = try!(html.to_string(py));
     let mut html = html.as_bytes();
@@ -51,9 +69,10 @@ pub fn query_html(py: Python, html: PyString, query: PyQuery) -> PyResult<PyList
     let result = query_tree(&handle.document, &query);
     lollygag_to_py_result(py, result)
 }
+
 fn lollygag_to_py_result(
     py: Python,
-    result: Result<Vec<Handle>, lollygag::LollygagError>,
+    result: Result<Vec<lollygag::SimpleHtmlNode>, lollygag::LollygagError>,
 ) -> PyResult<PyList> {
     let result = match result {
         Ok(result) => result,
@@ -62,13 +81,11 @@ fn lollygag_to_py_result(
     map_results(py, result)
 }
 
-fn map_results(py: Python, result: Vec<Handle>) -> PyResult<PyList> {
+fn map_results(py: Python, result: Vec<lollygag::SimpleHtmlNode>) -> PyResult<PyList> {
     let mut result_nodes: Vec<HtmlNode> = vec![];
     for res in result {
-        let node = try!(HtmlNode::new(py, &res));
-        if try!(node.get_type(py)) != node_type::UNKNOWN {
-            result_nodes.push(node);
-        }
+        let node = try!(HtmlNode::new(py, res));
+        result_nodes.push(node);
     }
     make_result(py, result_nodes)
 }

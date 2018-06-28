@@ -2,7 +2,7 @@
 extern crate cpython;
 extern crate html5ever;
 
-use cpython::{PyDict, PyObject, PyResult, PyString, Python};
+use cpython::{PyDict, PyResult, PyString, Python};
 
 extern crate lollygag;
 mod html_node;
@@ -42,12 +42,12 @@ py_module_initializer!(
         module.add(
             py,
             "query_html",
-            py_fn!(py, query_html(html: PyString, query: PyQuery)),
+            py_fn!(py, query_html(html: &PyString, query: &PyQuery)),
         )?;
         module.add(
             py,
             "query_http_endpoint",
-            py_fn!(py, query_http_endpoint(url: PyString, query: PyQuery)),
+            py_fn!(py, query_http_endpoint(url: &PyString, query: &PyQuery)),
         )?;
         module.add(py, "QUERY_NONE", query_consts::QUERY_NONE)?;
         module.add(py, "QUERY_NAME", query_consts::QUERY_NAME)?;

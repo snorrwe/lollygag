@@ -2,6 +2,7 @@ use html5ever::rcdom::{Handle, NodeData};
 use regex::Regex;
 
 use super::LollygagError;
+use simple_node::SimpleHtmlNode;
 
 #[derive(Debug)]
 pub enum HtmlQuery {
@@ -77,10 +78,10 @@ impl HtmlQuery {
 
 /// Get all nodes in a html tree matching the query
 /// Returns a vector of matching nodes
-pub fn query_tree(node: &Handle, query: &HtmlQuery) -> Result<Vec<Handle>, LollygagError> {
+pub fn query_tree(node: &Handle, query: &HtmlQuery) -> Result<Vec<SimpleHtmlNode>, LollygagError> {
     let mut result = vec![];
     if matches_node(node, query) {
-        result.push(node.clone());
+        result.push(SimpleHtmlNode::from_html5ever_node(&node));
     }
     for child in node.children.borrow().iter() {
         let mut res = try!(query_tree(child, &query));
@@ -131,23 +132,17 @@ pub fn has_attribute(node: &Handle, key: &String, value: &String) -> bool {
 /// Check if the pattern is found in the `Text` node
 /// Other types of nodes are ignored
 pub fn matches_data(node: &Handle, pattern: &String) -> bool {
-    match node.data {
-        NodeData::Element { .. } => {
-            let re = Regex::new(pattern).unwrap();
-            for child in node.children.borrow().iter() {
-                match child.data {
-                    NodeData::Text { ref contents, .. } => {
-                        if re.is_match(&contents.borrow()) {
-                            return true;
-                        }
-                    }
-                    _ => (),
+    if let NodeData::Element { .. } = node.data {
+        let re = Regex::new(pattern).unwrap();
+        for child in node.children.borrow().iter() {
+            if let NodeData::Text { ref contents, .. } = child.data {
+                if re.is_match(&contents.borrow()) {
+                    return true;
                 }
             }
-            false
         }
-        _ => false,
     }
+    false
 }
 
 #[cfg(test)]
@@ -159,8 +154,9 @@ mod tests {
     use std::io::Read;
 
     use html5ever::parse_document;
-    use html5ever::rcdom::{Handle, NodeData, RcDom};
+    use html5ever::rcdom::{Handle, RcDom};
     use html5ever::tendril::TendrilSink;
+    use simple_node::NodeData;
 
     const BASIC_TEST_HTML: &str = "test/data/basic.html";
     const INVALID_TEST_HTML: &str = "test/data/invalid.html";
@@ -194,11 +190,11 @@ mod tests {
                 for res in result {
                     match res.data {
                         NodeData::Element { ref name, .. } => {
-                            assert_eq!(name.local.to_string(), expected_tag.to_string())
+                            assert_eq!(*name, expected_tag.to_string())
                         }
                         NodeData::Text { .. } => {}
-                        NodeData::Document { .. } => {}
-                        _ => panic!("Unexpected NodeData in result!"),
+                        NodeData::Document => {}
+                        _ => panic!("Unexpected NodeData in result! {:?}", res),
                     };
                 }
             }

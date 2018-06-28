@@ -39,7 +39,9 @@ def test_data_query_regex():
     assert result
     assert len(result) == 3
     for r in result:
-        assert str(r) == """<li>
+        r = str(r)
+        print(r)
+        assert r == """<li>
     something interesting
 </li>
 """
