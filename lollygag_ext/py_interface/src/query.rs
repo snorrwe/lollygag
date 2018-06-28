@@ -28,14 +28,15 @@ pub fn query_multiple_endpoints(py: Python, urls: &PyList, query: &PyQuery) -> P
     let query = try!(query.to_query(py));
     let mut query_results = PyDict::new(py);
     for (url, result) in lollygag::query_multiple_endpoints(query_urls, &query) {
-        if let Ok(result) = result {
-            let mut query_result_values = vec![];
-            for res in result {
-                query_result_values.push(HtmlNode::new(py, res)?.into_object());
+        match result {
+            Ok(result) => {
+                let mut query_result_values = vec![];
+                for res in result {
+                    query_result_values.push(HtmlNode::new(py, res)?.into_object());
+                }
+                query_results.set_item(py, url, PyList::new(py, query_result_values.as_slice()));
             }
-            query_results.set_item(py, url, PyList::new(py, query_result_values.as_slice()));
-        } else {
-            unimplemented!()
+            _ => unimplemented!(),
         }
     }
     Ok(query_results)

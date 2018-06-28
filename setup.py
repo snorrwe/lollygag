@@ -6,7 +6,8 @@ try:
 except ImportError:
     import sys
     import subprocess
-    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'setuptools_rust'])
+    subprocess.check_call(
+        [sys.executable, '-m', 'pip', 'install', 'setuptools_rust'])
     from setuptools_rust import RustExtension, Binding
 
 DEPENDENCIES = ['requests>=2.2.1']
