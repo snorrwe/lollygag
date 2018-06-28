@@ -4,7 +4,7 @@ use html5ever::parse_document;
 use html5ever::rcdom::RcDom;
 use html5ever::tendril::TendrilSink;
 
-use html_node::{node_type, HtmlNode};
+use html_node::HtmlNode;
 use lollygag::{self, query_tree, HtmlQuery};
 use utils::get_strs_from_dict;
 

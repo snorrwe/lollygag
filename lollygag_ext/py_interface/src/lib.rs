@@ -2,7 +2,7 @@
 extern crate cpython;
 extern crate html5ever;
 
-use cpython::{PyDict, PyResult, PyString, Python};
+use cpython::{PyDict, PyList, PyResult, PyString, Python};
 
 extern crate lollygag;
 mod html_node;
@@ -10,7 +10,8 @@ mod query;
 mod utils;
 
 use html_node::{node_type, HtmlNode};
-use query::{query as query_consts, query_html, query_http_endpoint, PyQuery};
+use query::{query as query_consts, query_html, query_http_endpoint, query_multiple_endpoints,
+            PyQuery};
 
 trait Getter {
     fn get<TKey, TReturn>(&self, py: Python, key: &TKey) -> PyResult<TReturn>
@@ -48,6 +49,11 @@ py_module_initializer!(
             py,
             "query_http_endpoint",
             py_fn!(py, query_http_endpoint(url: &PyString, query: &PyQuery)),
+        )?;
+        module.add(
+            py,
+            "query_multiple_endpoints",
+            py_fn!(py, query_multiple_endpoints(url: &PyList, query: &PyQuery)),
         )?;
         module.add(py, "QUERY_NONE", query_consts::QUERY_NONE)?;
         module.add(py, "QUERY_NAME", query_consts::QUERY_NAME)?;

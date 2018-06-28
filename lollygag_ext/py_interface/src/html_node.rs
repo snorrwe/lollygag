@@ -1,6 +1,5 @@
 use cpython::PythonObject;
 use cpython::{PyList, PyResult, PyString, PyTuple, Python};
-use html5ever::rcdom::{Handle, NodeData};
 use lollygag;
 
 pub mod node_type {

@@ -3,6 +3,14 @@ from warnings import warn
 from lollygag_ext import PyQuery, QUERY_NAME, QUERY_ATTRIBUTE, QUERY_AND, QUERY_OR, QUERY_DATA, QUERY_NONE, QUERY_NOT
 from lollygag_ext import query_html as _query_html
 from lollygag_ext import query_http_endpoint as _query_http_endpoint
+from lollygag_ext import query_multiple_endpoints as _query_multiple_endpoints
+
+
+def query_multiple_endpoints(urls: str, query: PyQuery):
+    """
+    Get nodes matching the query in the response of the GET request sent to each `url` of `urls`
+    """
+    return _query_multiple_endpoints(urls, query)
 
 
 def query_http_endpoint(url: str, query: PyQuery):
