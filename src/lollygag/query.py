@@ -6,10 +6,13 @@ from lollygag_ext import query_http_endpoint as _query_http_endpoint
 from lollygag_ext import query_multiple_endpoints as _query_multiple_endpoints
 
 
-def query_multiple_endpoints(urls: str, query: PyQuery):
+def query_multiple_endpoints(urls, query: PyQuery):
     """
     Get nodes matching the query in the response of the GET request sent to each `url` of `urls`
+    Params:
+        urls: iterable of strs
     """
+    urls = list(urls)
     return _query_multiple_endpoints(urls, query)
 
 
