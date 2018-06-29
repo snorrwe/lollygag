@@ -53,4 +53,7 @@ if __name__ == '__main__':
         python_requires='>=3',
         cmdclass={
             'verify': VerifyVersionCommand,
-        })
+        },
+        zip_safe=False,
+        include_package_data=True,
+    )

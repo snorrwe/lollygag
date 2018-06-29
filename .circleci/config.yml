@@ -84,12 +84,13 @@ jobs:
             cargo --version
             source env/bin/activate
             pip install wheel
-            python setup.py bdist_wheel
+            # python setup.py bdist_wheel # Linux wheels are not yet supported on PyPi
             python setup.py sdist
       - run:
           name: Init .pypirc
           command: |
             echo -e "[pypi]" >> ~/.pypirc
+            echo -e "repository = https://pypi.org/project/lollygag/" >> ~/.pypirc
             echo -e "username = snorrwe" >> ~/.pypirc
             echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
       - run:
