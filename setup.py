@@ -31,4 +31,6 @@ if __name__ == '__main__':
                 'lollygag_ext/py_interface/Cargo.toml',
                 binding=Binding.RustCPython)
         ],
-        tests_require=TEST_DEPENDENCIES)
+        tests_require=TEST_DEPENDENCIES,
+        extras_require={'ci': TEST_DEPENDENCIES},
+    )

@@ -30,7 +30,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: project-cache
+          key: py-ext-cache
       - run:
           name: Setup Rust
           command: |
@@ -48,7 +48,7 @@ jobs:
             export PATH=$PATH:$HOME/.cargo/bin
             cargo --version
             source env/bin/activate
-            pip install .
+            pip install .[ci]
       - run:
           name: Test lollygag
           command: |
@@ -60,6 +60,7 @@ jobs:
             - "~/.cargo"
             - "./lollygag_ext/lollygag/target"
             - "./lollygag_ext/py_interface/target"
+            - "./env"
 
 workflows:
   version: 2
