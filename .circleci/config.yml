@@ -69,9 +69,12 @@ jobs:
       - checkout
       - restore_cache:
           key: py-ext-cache
-      - run:
-          name: Install Rust
-          command: curl -SsL "https://sh.rustup.rs/" | sh -s -- -y --default-toolchain=nightly
+
+      # python setup.py bdist_wheel # Linux wheels are not yet supported on PyPi
+      # - run:
+      #     name: Install Rust
+      #     command: curl -SsL "https://sh.rustup.rs/" | sh -s -- -y --default-toolchain=nightly
+
       - run:
           name: Verify version
           command: |
@@ -90,7 +93,6 @@ jobs:
           name: Init .pypirc
           command: |
             echo -e "[pypi]" >> ~/.pypirc
-            echo -e "repository = https://pypi.org/project/lollygag/" >> ~/.pypirc
             echo -e "username = snorrwe" >> ~/.pypirc
             echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
       - run:
