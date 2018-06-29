@@ -30,6 +30,11 @@ class VerifyVersionCommand(install):
             sys.exit(info)
 
 
+def get_readme():
+    with open("README.md") as f:
+        return f.read()
+
+
 if __name__ == '__main__':
     setup(
         name='lollygag',
@@ -37,7 +42,8 @@ if __name__ == '__main__':
         version=VERSION,
         author_email='littlesnorrboy@gmail.com',
         url='https://github.com/snorrwe/lollygag',
-        description="A simple web crawling module",
+        description="A scalable web crawling base",
+        long_description=get_readme(),
         license="MIT",
         package_dir={'': 'src'},
         packages=find_packages('src'),
