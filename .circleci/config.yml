@@ -35,10 +35,10 @@ jobs:
             export PATH=$PATH:$HOME/.cargo/bin
       - checkout
       - run:
-        name: Create Virtual Env
-        command: |
-          python -m venv env
-          source env/bin/activate
+          name: Create Virtual Env
+          command: |
+            python -m venv env
+            source env/bin/activate
       - run:
           name: Install lollygag
           command: |
