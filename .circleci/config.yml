@@ -76,6 +76,9 @@ jobs:
             echo -e "username = snorrwe" >> ~/.pypirc
             echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
       - run:
+          name: Install Rust
+          command: curl -SsL "https://sh.rustup.rs/" | sh -s -- -y --default-toolchain=nightly
+      - run:
           name: Build packages
           command: |
             export PATH=$PATH:$HOME/.cargo/bin
