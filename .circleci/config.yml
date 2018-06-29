@@ -23,18 +23,20 @@ jobs:
           key: project-cache
           paths:
             - "~/.cargo"
-            - "./target"
+            - "./lollygag_ext/lollygag/target"
   build-and-test-extension:
     docker:
       - image: circleci/python:3.6.2
     steps:
+      - checkout
+      - restore_cache:
+          key: project-cache
       - run:
           name: Setup Rust
           command: |
             curl -SsL "https://sh.rustup.rs/" | sh -s -- -y --default-toolchain=nightly
             export PATH=$PATH:$HOME/.cargo/bin
             cargo --version
-      - checkout
       - run:
           name: Create Virtual Env
           command: |
@@ -52,6 +54,12 @@ jobs:
           command: |
             source env/bin/activate
             pytest
+      - save_cache:
+          key: py-ext-cache
+          paths:
+            - "~/.cargo"
+            - "./lollygag_ext/lollygag/target"
+            - "./lollygag_ext/py_interface/target"
 
 workflows:
   version: 2
