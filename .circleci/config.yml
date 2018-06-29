@@ -33,6 +33,8 @@ jobs:
           command: |
             curl -SsL "https://sh.rustup.rs/" | sh -s -- -y --default-toolchain=nightly
             export PATH=$PATH:$HOME/.cargo/bin
+            echo PATH
+            ls -al $HOME/.cargo/bin
       - checkout
       - run:
           name: Create Virtual Env
