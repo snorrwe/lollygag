@@ -79,7 +79,8 @@ jobs:
           name: Build packages
           command: |
             source env/bin/activate
-            python setup.py build sdist bdist_wheel
+            python setup.py bdist_wheel
+            python setup.py sdist
 
 workflows:
   version: 2
