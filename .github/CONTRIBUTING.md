@@ -12,9 +12,8 @@
 
 * Ensure the PR description clearly describes the problem and solution. Include the relevant issue number if applicable.
 
-* Pull requests must pass all tests on Travis CI and must be peer reviewed by a contributor before they can be merged into _master_. To run the tests locally:
+* Pull requests must pass all tests on CI and must be peer reviewed by a contributor before they can be merged into _master_. To run the tests locally:
     * Run the tests via (for example) _pytest_. Just run `pytest` in the root directory of the project.
-    * Run _pylint_. Run `pylint lollygag` in the root directory of the project.
     
 ### Did you fix whitespace, format code, or make a purely cosmetic patch?
 
@@ -22,9 +21,9 @@ We accept purely cosmetic fixes aswell. Submit a pull request!
 
 ### Do you intend to add a new feature or change an existing one?
 
-* Open a new branch for your feature.
+* Open a new branch for your feature. Or fork the repository.
 
-* Open a pull request once you're finished.
+* Open a pull request.
 
 * Prefer many smaller commits to fewer larger ones.
 
@@ -32,25 +31,10 @@ We accept purely cosmetic fixes aswell. Submit a pull request!
 
 ### Coding guidelines
 
-* Your code must pass the _lint_ checks.
 
 * Write at least unit tests for your code.
 
-* Please see the __Test code__ section of this document about test code.
-
 * Write docstrings for your classes and public methods
-
-### Test code
-
-#### Unit testing
-
-Test files are located next to the files they meant to test.<br>
-Test files have the same base name, and end with *_test*<br>
-For example: tests for file *some_source.py* are in the file *some_source_test.py*
-
-#### End-to-end testing
-
-Test files are located in the *black_box_tests* directory.<br>
 
 ### Do you have questions about the source code?
 
