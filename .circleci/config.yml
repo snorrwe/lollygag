@@ -62,11 +62,31 @@ jobs:
             - "./lollygag_ext/py_interface/target"
             - "./env"
 
+  deploy_to_pypi:
+    docker:
+      - image: circleci/python:3.6.2
+    steps:
+      - checkout
+      - restore_cache:
+          key: py-ext-cache
+      - run:
+          name: Init .pypirc
+          command: |
+            echo -e "[pypi]" >> ~/.pypirc
+            echo -e "username = snorrwe" >> ~/.pypirc
+            echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
+      - run:
+          name: Build packages
+          command: |
+            source env/bin/activate
+            python setup.py build sdist bdist_wheel
+
 workflows:
   version: 2
   build_rust_standalone:
     jobs:
       - build-rust-standalone
-  build-and-test-extension:
-    jobs:
       - build-and-test-extension
+  deploy_to_pypi:
+    jobs:
+      - deploy_to_pypi
