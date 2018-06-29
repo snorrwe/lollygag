@@ -36,7 +36,9 @@ jobs:
       - checkout
       - run:
           name: Install lollygag
-          command: pip install .
+          command: |
+            pip install setuptools_rust
+            pip install .
       - run:
           name: Test lollygag
           command: pytest
