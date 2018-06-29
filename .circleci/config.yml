@@ -35,6 +35,7 @@ jobs:
             export PATH=$PATH:$HOME/.cargo/bin
             echo PATH
             ls -al $HOME/.cargo/bin
+            cargo --version
       - checkout
       - run:
           name: Create Virtual Env
