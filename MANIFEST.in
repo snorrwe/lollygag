@@ -1,4 +1,4 @@
-recursive-include lollygag_ext/lollygag/src *
-include lollygag_ext/lollygag/Cargo.toml 
-recursive-include lollygag_ext/py_interface/src *
-include lollygag_ext/py_interface/Cargo.toml 
+recursive-include src/lollygag_ext/lollygag/src *
+include src/lollygag_ext/lollygag/Cargo.toml 
+recursive-include src/lollygag_ext/py_interface/src *
+include src/lollygag_ext/py_interface/Cargo.toml 
