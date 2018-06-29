@@ -45,6 +45,9 @@ jobs:
       - run:
           name: Install lollygag
           command: |
+            echo PATH
+            ls -al $HOME/.cargo/bin
+            cargo --version
             source env/bin/activate
             pip install .
       - run:
