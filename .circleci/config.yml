@@ -24,9 +24,27 @@ jobs:
           paths:
             - "~/.cargo"
             - "./target"
+  build-and-test-extension:
+    docker:
+      - image: circleci/python:3.6.2
+    steps:
+      - run:
+        name: Setup Rust
+        command: |
+          curl -SsL "https://sh.rustup.rs/" | sh -s -- -y --default-toolchain=nightly
+          export PATH=$PATH:$HOME/.cargo/bin
+      - run:
+        name: Install lollygag
+        command: pip install .
+      - run:
+        name: Test lollygag
+        command: pytest
 
 workflows:
   version: 2
   build_rust_standalone:
     jobs:
       - build-rust-standalone
+  build-and-test-extension:
+    jobs:
+      - build-and-test-extension
