@@ -10,20 +10,20 @@ jobs:
       - run:
           name: Stable Build
           command: |
-            cd lollygag_ext/lollygag
+            cd src/lollygag_ext/lollygag
             rustup run stable rustc --version --verbose
             rustup run stable cargo --version --verbose
             rustup run stable cargo build
       - run:
           name: Test
           command: |
-            cd lollygag_ext/lollygag
+            cd src/lollygag_ext/lollygag
             rustup run stable cargo test
       - save_cache:
           key: project-cache
           paths:
             - "~/.cargo"
-            - "./lollygag_ext/lollygag/target"
+            - "src/lollygag_ext/lollygag/target"
   build-and-test-extension:
     docker:
       - image: circleci/python:3.6.2
@@ -58,8 +58,8 @@ jobs:
           key: py-ext-cache
           paths:
             - "~/.cargo"
-            - "./lollygag_ext/lollygag/target"
-            - "./lollygag_ext/py_interface/target"
+            - "src/lollygag_ext/lollygag/target"
+            - "src/lollygag_ext/py_interface/target"
             - "./env"
 
   deploy_to_pypi:
