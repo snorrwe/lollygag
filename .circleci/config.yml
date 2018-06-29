@@ -69,12 +69,9 @@ jobs:
       - checkout
       - restore_cache:
           key: py-ext-cache
-
-      # python setup.py bdist_wheel # Linux wheels are not yet supported on PyPi
-      # - run:
-      #     name: Install Rust
-      #     command: curl -SsL "https://sh.rustup.rs/" | sh -s -- -y --default-toolchain=nightly
-
+      - run:
+          name: Install Rust
+          command: curl -SsL "https://sh.rustup.rs/" | sh -s -- -y --default-toolchain=nightly
       - run:
           name: Verify version
           command: |
