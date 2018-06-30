@@ -30,8 +30,11 @@ class VerifyVersionCommand(install):
 
 
 def get_readme():
-    with open("README.md") as f:
-        return f.read()
+    try:
+        with open("README.md") as f:
+            return f.read()
+    except FileNotFoundError:
+        return ""
 
 
 setup_options = dict(
