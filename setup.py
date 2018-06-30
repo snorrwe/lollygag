@@ -14,7 +14,7 @@ except ImportError:
         [sys.executable, '-m', 'pip', 'install', 'setuptools_rust'])
     from setuptools_rust import RustExtension, Binding
 
-VERSION = '2.0.0-rc1'
+VERSION = '2.0.0rc2'
 DEPENDENCIES = []
 TEST_DEPENDENCIES = ['pytest']
 
