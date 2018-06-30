@@ -14,7 +14,7 @@ except ImportError:
         [sys.executable, '-m', 'pip', 'install', 'setuptools_rust'])
     from setuptools_rust import RustExtension, Binding
 
-VERSION = '2.0.0-dev'
+VERSION = '2.0.0-rc1'
 DEPENDENCIES = []
 TEST_DEPENDENCIES = ['pytest']
 
@@ -60,6 +60,14 @@ setup_options = dict(
     },
     zip_safe=False,
     include_package_data=True,
+    classifiers=(
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Rust :: 1.26",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+        "Topic :: Internet :: WWW/HTTP :: Indexing/Search",
+        "Development Status :: 3 - Alpha",
+    ),
 )
 
 if __name__ == '__main__':

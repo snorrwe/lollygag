@@ -28,3 +28,8 @@ pip install .
 # Using lollygag
 
 __TBA__
+
+## Examples
+
+__TBA__
+
