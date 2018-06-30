@@ -1,4 +1,5 @@
 from lollygag.query import compile_query, query_html
+from lollygag.query_builder import QueryBuilder
 from lollygag_ext import NODE_DOCUMENT, NODE_ELEMENT, NODE_TEXT
 
 some_html = """
@@ -173,3 +174,30 @@ def test_or_query():
     some asd data
 </i>
 """
+
+
+def test_compile_query_and_query_builder():
+    query = compile_query({
+        "or": ({
+            "attribute": {
+                "name": "foo",
+                "value": "bar"
+            },
+            "name": "asd-node",
+        }, {
+            "data": "asd"
+        })
+    })
+    result1 = query_html(some_html, query)
+    assert result1
+    assert len(result1) == 3
+
+    query = QueryBuilder().attribute(
+        'foo', 'bar')._and().name('asd-node')._or().data('asd').compile()
+
+    result2 = query_html(some_html, query)
+    assert result2
+    assert len(result2) == 3
+
+    for x, y in zip([str(x) for x in result1], [str(y) for y in result2]):
+        assert x == y
