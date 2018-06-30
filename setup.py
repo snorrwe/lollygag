@@ -62,7 +62,6 @@ setup_options = dict(
     include_package_data=True,
     classifiers=(
         "Programming Language :: Python :: 3",
-        "Programming Language :: Rust :: 1.26",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Topic :: Internet :: WWW/HTTP :: Indexing/Search",
