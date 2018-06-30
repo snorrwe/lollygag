@@ -48,8 +48,8 @@ setup_options = dict(
     install_requires=DEPENDENCIES,
     rust_extensions=[
         RustExtension(
-            'src/lollygag_ext',
-            'src/lollygag_ext/py_interface/Cargo.toml',
+            'lollygag_ext',
+            'lollygag_ext/py_interface/Cargo.toml',
             binding=Binding.RustCPython)
     ],
     tests_require=TEST_DEPENDENCIES,
